@@ -2,7 +2,6 @@
 name: suspend
 description: "Save a session summary to .agents/sessions/ so work can be resumed later. Run /suspend to snapshot current context."
 trigger: /suspend
-gemini_trigger: "When the user types /suspend or asks to save, snapshot, or pause the current session, always execute the following workflow exactly:"
 ---
 
 # /suspend

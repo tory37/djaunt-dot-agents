@@ -6,11 +6,19 @@ Your portable AI agent setup. Clone this repo on any machine, run one script, an
 
 ```
 AGENTS.md          — The shared system prompt / global instructions for all AI agents
-skills/            — Claude Code skills (slash commands) shared across all machines
-  bug/SKILL.md
-  feature/SKILL.md
-  resume/SKILL.md
-  suspend/SKILL.md
+skills/            — Shared skills (slash commands for Claude, inlined into Gemini)
+  bug/
+    SKILL.md       — Claude Code loads this
+    gemini.meta    — Gemini-specific trigger/notes (invisible to Claude)
+  feature/
+    SKILL.md
+    gemini.meta
+  resume/
+    SKILL.md
+    gemini.meta
+  suspend/
+    SKILL.md
+    gemini.meta
 scripts/
   sync.sh          — The install/refresh script
 ```
@@ -19,22 +27,32 @@ scripts/
 
 ```
 djaunt-dot-agents/
-  AGENTS.md  ──(copy)──▶  ~/.agents/AGENTS.md
-  skills/    ──(copy)──▶  ~/.agents/skills/
+  AGENTS.md  ──(copy)──▶  ~/.agents/AGENTS.md  ──(symlink)──▶  ~/.claude/CLAUDE.md
+  skills/    ──(symlink)─▶ ~/.agents/skills/   ──(symlink)──▶  ~/.claude/skills/
                                 │
-                    ┌───────────┴────────────┐
-                    ▼                        ▼
-          ~/.claude/CLAUDE.md        ~/.gemini/GEMINI.md
-          (symlink)                  (symlink)
-          ~/.claude/skills/          ~/.gemini/skills/
-          (copy)                     (copy)
+                                └──(assembled)──▶  ~/.gemini/GEMINI.md
+                                                   (AGENTS.md + all skills inlined)
 ```
 
-`~/.agents/AGENTS.md` is the single source of truth loaded by all agents. The symlinks in `~/.claude` and `~/.gemini` point back to it, so each AI tool sees the same instructions.
+**Claude Code** gets skills natively — `~/.claude/skills/` is a symlink chain back to the repo, so edits are live immediately.
+
+**Gemini CLI** has no native skill system. Instead, `sync.sh` assembles `~/.gemini/GEMINI.md` by taking `AGENTS.md` and inlining every skill after it, with natural-language trigger instructions. When you type `/feature` in Gemini, it reads the trigger from the inlined skill and follows the workflow. Re-run `sync.sh` after adding or editing skills to rebuild `GEMINI.md`.
+
+### The gemini.meta file
+
+Each skill folder contains a `gemini.meta` file with Gemini-specific metadata that `sync.sh` uses when assembling `GEMINI.md`. Claude Code never loads this file, so it costs zero context.
+
+```
+trigger: When the user types /feature or asks to implement a new feature, ...
+notes:   File argument: instead of @path syntax, provide the path as plain text.
+```
+
+- `trigger` — the natural-language "when to use this" line prepended before the skill body in GEMINI.md
+- `notes` — optional Gemini-specific caveat rendered as a blockquote (omit the line if not needed)
 
 ### Machine-specific extensions
 
-Drop `.md` files in `~/.agents/extensions/` on any machine before (or after) running `sync.sh`. The script detects them and appends `@<path>` references into the local `~/.agents/AGENTS.md` above the end of the file, replacing the `PROJECT_EXTENSIONS_PLACEHOLDER` comment.
+Drop `.md` files in `~/.agents/extensions/` on any machine. The script detects them and injects `@<path>` references into the local `~/.agents/AGENTS.md`, replacing the `PROJECT_EXTENSIONS_PLACEHOLDER` comment.
 
 Example: `~/.agents/extensions/work.md` might contain your company's coding standards, internal tool references, or anything else that belongs on your work laptop but not your personal machine.
 
@@ -53,17 +71,9 @@ mkdir -p ~/.agents/extensions
 bash scripts/sync.sh
 ```
 
-That's it. The script:
-- Creates `~/.agents/` and copies `AGENTS.md` + `skills/` into it
-- Injects `@` references to any files in `~/.agents/extensions/`
-- Symlinks `~/.agents/AGENTS.md` → `~/.claude/CLAUDE.md` (if `~/.claude` exists)
-- Copies skills into `~/.claude/skills/` (if `~/.claude` exists)
-- Symlinks `~/.agents/AGENTS.md` → `~/.gemini/GEMINI.md` (if `~/.gemini` exists)
-- Copies skills into `~/.gemini/skills/` (if `~/.gemini` exists)
+The script handles everything: creates `~/.agents/`, wires up Claude Code and Gemini CLI, injects extensions, and assembles `GEMINI.md`.
 
 ## Keeping it up to date
-
-Pull changes and re-run the sync script:
 
 ```bash
 cd ~/src/djaunt-dot-agents
@@ -73,21 +83,14 @@ bash scripts/sync.sh
 
 ## Editing your setup
 
-| What you want to change | Where to edit |
-|---|---|
-| Global AI instructions / persona | `AGENTS.md` in this repo |
-| Shared skills (slash commands) | `skills/<name>/SKILL.md` in this repo |
-| Machine-specific context | `~/.agents/extensions/<name>.md` on that machine |
-
-After editing files in this repo, commit, push, then re-run `sync.sh` on each machine where you want the changes.
-
-## A note on Gemini CLI skills
-
-Claude Code has a native skill system: drop a `SKILL.md` into `~/.claude/skills/<name>/` and it becomes a `/name` slash command. Gemini CLI does not have an equivalent feature at this time. The sync script copies skills to `~/.gemini/skills/` for future-proofing, but they will not auto-load in Gemini without additional configuration.
+| What you want to change | Where to edit | Needs re-sync? |
+|---|---|---|
+| Global AI instructions | `AGENTS.md` in this repo | Yes |
+| Skill workflow (both tools) | `skills/<name>/SKILL.md` | Claude: no — Gemini: yes |
+| Gemini trigger / notes for a skill | `skills/<name>/gemini.meta` | Yes |
+| Machine-specific context | `~/.agents/extensions/<name>.md` | Yes |
 
 ## Extensions folder structure
-
-Each extension file is a plain Markdown file. It can contain anything you'd put in `AGENTS.md` — coding standards, internal URLs, tool preferences, team conventions, etc.
 
 ```
 ~/.agents/

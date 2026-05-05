@@ -2,7 +2,6 @@
 name: resume
 description: "Load a saved session summary from .agents/sessions/ to restore context and continue prior work."
 trigger: /resume
-gemini_trigger: "When the user types /resume or asks to continue, reload, or pick up previous work, always execute the following workflow exactly:"
 ---
 
 # /resume

@@ -24,6 +24,13 @@ frontmatter_field() {
     ' "$file"
 }
 
+# Read a field from a gemini.meta file (simple "key: value" lines).
+# Usage: meta_field <file> <field>
+meta_field() {
+    local file="$1" field="$2"
+    awk -v field="$field" '$0 ~ "^" field ":" { sub("^" field ": *", ""); print; exit }' "$file"
+}
+
 # Return the body of a SKILL.md — everything after the closing --- of frontmatter.
 skill_body() {
     local file="$1"
@@ -141,8 +148,13 @@ PREAMBLE
         # Inline each skill
         for skill_file in "${SKILL_FILES[@]}"; do
             name="$(frontmatter_field "$skill_file" name)"
-            trigger="$(frontmatter_field "$skill_file" gemini_trigger)"
-            notes="$(frontmatter_field "$skill_file" gemini_notes)"
+            meta_file="$(dirname "$skill_file")/gemini.meta"
+            trigger=""
+            notes=""
+            if [ -f "$meta_file" ]; then
+                trigger="$(meta_field "$meta_file" trigger)"
+                notes="$(meta_field "$meta_file" notes)"
+            fi
 
             printf '\n### /%s\n\n' "$name" >> "$GEMINI_MD"
 

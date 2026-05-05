@@ -2,8 +2,6 @@
 name: feature
 description: "Kick off the full engineering workflow for a new feature. Accepts an optional spec file: /feature @path/to/spec.md"
 trigger: /feature
-gemini_trigger: "When the user types /feature or asks to implement a new feature, always execute the following workflow exactly, step by step:"
-gemini_notes: "File argument: instead of the @path/to/spec.md syntax, the user will provide a file path as plain text — read the file yourself before proceeding."
 ---
 
 # /feature

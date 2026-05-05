@@ -1,0 +1,1 @@
+trigger: When the user types /resume or asks to continue, reload, or pick up previous work, always execute the following workflow exactly:
