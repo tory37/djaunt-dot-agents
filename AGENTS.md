@@ -33,6 +33,7 @@ Write the Doer Test Plan to `.agents/<feature-name>-doer-test-plan.md`.
 - NEVER force-push to the project's default protected branch
 
 ## IMPORTANT Rules
+- **Token Efficiency:** To save context and cost, do not run tests (unit, e2e, integration) yourself. Always prompt the user to run the tests and report the results back to you.
 - ALWAYS verify work before saying it's done
 - NEVER modify production databases/infra without explicit user confirmation
 - NEVER commit .env files, credentials, or secrets

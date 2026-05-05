@@ -60,7 +60,12 @@ Code against the approved plan **as it exists on disk** — do not implement fro
 
 - Follow the project's style and linting rules.
 - Update the Doer Test Plan if steps or details change during implementation.
-- Once finished, present a summary and await user confirmation of completeness.
+- **Verification Gate:** Once finished, **STOP** and prompt the user to:
+    1. Run the unit tests and verify they pass.
+    2. Run e2e tests (if they exist) and verify they pass.
+    3. Run the manual steps in the Doer Test Plan.
+    4. Report back any issues or confirm all tests pass.
+- Await user confirmation of completeness before moving to Step 7. Do not move to Step 7 until all verification steps have been confirmed by the user.
 
 ### 7. Commit & PR
 

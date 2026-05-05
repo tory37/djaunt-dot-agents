@@ -51,9 +51,12 @@ Implement the minimal production code change that makes the failing test pass. D
 
 ### 6. Verify
 
-Have the user run the test suite to confirm:
-- The new test passes
-- No regressions in related tests
+**Verification Gate:** Once the fix is implemented, **STOP** and prompt the user to run the test suite to confirm:
+- The new test passes.
+- No regressions in related tests.
+- (If applicable) Manual verification steps pass.
+
+Await user confirmation and report back any issues before moving to Step 7. Do not move to Step 7 until all verification steps have been confirmed by the user.
 
 ### 7. Commit & PR
 
