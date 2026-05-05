@@ -2,6 +2,8 @@
 name: bug
 description: "Kick off the test-driven bug investigation workflow. Accepts an optional issue file: /bug @path/to/issue.md"
 trigger: /bug
+gemini_trigger: "When the user types /bug, reports a bug, or asks to investigate a failing test, always execute the following workflow exactly, step by step:"
+gemini_notes: "File argument: instead of the @path/to/issue.md syntax, the user will provide a file path as plain text — read the file yourself before proceeding."
 ---
 
 # /bug
