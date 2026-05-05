@@ -11,32 +11,6 @@ log()  { printf '\033[1;34m[sync]\033[0m %s\n' "$*"; }
 ok()   { printf '\033[1;32m  ✓\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m  !\033[0m %s\n' "$*"; }
 
-# Read a single field from a SKILL.md YAML frontmatter block.
-# Usage: frontmatter_field <file> <field>
-frontmatter_field() {
-    local file="$1" field="$2"
-    awk -v field="$field" '
-        /^---$/ { count++; next }
-        count == 1 && $0 ~ "^" field ":" {
-            sub("^" field ": *", ""); gsub(/^"|"$/, ""); print; exit
-        }
-        count >= 2 { exit }
-    ' "$file"
-}
-
-# Read a field from a gemini.meta file (simple "key: value" lines).
-# Usage: meta_field <file> <field>
-meta_field() {
-    local file="$1" field="$2"
-    awk -v field="$field" '$0 ~ "^" field ":" { sub("^" field ": *", ""); print; exit }' "$file"
-}
-
-# Return the body of a SKILL.md — everything after the closing --- of frontmatter.
-skill_body() {
-    local file="$1"
-    awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
-}
-
 # ──────────────────────────────────────────────
 # 1. Create ~/.agents and populate it
 # ──────────────────────────────────────────────
@@ -101,93 +75,7 @@ else
 fi
 
 # ──────────────────────────────────────────────
-# 4. Collect skills (shared by all tool integrations)
-# ──────────────────────────────────────────────
-SKILLS_DIR="$REPO_ROOT/skills"
-SKILL_FILES=()
-while IFS= read -r -d '' f; do
-    SKILL_FILES+=("$f")
-done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
-
-# ──────────────────────────────────────────────
-# 5. Wire up ~/.gemini (Gemini CLI)
-#    GEMINI.md is assembled (not symlinked): AGENTS.md content +
-#    all skills inlined with their Gemini-specific trigger lines.
-# ──────────────────────────────────────────────
-if [ -d "$HOME/.gemini" ]; then
-    log "~/.gemini detected — assembling GEMINI.md for Gemini CLI …"
-
-    GEMINI_MD="$HOME/.gemini/GEMINI.md"
-    rm -f "$GEMINI_MD"
-
-    # Start with the AGENTS.md content (already has extensions injected)
-    cat "$AGENTS_DIR/AGENTS.md" >> "$GEMINI_MD"
-
-    if [ ${#SKILL_FILES[@]} -gt 0 ]; then
-        # Append skills preamble
-        cat >> "$GEMINI_MD" <<'PREAMBLE'
-
-
----
-
-## Skills
-
-The following skills are available. When the user types a slash command or matches a trigger description below, execute the corresponding workflow **exactly as written** — do not skip or reorder steps, and do not proceed past a gate without user confirmation.
-
-PREAMBLE
-
-        # Build index table
-        printf '| Command | Description |\n' >> "$GEMINI_MD"
-        printf '|---------|-------------|\n' >> "$GEMINI_MD"
-        for skill_file in "${SKILL_FILES[@]}"; do
-            name="$(frontmatter_field "$skill_file" name)"
-            desc="$(frontmatter_field "$skill_file" description)"
-            printf '| /%s | %s |\n' "$name" "$desc" >> "$GEMINI_MD"
-            ok "  Indexed skill: /$name"
-        done
-        printf '\n---\n' >> "$GEMINI_MD"
-
-        # Inline each skill
-        for skill_file in "${SKILL_FILES[@]}"; do
-            name="$(frontmatter_field "$skill_file" name)"
-            meta_file="$(dirname "$skill_file")/gemini.meta"
-            trigger=""
-            notes=""
-            if [ -f "$meta_file" ]; then
-                trigger="$(meta_field "$meta_file" trigger)"
-                notes="$(meta_field "$meta_file" notes)"
-            fi
-
-            printf '\n### /%s\n\n' "$name" >> "$GEMINI_MD"
-
-            if [ -n "$trigger" ]; then
-                printf '%s\n\n' "$trigger" >> "$GEMINI_MD"
-            fi
-
-            if [ -n "$notes" ]; then
-                printf '> **Note:** %s\n\n' "$notes" >> "$GEMINI_MD"
-            fi
-
-            skill_body "$skill_file" >> "$GEMINI_MD"
-            printf '\n---\n' >> "$GEMINI_MD"
-            ok "  Inlined skill: /$name"
-        done
-    fi
-
-    ok "Assembled ~/.gemini/GEMINI.md"
-
-    # Symlink skills directory for future-proofing
-    if [ -L "$HOME/.gemini/skills" ] || [ -d "$HOME/.gemini/skills" ]; then
-        rm -rf "$HOME/.gemini/skills"
-    fi
-    ln -s "$AGENTS_DIR/skills" "$HOME/.gemini/skills"
-    ok "Symlinked ~/.agents/skills → ~/.gemini/skills"
-else
-    warn "~/.gemini not found — skipping Gemini CLI setup (install Gemini CLI to enable)"
-fi
-
-# ──────────────────────────────────────────────
-# 6. Wire up ~/.cursor (Cursor CLI)
+# 4. Wire up ~/.cursor (Cursor CLI)
 #    Commands are assembled (not symlinked): each skill body is
 #    copied to ~/.cursor/commands/<name>.md (frontmatter stripped).
 # ──────────────────────────────────────────────
@@ -197,13 +85,30 @@ if command -v cursor &>/dev/null || [ -d "$HOME/.cursor" ]; then
     CURSOR_COMMANDS="$HOME/.cursor/commands"
     mkdir -p "$CURSOR_COMMANDS"
 
-    if [ ${#SKILL_FILES[@]} -gt 0 ]; then
-        for skill_file in "${SKILL_FILES[@]}"; do
-            name="$(frontmatter_field "$skill_file" name)"
-            skill_body "$skill_file" > "$CURSOR_COMMANDS/${name}.md"
-            ok "  Wrote command: /${name} → $CURSOR_COMMANDS/${name}.md"
-        done
-    fi
+    # Read a single field from a SKILL.md YAML frontmatter block.
+    frontmatter_field() {
+        local file="$1" field="$2"
+        awk -v field="$field" '
+            /^---$/ { count++; next }
+            count == 1 && $0 ~ "^" field ":" {
+                sub("^" field ": *", ""); gsub(/^"|"$/, ""); print; exit
+            }
+            count >= 2 { exit }
+        ' "$file"
+    }
+
+    # Return the body of a SKILL.md — everything after the closing --- of frontmatter.
+    skill_body() {
+        local file="$1"
+        awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
+    }
+
+    SKILLS_DIR="$REPO_ROOT/skills"
+    while IFS= read -r -d '' skill_file; do
+        name="$(frontmatter_field "$skill_file" name)"
+        skill_body "$skill_file" > "$CURSOR_COMMANDS/${name}.md"
+        ok "  Wrote command: /${name} → $CURSOR_COMMANDS/${name}.md"
+    done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
 
     ok "Cursor CLI commands assembled (~/.cursor/commands/)"
 else
@@ -214,7 +119,7 @@ echo ""
 log "Done. Your portable AI setup is live on this machine."
 echo ""
 echo "  Edit your config:    $REPO_ROOT/AGENTS.md"
-echo "  Add/edit skills:     $REPO_ROOT/skills/<skill-name>/SKILL.md"
+echo "  Add/edit skills:     $REPO_ROOT/skills/djt-<name>/SKILL.md"
 echo "  Machine extensions:  $AGENTS_DIR/extensions/<name>.md"
 echo ""
 echo "  Re-run sync.sh after pulling or making changes to this repo"

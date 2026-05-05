@@ -1,18 +1,18 @@
 ---
-name: bug
-description: "Kick off the test-driven bug investigation workflow. Accepts an optional issue file: /bug @path/to/issue.md"
-trigger: /bug
+name: djt-bug
+description: "Kick off the test-driven bug investigation workflow. Accepts an optional issue file: /djt-bug @path/to/issue.md"
+trigger: /djt-bug
 ---
 
-# /bug
+# /djt-bug
 
 Start the test-driven bug investigation workflow.
 
 ## Usage
 
 ```
-/bug                        # start with no issue file; agent will ask for repro steps
-/bug @path/to/issue.md      # start from a written issue or repro-steps file
+/djt-bug                        # start with no issue file; agent will ask for repro steps
+/djt-bug @path/to/issue.md      # start from a written issue or repro-steps file
 ```
 
 ## Steps

@@ -1,18 +1,18 @@
 ---
-name: resume
+name: djt-resume
 description: "Load a saved session summary from .agents/sessions/ to restore context and continue prior work."
-trigger: /resume
+trigger: /djt-resume
 ---
 
-# /resume
+# /djt-resume
 
 Reload a suspended session from `.agents/sessions/` and orient the agent to continue where work left off.
 
 ## Usage
 
 ```
-/resume <slug>        # e.g. /resume amr-123-oauth-login
-/resume               # list available sessions if no argument given
+/djt-resume <slug>        # e.g. /djt-resume amr-123-oauth-login
+/djt-resume               # list available sessions if no argument given
 ```
 
 ## Steps
