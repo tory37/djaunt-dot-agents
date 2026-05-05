@@ -22,11 +22,11 @@ ok "~/.agents exists"
 cp "$REPO_ROOT/AGENTS.md" "$AGENTS_DIR/AGENTS.md"
 ok "Copied AGENTS.md → ~/.agents/AGENTS.md"
 
-mkdir -p "$AGENTS_DIR/skills"
-if [ -d "$REPO_ROOT/skills" ]; then
-    cp -R "$REPO_ROOT/skills/." "$AGENTS_DIR/skills/"
-    ok "Copied skills/ → ~/.agents/skills/"
+if [ -L "$AGENTS_DIR/skills" ] || [ -d "$AGENTS_DIR/skills" ]; then
+    rm -rf "$AGENTS_DIR/skills"
 fi
+ln -s "$REPO_ROOT/skills" "$AGENTS_DIR/skills"
+ok "Symlinked $REPO_ROOT/skills → ~/.agents/skills"
 
 # ──────────────────────────────────────────────
 # 2. Inject extension references into AGENTS.md
@@ -66,9 +66,11 @@ if [ -d "$HOME/.claude" ]; then
     ln -s "$AGENTS_DIR/AGENTS.md" "$CLAUDE_MD"
     ok "Symlinked ~/.agents/AGENTS.md → ~/.claude/CLAUDE.md"
 
-    mkdir -p "$HOME/.claude/skills"
-    cp -R "$AGENTS_DIR/skills/." "$HOME/.claude/skills/"
-    ok "Copied skills → ~/.claude/skills/"
+    if [ -L "$HOME/.claude/skills" ] || [ -d "$HOME/.claude/skills" ]; then
+        rm -rf "$HOME/.claude/skills"
+    fi
+    ln -s "$AGENTS_DIR/skills" "$HOME/.claude/skills"
+    ok "Symlinked ~/.agents/skills → ~/.claude/skills"
 else
     warn "~/.claude not found — skipping Claude Code setup (install Claude Code to enable)"
 fi
@@ -87,12 +89,13 @@ if [ -d "$HOME/.gemini" ]; then
     ln -s "$AGENTS_DIR/AGENTS.md" "$GEMINI_MD"
     ok "Symlinked ~/.agents/AGENTS.md → ~/.gemini/GEMINI.md"
 
-    # Gemini CLI does not have a native skills system equivalent to Claude Code.
-    # We copy skills here for future-proofing and in case Gemini adds support,
-    # but they will not auto-load without manual Gemini CLI configuration.
-    mkdir -p "$HOME/.gemini/skills"
-    cp -R "$AGENTS_DIR/skills/." "$HOME/.gemini/skills/"
-    ok "Copied skills → ~/.gemini/skills/ (note: Gemini CLI has no native skill auto-loading)"
+    # Gemini CLI has no native skill auto-loading equivalent to Claude Code,
+    # but we symlink for future-proofing and consistency.
+    if [ -L "$HOME/.gemini/skills" ] || [ -d "$HOME/.gemini/skills" ]; then
+        rm -rf "$HOME/.gemini/skills"
+    fi
+    ln -s "$AGENTS_DIR/skills" "$HOME/.gemini/skills"
+    ok "Symlinked ~/.agents/skills → ~/.gemini/skills (note: Gemini CLI has no native skill auto-loading)"
 else
     warn "~/.gemini not found — skipping Gemini CLI setup (install Gemini CLI to enable)"
 fi
