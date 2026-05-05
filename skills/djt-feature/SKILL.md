@@ -1,18 +1,18 @@
 ---
-name: feature
-description: "Kick off the full engineering workflow for a new feature. Accepts an optional spec file: /feature @path/to/spec.md"
-trigger: /feature
+name: djt-feature
+description: "Kick off the full engineering workflow for a new feature. Accepts an optional spec file: /djt-feature @path/to/spec.md"
+trigger: /djt-feature
 ---
 
-# /feature
+# /djt-feature
 
 Start the full engineering workflow for a new feature.
 
 ## Usage
 
 ```
-/feature                      # start with no spec; agent will ask for context
-/feature @path/to/spec.md     # start from a written spec file
+/djt-feature                      # start with no spec; agent will ask for context
+/djt-feature @path/to/spec.md     # start from a written spec file
 ```
 
 ## Steps

@@ -1,17 +1,17 @@
 ---
-name: suspend
-description: "Save a session summary to .agents/sessions/ so work can be resumed later. Run /suspend to snapshot current context."
-trigger: /suspend
+name: djt-suspend
+description: "Save a session summary to .agents/sessions/ so work can be resumed later. Run /djt-suspend to snapshot current context."
+trigger: /djt-suspend
 ---
 
-# /suspend
+# /djt-suspend
 
 Snapshot the current working session into `.agents/sessions/<name>.md` so it can be resumed in a future conversation.
 
 ## Steps
 
 1. Determine the session name:
-   - If the user passed an argument (e.g. `/suspend AMR-123`), use that as the filename slug.
+   - If the user passed an argument (e.g. `/djt-suspend AMR-123`), use that as the filename slug.
    - Otherwise, derive a short slug from the ticket key or feature being worked on (e.g. `amr-123-oauth-login`).
 
 2. Gather context from the current conversation:
@@ -50,4 +50,4 @@ Snapshot the current working session into `.agents/sessions/<name>.md` so it can
 
 4. Create `.agents/sessions/` if it does not exist.
 
-5. Tell the user the file path and that they can resume with `/resume <slug>`.
+5. Tell the user the file path and that they can resume with `/djt-resume <slug>`.

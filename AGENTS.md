@@ -6,7 +6,7 @@
 
 ## Workflow
 
-Use `/feature` to start a new feature (full 7-step workflow). Use `/bug` to start a bug investigation (test-driven). Both accept an optional spec/issue file: `/feature @path/to/spec.md`.
+Use `/djt-feature` to start a new feature (full 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Both accept an optional spec/issue file: `/djt-feature @path/to/spec.md`.
 
 For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and act directly.
 
@@ -51,8 +51,8 @@ console.log(`${DEBUG_TAG} context:`, data);
 
 ## Session Management
 
-Use `/suspend` to snapshot the current session to `.agents/sessions/<slug>.md`.
-Use `/resume <slug>` to reload a saved session and continue where work left off.
+Use `/djt-suspend` to snapshot the current session to `.agents/sessions/<slug>.md`.
+Use `/djt-resume <slug>` to reload a saved session and continue where work left off.
 
 ## Environment-Specific Extensions
 
