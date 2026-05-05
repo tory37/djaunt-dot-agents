@@ -1,0 +1,36 @@
+[2026-05-05 13:27:07] Starting automated sync...
+[2026-05-05 13:27:07] Already on 'main'
+[2026-05-05 13:27:07] M	AGENTS.md
+[2026-05-05 13:27:07] M	scripts/sync.sh
+[2026-05-05 13:27:07] D	skills/bug/SKILL.md
+[2026-05-05 13:27:07] D	skills/bug/gemini.meta
+[2026-05-05 13:27:07] D	skills/feature/SKILL.md
+[2026-05-05 13:27:07] D	skills/feature/gemini.meta
+[2026-05-05 13:27:07] D	skills/resume/SKILL.md
+[2026-05-05 13:27:07] D	skills/resume/gemini.meta
+[2026-05-05 13:27:07] D	skills/suspend/SKILL.md
+[2026-05-05 13:27:07] D	skills/suspend/gemini.meta
+[2026-05-05 13:27:07] Your branch is up to date with 'origin/main'.
+[2026-05-05 13:27:07] From github.com:tory37/djaunt-dot-agents
+[2026-05-05 13:27:07]  * branch            main       -> FETCH_HEAD
+[2026-05-05 13:27:07] Already up to date.
+[2026-05-05 13:27:07] Successfully pulled latest changes.
+[2026-05-05 13:27:07] [1;34m[sync][0m Setting up ~/.agents …
+[2026-05-05 13:27:07] [1;32m  ✓[0m ~/.agents exists
+[2026-05-05 13:27:07] [1;32m  ✓[0m Copied AGENTS.md → ~/.agents/AGENTS.md
+[2026-05-05 13:27:07] [1;32m  ✓[0m Symlinked /home/toryhebert/src/djaunt-dot-agents/skills → ~/.agents/skills
+[2026-05-05 13:27:07] [1;32m  ✓[0m No ~/.agents/extensions/ folder — skipping extension injection (create it later for machine-specific config)
+[2026-05-05 13:27:07] [1;34m[sync][0m ~/.claude detected — configuring for Claude Code …
+[2026-05-05 13:27:07] [1;33m  ![0m Removing existing /home/toryhebert/.claude/CLAUDE.md
+[2026-05-05 13:27:07] [1;32m  ✓[0m Symlinked ~/.agents/AGENTS.md → ~/.claude/CLAUDE.md
+[2026-05-05 13:27:07] [1;32m  ✓[0m Symlinked ~/.agents/skills → ~/.claude/skills
+[2026-05-05 13:27:07] [1;33m  ![0m Cursor CLI not found — skipping (install cursor to enable)
+[2026-05-05 13:27:07] 
+[2026-05-05 13:27:07] [1;34m[sync][0m Done. Your portable AI setup is live on this machine.
+[2026-05-05 13:27:07] 
+[2026-05-05 13:27:07]   Edit your config:    /home/toryhebert/src/djaunt-dot-agents/AGENTS.md
+[2026-05-05 13:27:07]   Add/edit skills:     /home/toryhebert/src/djaunt-dot-agents/skills/djt-<name>/SKILL.md
+[2026-05-05 13:27:07]   Machine extensions:  /home/toryhebert/.agents/extensions/<name>.md
+[2026-05-05 13:27:07] 
+[2026-05-05 13:27:07]   Re-run sync.sh after pulling or making changes to this repo
+[2026-05-05 13:27:07] Automated sync complete.
