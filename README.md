@@ -1,6 +1,16 @@
 # djaunt-dot-agents
 
-Your portable AI agent setup. Clone this repo on any machine, run one script, and your AI tools (Claude Code, Gemini CLI) are instantly configured with a shared system prompt, shared skills, and machine-specific extensions.
+Your portable AI agent setup. Clone this repo on any machine, run one script, and your AI tools (Claude Code, Gemini CLI, Cursor CLI) are instantly configured with a shared system prompt, shared skills, and machine-specific extensions.
+
+## Supported agents
+
+| Agent | Status |
+|-------|--------|
+| [Claude Code](https://claude.ai/code) | Supported |
+| [Gemini CLI](https://github.com/google-gemini/gemini-cli) | Supported |
+| [Cursor CLI](https://cursor.com/docs/cli/overview) | Supported |
+
+Other AI tools (Copilot, etc.) are not currently supported. The Cursor IDE (as distinct from the CLI) is also not supported.
 
 ## What's in this repo
 
@@ -30,13 +40,18 @@ djaunt-dot-agents/
   AGENTS.md  ──(copy)──▶  ~/.agents/AGENTS.md  ──(symlink)──▶  ~/.claude/CLAUDE.md
   skills/    ──(symlink)─▶ ~/.agents/skills/   ──(symlink)──▶  ~/.claude/skills/
                                 │
-                                └──(assembled)──▶  ~/.gemini/GEMINI.md
-                                                   (AGENTS.md + all skills inlined)
+                                ├──(assembled)──▶  ~/.gemini/GEMINI.md
+                                │                  (AGENTS.md + all skills inlined)
+                                │
+                                └──(assembled)──▶  ~/.cursor/commands/<name>.md
+                                                   (one file per skill, body only)
 ```
 
 **Claude Code** gets skills natively — `~/.claude/skills/` is a symlink chain back to the repo, so edits are live immediately.
 
 **Gemini CLI** has no native skill system. Instead, `sync.sh` assembles `~/.gemini/GEMINI.md` by taking `AGENTS.md` and inlining every skill after it, with natural-language trigger instructions. When you type `/feature` in Gemini, it reads the trigger from the inlined skill and follows the workflow. Re-run `sync.sh` after adding or editing skills to rebuild `GEMINI.md`.
+
+**Cursor CLI** has a native commands system — `~/.cursor/commands/*.md`. `sync.sh` copies each skill body (frontmatter stripped) into a file there. When you type `/feature` in Cursor, it loads that file as the command prompt. Re-run `sync.sh` after adding or editing skills.
 
 ### The gemini.meta file
 
@@ -71,7 +86,7 @@ mkdir -p ~/.agents/extensions
 bash scripts/sync.sh
 ```
 
-The script handles everything: creates `~/.agents/`, wires up Claude Code and Gemini CLI, injects extensions, and assembles `GEMINI.md`.
+The script handles everything: creates `~/.agents/`, wires up Claude Code, Gemini CLI, and Cursor CLI, injects extensions, and assembles output files for each tool.
 
 ## Keeping it up to date
 
@@ -86,7 +101,7 @@ bash scripts/sync.sh
 | What you want to change | Where to edit | Needs re-sync? |
 |---|---|---|
 | Global AI instructions | `AGENTS.md` in this repo | Yes |
-| Skill workflow (both tools) | `skills/<name>/SKILL.md` | Claude: no — Gemini: yes |
+| Skill workflow (all tools) | `skills/<name>/SKILL.md` | Claude: no — Gemini/Cursor: yes |
 | Gemini trigger / notes for a skill | `skills/<name>/gemini.meta` | Yes |
 | Machine-specific context | `~/.agents/extensions/<name>.md` | Yes |
 

@@ -101,7 +101,16 @@ else
 fi
 
 # ──────────────────────────────────────────────
-# 4. Wire up ~/.gemini (Gemini CLI)
+# 4. Collect skills (shared by all tool integrations)
+# ──────────────────────────────────────────────
+SKILLS_DIR="$REPO_ROOT/skills"
+SKILL_FILES=()
+while IFS= read -r -d '' f; do
+    SKILL_FILES+=("$f")
+done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
+
+# ──────────────────────────────────────────────
+# 5. Wire up ~/.gemini (Gemini CLI)
 #    GEMINI.md is assembled (not symlinked): AGENTS.md content +
 #    all skills inlined with their Gemini-specific trigger lines.
 # ──────────────────────────────────────────────
@@ -113,13 +122,6 @@ if [ -d "$HOME/.gemini" ]; then
 
     # Start with the AGENTS.md content (already has extensions injected)
     cat "$AGENTS_DIR/AGENTS.md" >> "$GEMINI_MD"
-
-    # Collect skills
-    SKILLS_DIR="$REPO_ROOT/skills"
-    SKILL_FILES=()
-    while IFS= read -r -d '' f; do
-        SKILL_FILES+=("$f")
-    done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
 
     if [ ${#SKILL_FILES[@]} -gt 0 ]; then
         # Append skills preamble
@@ -184,6 +186,30 @@ else
     warn "~/.gemini not found — skipping Gemini CLI setup (install Gemini CLI to enable)"
 fi
 
+# ──────────────────────────────────────────────
+# 6. Wire up ~/.cursor (Cursor CLI)
+#    Commands are assembled (not symlinked): each skill body is
+#    copied to ~/.cursor/commands/<name>.md (frontmatter stripped).
+# ──────────────────────────────────────────────
+if command -v cursor &>/dev/null || [ -d "$HOME/.cursor" ]; then
+    log "Cursor CLI detected — assembling ~/.cursor/commands/ …"
+
+    CURSOR_COMMANDS="$HOME/.cursor/commands"
+    mkdir -p "$CURSOR_COMMANDS"
+
+    if [ ${#SKILL_FILES[@]} -gt 0 ]; then
+        for skill_file in "${SKILL_FILES[@]}"; do
+            name="$(frontmatter_field "$skill_file" name)"
+            skill_body "$skill_file" > "$CURSOR_COMMANDS/${name}.md"
+            ok "  Wrote command: /${name} → $CURSOR_COMMANDS/${name}.md"
+        done
+    fi
+
+    ok "Cursor CLI commands assembled (~/.cursor/commands/)"
+else
+    warn "Cursor CLI not found — skipping (install cursor to enable)"
+fi
+
 echo ""
 log "Done. Your portable AI setup is live on this machine."
 echo ""
@@ -191,4 +217,4 @@ echo "  Edit your config:    $REPO_ROOT/AGENTS.md"
 echo "  Add/edit skills:     $REPO_ROOT/skills/<skill-name>/SKILL.md"
 echo "  Machine extensions:  $AGENTS_DIR/extensions/<name>.md"
 echo ""
-echo "  Re-run sync.sh after pulling changes to rebuild GEMINI.md."
+echo "  Re-run sync.sh after pulling or making changes to this repo"
