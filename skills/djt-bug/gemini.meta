@@ -1,2 +1,2 @@
-trigger: When the user types /bug, reports a bug, or asks to investigate a failing test, always execute the following workflow exactly, step by step:
+trigger: When the user types /djt-bug, reports a bug, or asks to investigate a failing test, always execute the following workflow exactly, step by step:
 notes: File argument: instead of the @path/to/issue.md syntax, the user will provide a file path as plain text — read the file yourself before proceeding.
