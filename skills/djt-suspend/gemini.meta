@@ -1,1 +1,1 @@
-trigger: When the user types /suspend or asks to save, snapshot, or pause the current session, always execute the following workflow exactly:
+trigger: When the user types /djt-suspend or asks to save, snapshot, or pause the current session, always execute the following workflow exactly:
