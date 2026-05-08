@@ -1,0 +1,2 @@
+trigger: When the user types /djt-pup or asks to upgrade, improve, or optimize a prompt for a future session, always execute the following workflow exactly:
+notes: The argument can be inline text, a plain file path, a URL, or a ticket reference — handle all forms. If the argument is missing or unreadable, tell the user clearly and stop.
