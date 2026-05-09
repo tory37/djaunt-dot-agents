@@ -12,6 +12,13 @@ ok()   { printf '\033[1;32m  ✓\033[0m %s\n' "$*"; }
 warn() { printf '\033[1;33m  !\033[0m %s\n' "$*"; }
 
 # ──────────────────────────────────────────────
+# 0. Initialize counters
+# ──────────────────────────────────────────────
+COUNT_DOTAGENTS=0
+COUNT_EXTENSIONS=0
+COUNT_SKILLS=0
+
+# ──────────────────────────────────────────────
 # 1. Create ~/.agents and populate it
 # ──────────────────────────────────────────────
 log "Setting up ~/.agents …"
@@ -20,6 +27,7 @@ mkdir -p "$AGENTS_DIR"
 ok "~/.agents exists"
 
 cp "$REPO_ROOT/AGENTS.md" "$AGENTS_DIR/AGENTS.md"
+((++COUNT_DOTAGENTS))
 ok "Copied AGENTS.md → ~/.agents/AGENTS.md"
 
 if [ -L "$AGENTS_DIR/skills" ] || [ -d "$AGENTS_DIR/skills" ]; then
@@ -27,6 +35,18 @@ if [ -L "$AGENTS_DIR/skills" ] || [ -d "$AGENTS_DIR/skills" ]; then
 fi
 ln -s "$REPO_ROOT/skills" "$AGENTS_DIR/skills"
 ok "Symlinked $REPO_ROOT/skills → ~/.agents/skills"
+
+# Log individual skills
+SKILLS_DIR="$REPO_ROOT/skills"
+if [ -d "$SKILLS_DIR" ]; then
+    for skill in "$SKILLS_DIR"/*/; do
+        if [ -d "$skill" ]; then
+            skill_name=$(basename "$skill")
+            ok "  Skill: $skill_name"
+            ((++COUNT_SKILLS))
+        fi
+    done
+fi
 
 # ──────────────────────────────────────────────
 # 2. Inject extension references into AGENTS.md
@@ -41,6 +61,7 @@ if [ -d "$AGENTS_DIR/extensions" ]; then
         for ext_file in "${EXT_FILES[@]}"; do
             INJECTION="${INJECTION}@${ext_file}"$'\n'
             ok "  Extension: $ext_file"
+            ((++COUNT_EXTENSIONS))
         done
         perl -i -0pe "s|${PLACEHOLDER}|${INJECTION}|" "$AGENTS_DIR/AGENTS.md"
         ok "Extensions injected"
@@ -115,6 +136,8 @@ else
     warn "Cursor CLI not found — skipping (install cursor to enable)"
 fi
 
+echo ""
+log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills"
 echo ""
 log "Done. Your portable AI setup is live on this machine."
 echo ""
