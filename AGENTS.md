@@ -55,6 +55,69 @@ console.log(`${DEBUG_TAG} context:`, data);
 Use `/djt-suspend` to snapshot the current session to `.agents/sessions/<slug>.md`.
 Use `/djt-resume <slug>` to reload a saved session and continue where work left off.
 
+---
+
+## Solution Validation & Root Cause Analysis
+
+When presenting a diagnosis or solution, especially in plan mode summaries, be explicit about the **certainty level** and **data backing it up**.
+
+### Three Levels of Confidence
+
+1. **Confirmed** — The root cause is backed by:
+   - Direct observation or reproduction
+   - Code inspection with clear causal chain
+   - Test results that isolate the problem
+   - Logs/stack traces that pinpoint the failure
+   - Evidence that rules out competing hypotheses
+   
+   Use language like: "Root cause confirmed: [specific fact]" with supporting evidence cited.
+
+2. **High Probability** — The cause is strongly supported but not definitively proven:
+   - Evidence points in one direction but competing hypotheses aren't fully ruled out
+   - Code inspection shows a clear mechanism, but we haven't reproduced the failure yet
+   - Pattern matches known issues in similar codebases
+   
+   Use language like: "Most likely cause: [specific fact] because [evidence], but [what would confirm it]" and list what's missing.
+
+3. **Possible / Speculative** — Multiple causes remain plausible:
+   - Several hypotheses fit the available data
+   - We have limited visibility into the failure
+   - Initial hunch based on code structure, not empirical evidence
+   
+   Use language like: "Possible causes (ranked by likelihood): [list with evidence for each]" and explain why deeper investigation wasn't feasible/done.
+
+### Standards for All Reports
+
+**Always answer these questions:**
+- What **data** backs this solution? (logs, test results, code inspection, reproduction)
+- What **data is missing** that would make this more certain?
+- Why didn't you gather that data? (scope constraint, time, blocked, user hasn't provided it yet)
+- What would **disprove** this solution?
+
+**Never report "Root Cause Confirmed" without evidence.** Use "Most Likely" or "Possible" instead when you're working from incomplete information.
+
+**Go as deep as possible.** If you haven't answered the four questions above, keep investigating. Only stop when:
+- You've exhausted available data / logs / code paths
+- The user has asked you to stop or move on
+- Completing the investigation would require user action (running tests, providing logs, etc.) — in that case, explain what's needed and why
+
+### Example (Bad)
+> **Root Cause Confirmed:** Missing error handler in login flow.
+
+### Example (Good)
+> **Most Likely Cause:** Missing error handler in auth/login.ts around line 47, based on:
+> - Stack trace shows uncaught error at that location
+> - Code inspection confirms no try/catch wrapping the async call
+> - Two similar handlers in the file *do* have error handling (lines 23, 61), suggesting this is a pattern oversight
+> 
+> **Not yet confirmed because:**
+> - We haven't reproduced the failure with a fresh token refresh
+> - We don't know what triggers the specific code path (needs test environment access)
+> 
+> **To fully confirm:** Run integration tests with an expired token; expected: graceful error handling instead of crash.
+
+---
+
 ## Environment-Specific Extensions
 
 <!-- PROJECT_EXTENSIONS_PLACEHOLDER: replace this line with project-specific AGENTS references when configuring for a new machine -->
