@@ -1,6 +1,6 @@
 # Machine Bootstrap Tools
 
-> **Agent instructions:** Install each tool below on this machine using whatever package manager is available (`brew`, `apt`, `dnf`, `pacman`, etc.). If a tool is unavailable or unsupported on this platform, skip it and move on — do not abort. Use the repo/homepage links to identify the correct package. For GitHub release binaries, download and install the latest release for the current platform's architecture.
+> **Agent instructions:** Before installing tools, detect what package managers are available on this system and research what's currently the best-practice package manager for this OS. If the best one isn't installed, ask the user if they'd like to install it first (then use it for the rest); if not, use whatever is available. For each tool below, install via package manager using the repo/homepage links to identify the correct package name. If a tool is unavailable or unsupported on this platform, skip it and move on — do not abort. For GitHub release binaries, download and install the latest release for the current platform's architecture.
 
 ## Shell Utilities
 
