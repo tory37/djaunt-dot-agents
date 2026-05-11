@@ -94,8 +94,6 @@ mkdir -p "$SKILL_TRELLO_DIR"
 mkdir -p "$SKILL_BACKLOG_DIR"
 mkdir -p "$MCP_DIR"
 
-echo "Deploying templates to $TARGET..."
-
 # Internal function for template replacement
 expand_template() {
   local src=$1
