@@ -49,21 +49,36 @@ When retrieving (`/{{PREFIX}}-trello <column>`):
 
 ## Add Workflow
 
-When adding (`/{{PREFIX}}-trello add <column>`):
+When adding (`/{{PREFIX}}-trello add <column> [@path/to/template.md]`):
 
-1. Ask the user for a card title if not provided.
-2. Create the card in the specified column list using this description template:
+- If a filled template file is provided via `@path`, read it and use its fields to populate the card.
+- If no file is provided, prompt the user for each field in the order it appears in the template below.
 
-```markdown
-### Goal:
+### Bug cards (`add bugs`)
 
-### User Story:
+Template schema:
 
-### Implementation Notes:
-```
+{{BUG_TEMPLATE}}
 
-3. Create two checklists on the card: **"Acceptance Criteria"** and **"Test Plan"**.
-4. Present the new card URL to the user.
+**Mapping to Trello:**
+- **Card name** ← Summary
+- **Description** ← Expected Behavior + Actual Behavior + Environment + Error Output + Related Tickets/Links
+- **Checklist "Steps to Reproduce"** ← each numbered step as a checklist item
+- **Checklist "Affected Files"** ← each file or component as a checklist item
+
+### Feature / Tech Debt / Backlog cards (`add techdebt`, `add backlog`)
+
+Template schema:
+
+{{FEATURE_TEMPLATE}}
+
+**Mapping to Trello:**
+- **Card name** ← Feature Name
+- **Description** ← Goal + User Story + Scope (In/Out) + Constraints & Non-Goals + Related Tickets/Links
+- **Checklist "Acceptance Criteria"** ← each checkbox item as a checklist item
+- **Checklist "Test Plan"** ← empty (filled during implementation)
+
+After creating the card, present the URL to the user.
 
 ---
 

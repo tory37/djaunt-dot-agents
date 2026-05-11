@@ -5,6 +5,8 @@
 
 set -e
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # Default values
 PREFIX="djt"
 TARGET=""
@@ -94,20 +96,38 @@ mkdir -p "$SKILL_TRELLO_DIR"
 mkdir -p "$SKILL_BACKLOG_DIR"
 mkdir -p "$MCP_DIR"
 
-# Internal function for template replacement
+# Paths to prompt templates (resolved relative to this script)
+BUG_TEMPLATE_PATH="$SCRIPT_DIR/../../skills/djt-bug/template.md"
+FEATURE_TEMPLATE_PATH="$SCRIPT_DIR/../../skills/djt-feature/template.md"
+
+# Internal function for template replacement (supports multi-line {{BUG_TEMPLATE}} / {{FEATURE_TEMPLATE}} injection)
 expand_template() {
   local src=$1
   local dest=$2
-  
-  sed -e "s/{{PREFIX}}/${PREFIX}/g" \
-      -e "s/{{TRELLO_API_KEY}}/${TRELLO_API_KEY}/g" \
-      -e "s/{{TRELLO_TOKEN}}/${TRELLO_TOKEN}/g" \
-      -e "s/{{TRELLO_BOARD_ID}}/${TRELLO_BOARD_ID}/g" \
-      -e "s/{{TRELLO_LIST_BUGS}}/${TRELLO_LIST_BUGS}/g" \
-      -e "s/{{TRELLO_LIST_TECHDEBT}}/${TRELLO_LIST_TECHDEBT}/g" \
-      -e "s/{{TRELLO_LIST_BACKLOG}}/${TRELLO_LIST_BACKLOG}/g" \
-      -e "s/{{TRELLO_LIST_DOING}}/${TRELLO_LIST_DOING}/g" \
-      "$src" > "$dest"
+
+  python3 << PYEOF
+import os
+
+content = open("$src").read()
+
+subs = {
+    "{{PREFIX}}":              "$PREFIX",
+    "{{TRELLO_API_KEY}}":      "$TRELLO_API_KEY",
+    "{{TRELLO_TOKEN}}":        "$TRELLO_TOKEN",
+    "{{TRELLO_BOARD_ID}}":     "$TRELLO_BOARD_ID",
+    "{{TRELLO_LIST_BUGS}}":    "$TRELLO_LIST_BUGS",
+    "{{TRELLO_LIST_TECHDEBT}}":"$TRELLO_LIST_TECHDEBT",
+    "{{TRELLO_LIST_BACKLOG}}": "$TRELLO_LIST_BACKLOG",
+    "{{TRELLO_LIST_DOING}}":   "$TRELLO_LIST_DOING",
+    "{{BUG_TEMPLATE}}":        open("$BUG_TEMPLATE_PATH").read() if os.path.exists("$BUG_TEMPLATE_PATH") else "{{BUG_TEMPLATE}}",
+    "{{FEATURE_TEMPLATE}}":    open("$FEATURE_TEMPLATE_PATH").read() if os.path.exists("$FEATURE_TEMPLATE_PATH") else "{{FEATURE_TEMPLATE}}",
+}
+
+for key, val in subs.items():
+    content = content.replace(key, val)
+
+open("$dest", "w").write(content)
+PYEOF
 }
 
 # Deploy Templates

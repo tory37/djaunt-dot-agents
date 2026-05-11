@@ -96,18 +96,22 @@ Commit the changes and open a Pull Request.
 
 ## Adding a New Backlog Card
 
-When invoked with `add`, create a new BACKLOG card using this template:
+When invoked with `add [@path/to/spec.md]`:
 
-**Description:**
-```markdown
-### Goal:
+- If a filled spec file is provided via `@path`, read it and use its fields to populate the card.
+- If no file is provided, prompt the user for each field in the order it appears in the template below.
 
-### User Story:
+Template schema:
 
-### Implementation Notes:
-```
+{{FEATURE_TEMPLATE}}
 
-**Checklists to create:** "Acceptance Criteria", "Test Plan"
+**Mapping to Trello:**
+- **Card name** ← Feature Name
+- **Description** ← Goal + User Story + Scope (In/Out) + Constraints & Non-Goals + Related Tickets/Links
+- **Checklist "Acceptance Criteria"** ← each checkbox item as a checklist item
+- **Checklist "Test Plan"** ← empty (filled during implementation)
+
+After creating the card, present the URL to the user.
 
 ---
 
