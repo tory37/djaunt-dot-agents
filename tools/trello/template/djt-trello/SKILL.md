@@ -36,12 +36,15 @@ Do NOT fall back to a default column silently. Wait for the user's answer before
 
 When retrieving (`/{{PREFIX}}-trello <column>`):
 
-1. Fetch cards from the specified column list (see Trello Config below).
-2. **Ignore** any card named "Bug Template" or "Feature Template".
-3. Pick the first card (top = highest priority).
-4. Move the card to **DOING** (`{{TRELLO_LIST_DOING}}`) and assign yourself.
-5. Present the card name, description, and URL to the user.
-6. Stop — do not begin an engineering workflow unless the user asks.
+1. Fetch **all** cards from the specified column list (see Trello Config below).
+2. **Filter** out any card named "Bug Template" or "Feature Template".
+3. Present the list of available cards to the user with their names and (brief) descriptions.
+4. **Ask the user to pick which card they want to start.**
+5. Once the user selects a card:
+    - Move the card to **DOING** (`{{TRELLO_LIST_DOING}}`) and assign yourself.
+    - Present the full card name, description, and URL to the user.
+    - Stop — do not begin an engineering workflow unless the user asks.
+
 
 ---
 
