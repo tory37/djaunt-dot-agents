@@ -8,7 +8,12 @@ This directory contains optional tools and skills that can be "embedded" into a 
 A set of skills and MCP configuration to manage Trello cards (Bugs, Tech Debt, Backlog, Doing) directly from the Gemini CLI.
 
 - **`trello` skill**: Lightweight card management (list cards, move to doing, add new cards).
-- **`backlog` skill**: Pulls the top item from the backlog and automatically starts the full engineering workflow.
+
+### Project Sync Tool
+A set of scripts to synchronize agent context (AGENTS.md -> CLAUDE.md), local Claude configuration, and workspace-scoped Gemini skills.
+
+- **`sync.sh`**: The main synchronization script.
+- **`wire-claude.sh`**: Recursively links AGENTS.md to CLAUDE.md.
 
 ## Installation
 

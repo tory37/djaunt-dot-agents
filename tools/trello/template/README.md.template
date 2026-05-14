@@ -14,16 +14,6 @@ Use this for lightweight management of cards across your Trello board.
 - **Add Card**: `/{{PREFIX}}-trello add [bugs|techdebt|backlog]`
   - Creates a new card with standard templates for Acceptance Criteria and Test Plans.
 
-### 2. Backlog Workflow (`/{{PREFIX}}-backlog`)
-Use this to start a full engineering session from a Trello card.
-
-- **Start Next Task**: `/{{PREFIX}}-backlog`
-  - Automatically pulls the top item from the **BACKLOG** list.
-  - Moves it to **DOING**.
-  - Immediately transitions into the Research -> Strategy -> Execution engineering workflow.
-- **Add Feature**: `/{{PREFIX}}-backlog add`
-  - Adds a new feature request to the Backlog.
-
 ## Configuration
 
 The tools are configured to work with the following Trello setup:
