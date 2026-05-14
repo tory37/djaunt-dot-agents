@@ -133,17 +133,44 @@ echo "Deploying templates to $TARGET..."
 
 # 1. Copy CLEAN templates for version control (commit-safe)
 cp "template/mcp-config.json.template" "$MCP_DIR/trello.json.template"
-cp "template/.env.trello.example" "$TARGET/.env.trello.example"
 
-# 2. Expand and Copy (local use, NOT for committing)
+# 2. Create/Update local secrets file (.agents/trello.env)
+# This file is intentionally NOT a template and NOT for committing.
+TRELLO_ENV="$TARGET/.agents/trello.env"
+if [ ! -f "$TRELLO_ENV" ]; then
+  echo "Creating $TRELLO_ENV..."
+  {
+    echo "# Trello Secrets - DO NOT COMMIT"
+    echo "TRELLO_API_KEY=\"$TRELLO_API_KEY\""
+    echo "TRELLO_TOKEN=\"$TRELLO_TOKEN\""
+  } > "$TRELLO_ENV"
+else
+  echo "$TRELLO_ENV already exists. Skipping secret overwrite to preserve existing keys."
+fi
+
+# 3. Ensure .gitignore excludes the secrets file
+GITIGNORE="$TARGET/.gitignore"
+if [ -f "$GITIGNORE" ]; then
+  if ! grep -q ".agents/trello.env" "$GITIGNORE"; then
+    echo "Adding .agents/trello.env to .gitignore..."
+    echo "" >> "$GITIGNORE"
+    echo "# Trello Toolset" >> "$GITIGNORE"
+    echo ".agents/trello.env" >> "$GITIGNORE"
+  fi
+fi
+
+# 4. Expand and Copy remaining files
 expand_template "template/djt-trello/SKILL.md" "$SKILL_TRELLO_DIR/SKILL.md"
 expand_template "template/mcp-config.json.template" "$MCP_DIR/trello.json"
 expand_template "template/README.md.template" "$TARGET/.agents/skills/README.trello.md"
 
 echo ""
 echo "Success! Trello toolset installed."
+echo "Configuration:"
+echo "  Skills:  $SKILL_TRELLO_DIR"
+echo "  Secrets: $TRELLO_ENV (Added to .gitignore)"
+echo ""
 echo "Next steps:"
-echo "1. Add .agents/mcp/trello.json to your .gitignore (the .template is already there for others)."
-echo "2. Review $TARGET/.env.trello.example and copy the required variables to your project's .env file."
-echo "2. Ensure the 'trello' server is registered in your Gemini CLI configuration (pointing to $MCP_DIR/trello.json)."
-echo "3. Try running: /${PREFIX}-trello"
+echo "1. Ensure the 'trello' server is registered in your Gemini CLI configuration."
+echo "   It should point to: $MCP_DIR/trello.json"
+echo "2. Try running: /${PREFIX}-trello"
