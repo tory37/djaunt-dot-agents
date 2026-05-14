@@ -5,7 +5,6 @@ A set of genericized Trello skills and MCP configuration to manage BUGS, TECH DE
 ## Included Skills
 
 - **Trello (`djt-trello`)**: Lightweight card management. List cards in a column, move them to DOING, or add new cards with standard templates and checklists.
-- **Backlog (`djt-backlog`)**: Automatically pulls the top card from the BACKLOG list, moves it to DOING, and kicks off the full engineering workflow.
 
 ## Installation
 

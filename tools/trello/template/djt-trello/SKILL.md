@@ -20,8 +20,6 @@ Retrieve the next card from a Trello column, or add a new card to one.
 /{{PREFIX}}-trello                # → prompts for column
 ```
 
-> **Note:** To start the full engineering workflow from a BACKLOG card, use `/{{PREFIX}}-backlog` instead.
-
 ---
 
 ## Ambiguity Rule

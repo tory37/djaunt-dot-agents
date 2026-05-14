@@ -89,11 +89,9 @@ prompt_var "TRELLO_LIST_DOING" "List ID for DOING"
 
 # Create target directories
 SKILL_TRELLO_DIR="$TARGET/.agents/skills/${PREFIX}-trello"
-SKILL_BACKLOG_DIR="$TARGET/.agents/skills/${PREFIX}-backlog"
 MCP_DIR="$TARGET/.agents/mcp"
 
 mkdir -p "$SKILL_TRELLO_DIR"
-mkdir -p "$SKILL_BACKLOG_DIR"
 mkdir -p "$MCP_DIR"
 
 # Paths to prompt templates (resolved relative to this script)
@@ -139,7 +137,6 @@ cp "template/.env.trello.example" "$TARGET/.env.trello.example"
 
 # 2. Expand and Copy (local use, NOT for committing)
 expand_template "template/djt-trello/SKILL.md" "$SKILL_TRELLO_DIR/SKILL.md"
-expand_template "template/djt-backlog/SKILL.md" "$SKILL_BACKLOG_DIR/SKILL.md"
 expand_template "template/mcp-config.json.template" "$MCP_DIR/trello.json"
 expand_template "template/README.md.template" "$TARGET/.agents/skills/README.trello.md"
 
