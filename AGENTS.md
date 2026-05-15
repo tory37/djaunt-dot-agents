@@ -105,7 +105,7 @@ Never silently match a bad pattern. Never silently ignore it and "do it right" w
 
 ## Session Management
 
-Use `/djt-suspend` to snapshot the current session to `.agents/sessions/<slug>.md`.
+Use `/djt-suspend` to snapshot the current session to `.agents/output/sessions/<slug>.md`.
 Use `/djt-resume <slug>` to reload a saved session and continue where work left off.
 
 ---
@@ -174,6 +174,12 @@ When presenting a diagnosis or solution, especially in plan mode summaries, be e
 > - We don't know what triggers the specific code path (needs test environment access)
 >
 > **To fully confirm:** Run integration tests with an expired token; expected: graceful error handling instead of crash.
+
+---
+
+## Environment
+ironment
+n integration tests with an expired token; expected: graceful error handling instead of crash.
 
 ---
 

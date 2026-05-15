@@ -47,7 +47,7 @@ Write failing tests before any implementation code.
 - If no test framework exists, examine the codebase and language, then suggest the best options for both unit AND integration tests. Await user confirmation before setting anything up.
 - Goal: programmatic confidence the change works as intended — unit tests for logic, integration tests for behavior.
 - Have the user run the tests to confirm they compile and fail as expected. Do not run them yourself.
-- Write a Doer Test Plan to `.agents/<feature-name>-doer-test-plan.md` (see definition in AGENTS.md).
+- Write a Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.md` (see definition in AGENTS.md).
 
 ### 5. Create a Branch
 

@@ -18,12 +18,12 @@ Reload a suspended session from `.agents/sessions/` and orient the agent to cont
 ## Steps
 
 1. If no argument is given:
-   - List all `.md` files in `.agents/sessions/`
+   - List all `.md` files in `.agents/output/sessions/`
    - Show the name, last-updated date, and status for each
    - Ask the user which one to resume
 
 2. If a slug is given:
-   - Read `.agents/sessions/<slug>.md`
+   - Read `.agents/output/sessions/<slug>.md`
    - Confirm the file exists; if not, list available sessions
 
 3. After reading the file, orient with a brief recap:

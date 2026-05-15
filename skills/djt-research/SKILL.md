@@ -75,7 +75,7 @@ Once the report is written to disk, output ONLY the following summary to the use
 >
 > - **Sources searched**: [X]
 > - **Sources cited**: [Y]
-> - **Report location**: `.agents/research/<filename>.md`
+> - **Report location**: `.agents/output/research/<filename>.md`
 
 ### Constraints
 
@@ -83,3 +83,4 @@ Once the report is written to disk, output ONLY the following summary to the use
 - **No Terminal Bloat**: Do NOT print the report content to the console.
 - **High-Density Text**: Prioritize facts and mechanics over flowery prose.
 - **Strictly Markdown**: The report file must follow clean Markdown formatting.
+tting.
