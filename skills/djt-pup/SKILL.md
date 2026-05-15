@@ -29,7 +29,7 @@ Determine what form the argument takes and read the source content:
 - **Ticket reference** (any ID-like string, e.g. `ABC-123`, `#42`) — look it up via available tools and read the title, description, and any acceptance criteria.
 - **Missing or unreadable** — respond with:
   > "I couldn't find or read the prompt source you provided. Please paste the prompt text directly, share a readable file path, a reachable URL, or a valid ticket reference."
-  Then stop and wait.
+  > Then stop and wait.
 
 ### 2. Analyze the Raw Prompt
 

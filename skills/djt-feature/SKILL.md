@@ -30,6 +30,7 @@ If there are unknowns or ambiguities, surface them all at once in a single messa
 ### 3. Plan
 
 Write a step-by-step implementation plan to `.agents/<feature-name>-plan.md`. The plan must include:
+
 - Tests first (what needs to be tested and how)
 - Implementation steps second
 - Brief rationale for key decisions
@@ -61,16 +62,16 @@ Code against the approved plan **as it exists on disk** — do not implement fro
 - Follow the project's style and linting rules.
 - Update the Doer Test Plan if steps or details change during implementation.
 - **Verification Gate:** Once finished, **STOP** and prompt the user to:
-    1. Run the unit tests and verify they pass.
-    2. Run e2e tests (if they exist) and verify they pass.
-    3. Run the manual steps in the Doer Test Plan.
-    4. Report back any issues or confirm all tests pass.
+  1. Run the unit tests and verify they pass.
+  2. Run e2e tests (if they exist) and verify they pass.
+  3. Run the manual steps in the Doer Test Plan.
+  4. Report back any issues or confirm all tests pass.
 - Await user confirmation of completeness before moving to Step 7. Do not move to Step 7 until all verification steps have been confirmed by the user.
 
 ### 7. Commit & PR
 
 Commit the changes and open a Pull Request.
 
-- Commit message: imperative mood, under 72 characters, body explains *why* not *what*.
+- Commit message: imperative mood, under 72 characters, body explains _why_ not _what_.
 - PR description: feature explanation + brief implementation overview.
 - Link related issues. Request review before merge.
