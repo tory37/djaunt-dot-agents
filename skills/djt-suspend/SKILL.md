@@ -33,18 +33,23 @@ Snapshot the current working session into `.agents/sessions/<name>.md` so it can
 **PR:** [link if exists]
 
 ## Summary
+
 <!-- One paragraph: what this work is and why -->
 
 ## Implementation Complete
+
 <!-- Bullet list of what is done -->
 
 ## Pending
+
 <!-- Bullet list of what still needs to happen -->
 
 ## Technical Notes
+
 <!-- Decisions made, gotchas, constraints, anything non-obvious -->
 
 ## Next Steps
+
 <!-- Ordered list of exactly what to do next to resume -->
 ```
 

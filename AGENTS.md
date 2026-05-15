@@ -4,6 +4,23 @@
 
 **Overview**: When presenting anything non-conversational to the user, write things out to a `.md` file in the `.agents` sub-directory of the project. Create `.agents` if needed. Then direct the user to the written files instead of printing output to the screen unnecessarily.
 
+## Strict Review & Authorization
+
+**MANDATE:** The agent MUST NOT modify any files (write_file, replace) or execute system-altering commands (pip install, etc.) without first presenting the specific intended change to the user and awaiting explicit approval.
+
+1. **Proposed Changes:** Present the exact code diff or file content in a clear Markdown block.
+2. **Approval Gate:** Use a distinct "Awaiting approval to proceed with these changes..." message.
+3. **No Batch Commit/Push:** Never combine implementation, linting, and committing into a single autonomous sequence. Each stage requires a fresh review.
+
+## Handling Interjectory Requests
+
+When the user makes a request that is outside the scope of the current feature or story (an "interjectory request"):
+
+1. **Identify Scope:** Explicitly ask yourself: "Is this part of the current feature, or is it an 'oh this would be nice' addition?"
+2. **Isolate Changes:** If it is out-of-scope, do NOT implement it on the current feature branch.
+3. **Branch Off Master:** Create a new branch specifically for this request, starting from `master` (or the project's default branch).
+4. **Switch Back:** Once the interjectory task is reviewed/completed, switch back to the original feature branch to continue the primary work.
+
 ## Workflow
 
 Use `/djt-feature` to start a new feature (full 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Use `/djt-research` to synthesize research into a strategy. These accept an optional spec/issue/context file: `/djt-feature @path/to/spec.md`.
@@ -15,6 +32,7 @@ For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and a
 ## Doer Test Plan
 
 A Doer Test Plan is a written list of manual steps that tells both the implementer and a QA engineer how to:
+
 1. Navigate to the feature from the app's entry point (e.g. "Start at the login page, navigate to Settings > Notifications")
 2. Exercise the change or new behavior
 3. Verify the expected outcome at each step
@@ -26,6 +44,7 @@ Write the Doer Test Plan to `.agents/<feature-name>-doer-test-plan.md`.
 ---
 
 ## Git Conventions
+
 - Interact with git through the CLI
 - Branch names: `type/short-description` (e.g. `feat/oauth-login`, `fix/token-refresh`)
 - Commits: imperative mood, <72 chars subject, body explains *why* not *what*
@@ -33,6 +52,7 @@ Write the Doer Test Plan to `.agents/<feature-name>-doer-test-plan.md`.
 - NEVER force-push to the project's default protected branch
 
 ## IMPORTANT Rules
+
 - **Token Efficiency:** To save context and cost, do not run tests (unit, e2e, integration) yourself. Always prompt the user to run the tests and report the results back to you.
 - ALWAYS verify work before saying it's done
 - NEVER modify production databases/infra without explicit user confirmation
@@ -102,26 +122,27 @@ When presenting a diagnosis or solution, especially in plan mode summaries, be e
    - Test results that isolate the problem
    - Logs/stack traces that pinpoint the failure
    - Evidence that rules out competing hypotheses
-   
+
    Use language like: "Root cause confirmed: [specific fact]" with supporting evidence cited.
 
 2. **High Probability** — The cause is strongly supported but not definitively proven:
    - Evidence points in one direction but competing hypotheses aren't fully ruled out
    - Code inspection shows a clear mechanism, but we haven't reproduced the failure yet
    - Pattern matches known issues in similar codebases
-   
+
    Use language like: "Most likely cause: [specific fact] because [evidence], but [what would confirm it]" and list what's missing.
 
 3. **Possible / Speculative** — Multiple causes remain plausible:
    - Several hypotheses fit the available data
    - We have limited visibility into the failure
    - Initial hunch based on code structure, not empirical evidence
-   
+
    Use language like: "Possible causes (ranked by likelihood): [list with evidence for each]" and explain why deeper investigation wasn't feasible/done.
 
 ### Standards for All Reports
 
 **Always answer these questions:**
+
 - What **data** backs this solution? (logs, test results, code inspection, reproduction)
 - What **data is missing** that would make this more certain?
 - Why didn't you gather that data? (scope constraint, time, blocked, user hasn't provided it yet)
@@ -130,27 +151,30 @@ When presenting a diagnosis or solution, especially in plan mode summaries, be e
 **Never report "Root Cause Confirmed" without evidence.** Use "Most Likely" or "Possible" instead when you're working from incomplete information.
 
 **Go as deep as possible.** If you haven't answered the four questions above, keep investigating. Only stop when:
+
 - You've exhausted available data / logs / code paths
 - The user has asked you to stop or move on
 - Completing the investigation would require user action (running tests, providing logs, etc.) — in that case, explain what's needed and why
 
 ### Example (Bad)
+>
 > **Root Cause Confirmed:** Missing error handler in login flow.
 
 ### Example (Good)
+>
 > **Most Likely Cause:** Missing error handler in auth/login.ts around line 47, based on:
+>
 > - Stack trace shows uncaught error at that location
 > - Code inspection confirms no try/catch wrapping the async call
 > - Two similar handlers in the file *do* have error handling (lines 23, 61), suggesting this is a pattern oversight
-> 
+>
 > **Not yet confirmed because:**
+>
 > - We haven't reproduced the failure with a fresh token refresh
 > - We don't know what triggers the specific code path (needs test environment access)
-> 
+>
 > **To fully confirm:** Run integration tests with an expired token; expected: graceful error handling instead of crash.
 
 ---
 
-## Environment-Specific Extensions
-
-<!-- PROJECT_EXTENSIONS_PLACEHOLDER: replace this line with project-specific AGENTS references when configuring for a new machine -->
+## Environment

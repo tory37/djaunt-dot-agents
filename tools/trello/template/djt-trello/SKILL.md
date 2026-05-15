@@ -41,10 +41,9 @@ When retrieving (`/{{PREFIX}}-trello <column>`):
 3. Present the list of available cards to the user with their names and (brief) descriptions.
 4. **Ask the user to pick which card they want to start.**
 5. Once the user selects a card:
-    - Move the card to **DOING** (`{{TRELLO_LIST_DOING}}`) and assign yourself.
-    - Present the full card name, description, and URL to the user.
-    - Stop — do not begin an engineering workflow unless the user asks.
-
+   - Move the card to **DOING** (`{{TRELLO_LIST_DOING}}`) and assign yourself.
+   - Present the full card name, description, and URL to the user.
+   - Stop — do not begin an engineering workflow unless the user asks.
 
 ---
 
@@ -62,6 +61,7 @@ Template schema:
 {{BUG_TEMPLATE}}
 
 **Mapping to Trello:**
+
 - **Card name** ← Summary
 - **Description** ← Expected Behavior + Actual Behavior + Environment + Error Output + Related Tickets/Links
 - **Checklist "Steps to Reproduce"** ← each numbered step as a checklist item
@@ -74,6 +74,7 @@ Template schema:
 {{FEATURE_TEMPLATE}}
 
 **Mapping to Trello:**
+
 - **Card name** ← Feature Name
 - **Description** ← Goal + User Story + Scope (In/Out) + Constraints & Non-Goals + Related Tickets/Links
 - **Checklist "Acceptance Criteria"** ← each checkbox item as a checklist item
@@ -85,13 +86,14 @@ After creating the card, present the URL to the user.
 
 ## Trello Config
 
-| Column    | List ID                      | Excluded Templates          |
-|-----------|------------------------------|-----------------------------|
-| BUGS      | `{{TRELLO_LIST_BUGS}}`       | "Bug Template"              |
-| TECH DEBT | `{{TRELLO_LIST_TECHDEBT}}`   | "Feature Template"          |
-| BACKLOG   | `{{TRELLO_LIST_BACKLOG}}`    | "Feature Template"          |
-| DOING     | `{{TRELLO_LIST_DOING}}`      | —                           |
+| Column    | List ID                    | Excluded Templates |
+| --------- | -------------------------- | ------------------ |
+| BUGS      | `{{TRELLO_LIST_BUGS}}`     | "Bug Template"     |
+| TECH DEBT | `{{TRELLO_LIST_TECHDEBT}}` | "Feature Template" |
+| BACKLOG   | `{{TRELLO_LIST_BACKLOG}}`  | "Feature Template" |
+| DOING     | `{{TRELLO_LIST_DOING}}`    | —                  |
 
 - Board ID: `{{TRELLO_BOARD_ID}}`
 - MCP server: `trello` (defined in `.agents/mcp/trello.json`)
+
 ---
