@@ -1,0 +1,2 @@
+trigger: When the user types /djt-techdebt or asks to refactor or address technical debt, always execute the following workflow exactly, step by step:
+notes: File argument: instead of the @path/to/spec.md syntax, the user will provide a file path as plain text — read the file yourself before proceeding.

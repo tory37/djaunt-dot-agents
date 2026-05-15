@@ -53,6 +53,7 @@ Snapshot the current working session into `.agents/sessions/<name>.md` so it can
 <!-- Ordered list of exactly what to do next to resume -->
 ```
 
-4. Create `.agents/sessions/` if it does not exist.
+4. Create `.agents/output/sessions/` if it does not exist.
 
 5. Tell the user the file path and that they can resume with `/djt-resume <slug>`.
+lug>`.

@@ -38,7 +38,7 @@ Write a failing test that captures the bug. The test should:
 
 ### 4. Propose Fix
 
-Write a fix plan to `.agents/<bug-name>-fix-plan.md`. Include:
+Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.md`. Include:
 - Root cause explanation
 - Proposed minimal code change
 - Any side effects or related risk areas
