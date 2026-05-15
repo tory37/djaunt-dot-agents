@@ -136,6 +136,61 @@ else
     warn "Cursor CLI not found — skipping (install cursor to enable)"
 fi
 
+# ──────────────────────────────────────────────
+# 5. Wire up ~/.gemini (Gemini CLI)
+#    Assembles a single GEMINI.md by inlining all skills.
+# ──────────────────────────────────────────────
+if [ -d "$HOME/.gemini" ]; then
+    log "Gemini CLI detected — assembling ~/.gemini/GEMINI.md …"
+
+    GEMINI_MD="$HOME/.gemini/GEMINI.md"
+    
+    # Initialize with AGENTS.md content
+    cp "$REPO_ROOT/AGENTS.md" "$GEMINI_MD"
+    
+    # Append a separator
+    echo -e "\n\n---\n\n# SKILLS\n" >> "$GEMINI_MD"
+
+    # Helper to read gemini.meta fields
+    meta_field() {
+        local file="$1" field="$2"
+        grep "^$field:" "$file" | cut -d':' -f2- | sed 's/^ *//' || true
+    }
+
+    # Return the body of a SKILL.md — everything after the closing --- of frontmatter.
+    # (Shared with Cursor logic above, but redefined here for clarity)
+    skill_body() {
+        local file="$1"
+        awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
+    }
+
+    SKILLS_DIR="$REPO_ROOT/skills"
+    while IFS= read -r -d '' skill_dir; do
+        skill_file="$skill_dir/SKILL.md"
+        meta_file="$skill_dir/gemini.meta"
+        
+        if [ -f "$skill_file" ] && [ -f "$meta_file" ]; then
+            name=$(basename "$skill_dir")
+            trigger=$(meta_field "$meta_file" "trigger")
+            notes=$(meta_field "$meta_file" "notes")
+            
+            echo -e "## Skill: $name\n" >> "$GEMINI_MD"
+            echo -e "$trigger\n" >> "$GEMINI_MD"
+            if [ -n "$notes" ]; then
+                echo -e "> **Note:** $notes\n" >> "$GEMINI_MD"
+            fi
+            skill_body "$skill_file" >> "$GEMINI_MD"
+            echo -e "\n---\n" >> "$GEMINI_MD"
+            
+            ok "  Inlined skill: $name"
+        fi
+    done < <(find "$SKILLS_DIR" -maxdepth 1 -mindepth 1 -type d -print0 | sort -z)
+
+    ok "Gemini CLI GEMINI.md assembled"
+else
+    warn "~/.gemini not found — skipping Gemini CLI setup"
+fi
+
 echo ""
 log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills"
 echo ""

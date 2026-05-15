@@ -1,6 +1,7 @@
 ---
-name: research-to-strategy
+name: djt-research
 description: Synthesizes high-density research into a strategic product document. Use when starting deep research for a specific domain or app feature.
+trigger: /djt-research
 ---
 
 # Research-to-Strategy Engine

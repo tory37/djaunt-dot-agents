@@ -6,7 +6,7 @@
 
 ## Workflow
 
-Use `/djt-feature` to start a new feature (full 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Both accept an optional spec/issue file: `/djt-feature @path/to/spec.md`.
+Use `/djt-feature` to start a new feature (full 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Use `/djt-research` to synthesize research into a strategy. These accept an optional spec/issue/context file: `/djt-feature @path/to/spec.md`.
 
 For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and act directly.
 
