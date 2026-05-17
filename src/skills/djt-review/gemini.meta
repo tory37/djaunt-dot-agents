@@ -1,0 +1,2 @@
+trigger: When the user types /djt-review, asks for a code review, or provides a diff/branch to review, always execute the following workflow exactly:
+notes: If the user provides a branch or diff range, use git tools to identify and read the changes before starting the analysis.
