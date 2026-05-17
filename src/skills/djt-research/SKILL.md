@@ -13,7 +13,7 @@ This skill transforms broad research topics into a "Research-backed Strategy Doc
 ### Core Mandates
 
 - **Grounded Truth**: ZERO hallucination. Every claim, data point, or technical assertion MUST be backed by a source and cited inline.
-- **File-First Delivery**: All reports MUST be written to `.agents/research/<domain>-<timestamp>.md`. Do NOT print the report to the terminal.
+- **File-First Delivery**: All reports MUST be written to `.agents/output/research/<domain>-<timestamp>.md`. Do NOT print the report to the terminal.
 - **Concise Reporting**: After writing the file, provide only a high-level summary of the research effort in the terminal.
 
 ## 2. Intake Protocol (CRITICAL)
@@ -83,4 +83,3 @@ Once the report is written to disk, output ONLY the following summary to the use
 - **No Terminal Bloat**: Do NOT print the report content to the console.
 - **High-Density Text**: Prioritize facts and mechanics over flowery prose.
 - **Strictly Markdown**: The report file must follow clean Markdown formatting.
-tting.

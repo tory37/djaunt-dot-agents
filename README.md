@@ -15,20 +15,24 @@ Other AI tools (Copilot, etc.) are not currently supported. The Cursor IDE (as d
 ## What's in this repo
 
 ```
-AGENTS.md          — The shared system prompt / global instructions for all AI agents
-skills/            — Shared skills (slash commands for Claude, inlined into Gemini)
-  bug/
-    SKILL.md       — Claude Code loads this
-    gemini.meta    — Gemini-specific trigger/notes (invisible to Claude)
-  feature/
-    SKILL.md
-    gemini.meta
-  resume/
-    SKILL.md
-    gemini.meta
-  suspend/
-    SKILL.md
-    gemini.meta
+CLAUDE.md          — Context for Claude Code when working in this repo
+AGENTS.md          — Context for other agents (Codex, etc.) when working in this repo
+GEMINI.md          — Context for Gemini CLI when working in this repo
+src/
+  AGENTS.md        — The shared system prompt / global instructions (deployed to all tools)
+  skills/          — Shared skills (slash commands for Claude, inlined into Gemini)
+    djt-bug/
+      SKILL.md     — Claude Code loads this
+      gemini.meta  — Gemini-specific trigger/notes (invisible to Claude)
+    djt-feature/
+      SKILL.md
+      gemini.meta
+    djt-resume/
+      SKILL.md
+      gemini.meta
+    djt-suspend/
+      SKILL.md
+      gemini.meta
 scripts/
   sync.sh          — The install/refresh script
 ```
@@ -37,14 +41,14 @@ scripts/
 
 ```
 djaunt-dot-agents/
-  AGENTS.md  ──(copy)──▶  ~/.agents/AGENTS.md  ──(symlink)──▶  ~/.claude/CLAUDE.md
-  skills/    ──(symlink)─▶ ~/.agents/skills/   ──(symlink)──▶  ~/.claude/skills/
-                                │
-                                ├──(assembled)──▶  ~/.gemini/GEMINI.md
-                                │                  (AGENTS.md + all skills inlined)
-                                │
-                                └──(assembled)──▶  ~/.cursor/commands/<name>.md
-                                                   (one file per skill, body only)
+  src/AGENTS.md  ──(copy)──▶  ~/.agents/AGENTS.md  ──(symlink)──▶  ~/.claude/CLAUDE.md
+  src/skills/    ──(symlink)─▶ ~/.agents/skills/   ──(symlink)──▶  ~/.claude/skills/
+                                    │
+                                    ├──(assembled)──▶  ~/.gemini/GEMINI.md
+                                    │                  (AGENTS.md + all skills inlined)
+                                    │
+                                    └──(assembled)──▶  ~/.cursor/commands/<name>.md
+                                                       (one file per skill, body only)
 ```
 
 **Claude Code** gets skills natively — `~/.claude/skills/` is a symlink chain back to the repo, so edits are live immediately.
@@ -100,9 +104,9 @@ bash scripts/sync.sh
 
 | What you want to change | Where to edit | Needs re-sync? |
 |---|---|---|
-| Global AI instructions | `AGENTS.md` in this repo | Yes |
-| Skill workflow (all tools) | `skills/<name>/SKILL.md` | Claude: no — Gemini/Cursor: yes |
-| Gemini trigger / notes for a skill | `skills/<name>/gemini.meta` | Yes |
+| Global AI instructions | `src/AGENTS.md` | Yes |
+| Skill workflow (all tools) | `src/skills/<name>/SKILL.md` | Claude: no — Gemini/Cursor: yes |
+| Gemini trigger / notes for a skill | `src/skills/<name>/gemini.meta` | Yes |
 | Machine-specific context | `~/.agents/extensions/<name>.md` | Yes |
 
 ## Extensions folder structure

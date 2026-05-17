@@ -26,18 +26,18 @@ log "Setting up ~/.agents …"
 mkdir -p "$AGENTS_DIR"
 ok "~/.agents exists"
 
-cp "$REPO_ROOT/AGENTS.md" "$AGENTS_DIR/AGENTS.md"
+cp "$REPO_ROOT/src/AGENTS.md" "$AGENTS_DIR/AGENTS.md"
 ((++COUNT_DOTAGENTS))
-ok "Copied AGENTS.md → ~/.agents/AGENTS.md"
+ok "Copied src/AGENTS.md → ~/.agents/AGENTS.md"
 
 if [ -L "$AGENTS_DIR/skills" ] || [ -d "$AGENTS_DIR/skills" ]; then
     rm -rf "$AGENTS_DIR/skills"
 fi
-ln -s "$REPO_ROOT/skills" "$AGENTS_DIR/skills"
-ok "Symlinked $REPO_ROOT/skills → ~/.agents/skills"
+ln -s "$REPO_ROOT/src/skills" "$AGENTS_DIR/skills"
+ok "Symlinked $REPO_ROOT/src/skills → ~/.agents/skills"
 
 # Log individual skills
-SKILLS_DIR="$REPO_ROOT/skills"
+SKILLS_DIR="$REPO_ROOT/src/skills"
 if [ -d "$SKILLS_DIR" ]; then
     for skill in "$SKILLS_DIR"/*/; do
         if [ -d "$skill" ]; then
@@ -124,7 +124,7 @@ if command -v cursor &>/dev/null || [ -d "$HOME/.cursor" ]; then
         awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
     }
 
-    SKILLS_DIR="$REPO_ROOT/skills"
+    SKILLS_DIR="$REPO_ROOT/src/skills"
     while IFS= read -r -d '' skill_file; do
         name="$(frontmatter_field "$skill_file" name)"
         skill_body "$skill_file" > "$CURSOR_COMMANDS/${name}.md"
@@ -146,7 +146,7 @@ if [ -d "$HOME/.gemini" ]; then
     GEMINI_MD="$HOME/.gemini/GEMINI.md"
     
     # Initialize with AGENTS.md content
-    cp "$REPO_ROOT/AGENTS.md" "$GEMINI_MD"
+    cp "$REPO_ROOT/src/AGENTS.md" "$GEMINI_MD"
     
     # Append a separator
     echo -e "\n\n---\n\n# SKILLS\n" >> "$GEMINI_MD"
@@ -164,7 +164,7 @@ if [ -d "$HOME/.gemini" ]; then
         awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
     }
 
-    SKILLS_DIR="$REPO_ROOT/skills"
+    SKILLS_DIR="$REPO_ROOT/src/skills"
     while IFS= read -r -d '' skill_dir; do
         skill_file="$skill_dir/SKILL.md"
         meta_file="$skill_dir/gemini.meta"
@@ -196,8 +196,8 @@ log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_S
 echo ""
 log "Done. Your portable AI setup is live on this machine."
 echo ""
-echo "  Edit your config:    $REPO_ROOT/AGENTS.md"
-echo "  Add/edit skills:     $REPO_ROOT/skills/djt-<name>/SKILL.md"
+echo "  Edit your config:    $REPO_ROOT/src/AGENTS.md"
+echo "  Add/edit skills:     $REPO_ROOT/src/skills/djt-<name>/SKILL.md"
 echo "  Machine extensions:  $AGENTS_DIR/extensions/<name>.md"
 echo ""
 echo "  Re-run sync.sh after pulling or making changes to this repo"

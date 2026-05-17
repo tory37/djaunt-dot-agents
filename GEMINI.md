@@ -19,7 +19,7 @@ README.md          — Human-facing docs
 ## How to make changes
 
 - **Edit global AI instructions:** `src/AGENTS.md` — re-run sync after saving
-- **Edit a skill:** `src/skills/<name>/SKILL.md` — re-run sync to propagate to all tools
+- **Edit a skill:** `src/skills/<name>/SKILL.md` — re-run sync to propagate
 - **Add a skill:** create `src/skills/<name>/SKILL.md` + `gemini.meta` — re-run sync
 
 ```bash
