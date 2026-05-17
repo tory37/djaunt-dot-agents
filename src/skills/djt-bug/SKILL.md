@@ -45,23 +45,29 @@ Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.md`. Include:
 
 **Present the plan and await explicit user approval before writing any fix code.**
 
-### 5. Fix
+### 5. Create a Branch
+
+Create a new git branch before writing any fix code.
+
+Branch naming: `fix/short-description` (e.g. `fix/token-refresh-crash`)
+
+### 6. Fix
 
 Implement the minimal production code change that makes the failing test pass. Do not refactor or expand scope beyond the bug.
 
-### 6. Verify
+### 7. Verify
 
 **Verification Gate:** Once the fix is implemented, **STOP** and prompt the user to run the test suite to confirm:
 - The new test passes.
 - No regressions in related tests.
 - (If applicable) Manual verification steps pass.
 
-Await user confirmation and report back any issues before moving to Step 7. Do not move to Step 7 until all verification steps have been confirmed by the user.
+Await user confirmation and report back any issues before moving to Step 8. Do not move to Step 8 until all verification steps have been confirmed by the user.
 
-### 7. Commit & PR
+### 8. Commit & PR
 
-Commit the fix and open a Pull Request.
+Commit the fix and open a Pull Request (follow git conventions in AGENTS.md).
 
-- Commit message: imperative mood, under 72 characters, body explains *why* the bug occurred and *why* this fix is correct.
+- Commit body: explain why the bug occurred and why this fix is correct.
 - PR description: bug summary + root cause + fix approach.
 - Link the original issue. Request review before merge.

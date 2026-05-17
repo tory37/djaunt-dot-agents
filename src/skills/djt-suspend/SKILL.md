@@ -1,12 +1,12 @@
 ---
 name: djt-suspend
-description: "Save a session summary to .agents/sessions/ so work can be resumed later. Run /djt-suspend to snapshot current context."
+description: "Save a session summary to .agents/output/sessions/ so work can be resumed later. Run /djt-suspend to snapshot current context."
 trigger: /djt-suspend
 ---
 
 # /djt-suspend
 
-Snapshot the current working session into `.agents/sessions/<name>.md` so it can be resumed in a future conversation.
+Snapshot the current working session into `.agents/output/sessions/<name>.md` so it can be resumed in a future conversation.
 
 ## Steps
 
@@ -22,7 +22,7 @@ Snapshot the current working session into `.agents/sessions/<name>.md` so it can
    - Any technical notes, decisions, or gotchas
    - Clear next steps for resuming
 
-3. Write the file to `.agents/sessions/<slug>.md` using this template:
+3. Write the file to `.agents/output/sessions/<slug>.md` using this template:
 
 ```markdown
 # <TICKET-KEY>: Brief Description
@@ -56,4 +56,3 @@ Snapshot the current working session into `.agents/sessions/<name>.md` so it can
 4. Create `.agents/output/sessions/` if it does not exist.
 
 5. Tell the user the file path and that they can resume with `/djt-resume <slug>`.
-lug>`.

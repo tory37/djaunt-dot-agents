@@ -44,7 +44,7 @@ Ensure existing tests pass and add new tests if needed to cover the changes.
 
 - Goal: ensure functional parity and verify the improvement.
 - Have the user run the tests to confirm they pass before refactoring begins.
-- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.md`.
+- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.md` (see definition in AGENTS.md).
 
 ### 5. Create a Branch
 
@@ -66,8 +66,8 @@ Code against the approved plan as it exists on disk.
 
 ### 7. Commit & PR
 
-Commit the changes and open a Pull Request.
+Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 
-- Commit message: imperative mood, under 72 characters, body explains _why_ the refactoring was necessary and _how_ it improves the codebase.
+- Commit body: explain why the refactoring was necessary and how it improves the codebase.
 - PR description: technical debt summary + refactoring approach + impact.
 - Link related issues. Request review before merge.

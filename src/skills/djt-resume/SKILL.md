@@ -1,12 +1,12 @@
 ---
 name: djt-resume
-description: "Load a saved session summary from .agents/sessions/ to restore context and continue prior work."
+description: "Load a saved session summary from .agents/output/sessions/ to restore context and continue prior work."
 trigger: /djt-resume
 ---
 
 # /djt-resume
 
-Reload a suspended session from `.agents/sessions/` and orient the agent to continue where work left off.
+Reload a suspended session from `.agents/output/sessions/` and orient the agent to continue where work left off.
 
 ## Usage
 

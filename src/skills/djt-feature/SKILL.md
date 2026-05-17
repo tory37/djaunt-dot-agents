@@ -29,7 +29,7 @@ If there are unknowns or ambiguities, surface them all at once in a single messa
 
 ### 3. Plan
 
-Write a step-by-step implementation plan to `.agents/<feature-name>-plan.md`. The plan must include:
+Write a step-by-step implementation plan to `.agents/output/features/<feature-name>/plan.md`. The plan must include:
 
 - Tests first (what needs to be tested and how)
 - Implementation steps second
@@ -70,8 +70,8 @@ Code against the approved plan **as it exists on disk** — do not implement fro
 
 ### 7. Commit & PR
 
-Commit the changes and open a Pull Request.
+Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 
-- Commit message: imperative mood, under 72 characters, body explains _why_ not _what_.
+- Commit body: explain what the feature does and why it was built this way.
 - PR description: feature explanation + brief implementation overview.
 - Link related issues. Request review before merge.
