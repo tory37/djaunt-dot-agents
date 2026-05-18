@@ -1,0 +1,2 @@
+trigger: When the user types /djt-kanban or /djt-kanban [bugs|techdebt], list all tickets in the target folder, present them for selection, then move the selected ticket to 3_doing/ and execute the appropriate workflow (djt-feature for backlog, djt-bug for bugs, djt-techdebt for techdebt).
+notes: Folder structure is at .agents/.kanban/ — if it doesn't exist, create it. Ticket filenames are {epic}.{ticket}.md. When work completes, move ticket from 3_doing/ to 4_done/ automatically.

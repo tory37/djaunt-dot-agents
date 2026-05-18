@@ -1,4 +1,5 @@
 {
+    "terminal.integrated.defaultProfile.linux": "zsh",
     "workbench.colorCustomizations": {
         "titleBar.activeBackground": "#d0b492",
         "titleBar.inactiveBackground": "#d0b49299",
