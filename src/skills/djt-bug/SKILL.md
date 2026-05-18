@@ -46,7 +46,7 @@ Write a failing test that captures the bug. The test should:
 
 **Write the plan to disk immediately.** Present a high-level summary and await explicit user approval before writing any fix code.
 
-*If using djt-kanban, sync these phases to the active ticket in `3_doing/` now.*
+*If using djt-kanban or djt-trello, sync these phases to the active ticket/card now.*
 
 ### 5. [Step Removed]
 

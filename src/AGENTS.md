@@ -19,6 +19,12 @@ If the project uses the `djt-kanban` system (detected by `.agents/.kanban/` fold
 - **Sync Phases:** After writing an implementation plan, immediately update the active ticket in `.agents/.kanban/3_doing/` to include the implementation phases.
 - **Tally Progress:** Tick off phases in the markdown ticket as they are committed.
 
+### Trello Integration
+
+If the project uses the `djt-trello` system (detected by Trello skill usage):
+- **Sync Phases:** After writing an implementation plan, immediately create/update the "Implementation Phases" checklist on the active Trello card.
+- **Tally Progress:** Tick off phases in Trello as they are committed.
+
 ## Handling Interjectory Requests
 
 When the user makes a request that is outside the scope of the current feature or story (an "interjectory request"):
