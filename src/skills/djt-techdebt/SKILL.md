@@ -37,7 +37,7 @@ Surface all unknowns or ambiguities regarding the current implementation and the
 
 **Write the plan to disk immediately.** Present a high-level summary and await explicit approval before proceeding.
 
-*If using djt-kanban, sync these phases to the active ticket in `3_doing/` now.*
+*If using djt-kanban or djt-trello, sync these phases to the active ticket/card now.*
 
 ### 4. Test-Driven Refactoring
 

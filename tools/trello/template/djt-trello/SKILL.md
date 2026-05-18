@@ -13,12 +13,24 @@ Retrieve the next card from a Trello column, or add a new card to one.
 ```
 /{{PREFIX}}-trello bugs           # retrieve top BUGS card → move to DOING
 /{{PREFIX}}-trello techdebt       # retrieve top TECH DEBT card → move to DOING
-/{{PREFIX}}-trello backlog        # retrieve top BACKLOG card → move to DOING (no workflow)
+/{{PREFIX}}-trello backlog        # retrieve top BACKLOG card → move to DOING
 /{{PREFIX}}-trello add bugs       # create a new card in BUGS
 /{{PREFIX}}-trello add techdebt   # create a new card in TECH DEBT
 /{{PREFIX}}-trello add backlog    # create a new card in BACKLOG
 /{{PREFIX}}-trello                # → prompts for column
 ```
+
+---
+
+## Iterative Workflow Integration
+
+When using this skill to manage work:
+
+1. **Retrieve Card:** Selecting a card moves it to **DOING**.
+2. **Standard Workflow:** Once a card is in DOING, start the standard iterative workflow (e.g., `/djt-feature`, `/djt-bug`, or `/djt-techdebt`).
+3. **Sync Phases:** After writing an implementation plan, create a **Checklist** named "Implementation Phases" on the Trello card.
+4. **Tally Progress:** Tick off each phase in Trello as the corresponding code is verified and COMMITTED.
+5. **Move to Done:** Once all phases are committed, move the card to a **DONE** column (if one exists) or archive it.
 
 ---
 
@@ -43,7 +55,7 @@ When retrieving (`/{{PREFIX}}-trello <column>`):
 5. Once the user selects a card:
    - Move the card to **DOING** (`{{TRELLO_LIST_DOING}}`) and assign yourself.
    - Present the full card name, description, and URL to the user.
-   - Stop — do not begin an engineering workflow unless the user asks.
+   - **Proceed to Step 2 of Iterative Workflow Integration.**
 
 ---
 
@@ -66,6 +78,7 @@ Template schema:
 - **Description** ← Expected Behavior + Actual Behavior + Environment + Error Output + Related Tickets/Links
 - **Checklist "Steps to Reproduce"** ← each numbered step as a checklist item
 - **Checklist "Affected Files"** ← each file or component as a checklist item
+- **Checklist "Implementation Phases"** ← empty (filled during implementation)
 
 ### Feature / Tech Debt / Backlog cards (`add techdebt`, `add backlog`)
 
@@ -79,6 +92,7 @@ Template schema:
 - **Description** ← Goal + User Story + Scope (In/Out) + Constraints & Non-Goals + Related Tickets/Links
 - **Checklist "Acceptance Criteria"** ← each checkbox item as a checklist item
 - **Checklist "Test Plan"** ← empty (filled during implementation)
+- **Checklist "Implementation Phases"** ← empty (filled during implementation)
 
 After creating the card, present the URL to the user.
 

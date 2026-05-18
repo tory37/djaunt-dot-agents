@@ -38,7 +38,7 @@ Write a step-by-step implementation plan to `.agents/output/features/<feature-na
 
 **Write the plan to disk immediately.** Present a high-level summary to the user and await explicit approval of the phased approach before proceeding. 
 
-*If using djt-kanban, sync these phases to the active ticket in `3_doing/` now.*
+*If using djt-kanban or djt-trello, sync these phases to the active ticket/card now.*
 
 ### 4. Test-Driven Development & Branching
 
