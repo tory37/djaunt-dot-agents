@@ -1,27 +1,94 @@
 # Trello Integration
 
-This project uses a Trello-based workflow for managing tasks, bugs, and features directly through the Gemini CLI.
+This project is configured with a Trello-based workflow for managing tasks, bugs, and features directly through your AI tools via the Model Context Protocol (MCP).
+
+## Complete the Setup
+
+To enable the Trello tools, you must register the MCP server in your preferred AI tool's configuration.
+
+### 1. Gemini CLI
+- **Config Path**: Usually `~/.gemini/config.json` (or via `gemini config edit`).
+- **Snippet**: Add to your `mcpServers` list:
+
+```json
+"trello": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-trello"
+  ],
+  "env": {
+    "TRELLO_API_KEY": "{{TRELLO_API_KEY}}",
+    "TRELLO_TOKEN": "{{TRELLO_TOKEN}}"
+  }
+}
+```
+
+### 2. Claude Desktop
+- **Config Path**: 
+  - macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`
+  - Windows: `%APPDATA%\Claude\claude_desktop_config.json`
+- **Snippet**: Add to your `mcpServers` list:
+
+```json
+"trello": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-trello"
+  ],
+  "env": {
+    "TRELLO_API_KEY": "{{TRELLO_API_KEY}}",
+    "TRELLO_TOKEN": "{{TRELLO_TOKEN}}"
+  }
+}
+```
+
+### 3. Cursor
+- **Config Path**: 
+  - Global: `~/.cursor/mcp.json` (macOS/Linux) or `%USERPROFILE%\.cursor\mcp.json` (Windows)
+  - Project-specific: `.cursor/mcp.json` (in this project's root)
+- **Alternatively**: Go to **Cursor Settings** > **Features** > **MCP** and click **+ Add New MCP Server**. Use the parameters from the snippet below.
+- **Snippet**:
+
+```json
+"trello": {
+  "command": "npx",
+  "args": [
+    "-y",
+    "@modelcontextprotocol/server-trello"
+  ],
+  "env": {
+    "TRELLO_API_KEY": "{{TRELLO_API_KEY}}",
+    "TRELLO_TOKEN": "{{TRELLO_TOKEN}}"
+  }
+}
+```
+
+---
+
+*Note: The API keys above are injected during installation. If you need to change them, update your `.agents/trello.env` file (which is ignored by git).*
 
 ## Available Skills
 
 ### 1. Trello Card Management (`/{{PREFIX}}-trello`)
 Use this for lightweight management of cards across your Trello board.
 
-- **List/Retrieve**: `/{{PREFIX}}-trello [bugs|techdebt|backlog]`
-  - Fetches the top card from the specified column.
-  - Moves the card to **DOING**.
+- **Retrieve**: `/{{PREFIX}}-trello [bugs|techdebt|backlog]`
+  - Lists available cards in the column.
+  - Moves your selected card to **DOING**.
   - Assigns you to the card.
 - **Add Card**: `/{{PREFIX}}-trello add [bugs|techdebt|backlog]`
   - Creates a new card with standard templates for Acceptance Criteria and Test Plans.
 
 ## Configuration
 
-The tools are configured to work with the following Trello setup:
 - **Board ID**: `{{TRELLO_BOARD_ID}}`
-- **MCP Config**: `.agents/mcp/trello.json`
-
-Ensure your local `.env` file contains the required `TRELLO_API_KEY` and `TRELLO_TOKEN`. You can find the specific required keys in `.env.trello.example`.
+- **Trello Secret Path**: `.agents/trello.env` (Added to `.gitignore`)
 
 ## Troubleshooting
 
-If the skills are not responding, ensure that the `trello` MCP server is correctly registered in your Gemini CLI configuration and that your Trello token has not expired.
+If the skills are not responding:
+1. Ensure the `trello` MCP server is correctly registered in your AI tool's configuration.
+2. Check that your Trello token has not expired.
+3. Verify that the List IDs in `.agents/skills/{{PREFIX}}-trello/SKILL.md` are correct.
