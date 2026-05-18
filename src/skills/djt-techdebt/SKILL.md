@@ -27,44 +27,40 @@ Read the relevant parts of the codebase before writing anything. Identify the de
 
 Surface all unknowns or ambiguities regarding the current implementation and the desired refactoring in a single message. Wait for answers before proceeding.
 
-### 3. Plan
+### 3. Plan & Branch
 
-Write a step-by-step refactoring plan to `.agents/output/techdebt/<name>/plan.md`. The plan must include:
+1. **Write Refactoring Plan:** Write a step-by-step refactoring plan to `.agents/output/techdebt/<name>/plan.md`. The plan MUST:
+   - **Break into Phases:** Organize the refactor into discrete, verifiable phases.
+   - **Regression tests:** Define how to ensure functional parity at each step.
+   - **Rationale:** Explain the approach and risks.
+2. **Create a Branch:** Create a new git branch: `refactor/short-description`.
 
-- Regression tests first (how to ensure existing behavior is preserved)
-- Implementation steps second
-- Rationale for the refactoring approach
-- Potential risks and mitigation strategies
+**Write the plan to disk immediately.** Present a high-level summary and await explicit approval before proceeding.
 
-**Present the plan to the user and await explicit approval before proceeding.**
+*If using djt-kanban, sync these phases to the active ticket in `3_doing/` now.*
 
 ### 4. Test-Driven Refactoring
 
 Ensure existing tests pass and add new tests if needed to cover the changes.
-
-- Goal: ensure functional parity and verify the improvement.
 - Have the user run the tests to confirm they pass before refactoring begins.
-- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.md` (see definition in AGENTS.md).
+- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.md` for the current phase.
 
-### 5. Create a Branch
+### 5. [Step Removed]
 
-Create a new git branch before writing any refactoring code.
+*(Branching consolidated in Step 3)*
 
-Branch naming: `refactor/short-description` or `fix/tech-debt-description`
+### 6. Iterative Implementation
 
-### 6. Implement
+Perform the refactor phase by phase:
 
-Code against the approved plan as it exists on disk.
+1. **Implement:** Code against the plan for the current phase.
+2. **Verify:** Once the phase is done, **STOP** and prompt the user to:
+   - Run tests and verify zero regressions.
+   - Run manual steps in the Doer Test Plan.
+3. **Commit:** After confirmation, **COMMIT** the changes. Use the phase description for the commit message.
+4. **Next Phase:** Repeat until the refactor is complete.
 
-- Follow the project's style and linting rules.
-- Update the Doer Test Plan if steps or details change.
-- **Verification Gate:** Once finished, **STOP** and prompt the user to:
-  1. Run the tests and verify they pass (zero regressions).
-  2. Run the manual steps in the Doer Test Plan.
-  3. Report back any issues or confirm all tests pass.
-- Await user confirmation of completeness before moving to Step 7.
-
-### 7. Commit & PR
+### 7. Finalize & PR
 
 Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 

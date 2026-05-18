@@ -29,46 +29,41 @@ If there are unknowns or ambiguities, surface them all at once in a single messa
 
 ### 3. Plan
 
-Write a step-by-step implementation plan to `.agents/output/features/<feature-name>/plan.md`. The plan must include:
+Write a step-by-step implementation plan to `.agents/output/features/<feature-name>/plan.md`. The plan MUST:
 
-- Tests first (what needs to be tested and how)
-- Implementation steps second
-- Brief rationale for key decisions
-- Optional improvements only if weak points directly related to the change are found
-- Suggestions to break into smaller sessions if the scope is large
+- **Break into Phases:** Organize the work into discrete, testable phases (like user stories). Each phase should deliver a small, verifiable piece of value.
+- **Tests First:** Define what needs to be tested for each phase.
+- **Implementation steps:** Detail the steps for each phase.
+- **Brief rationale:** Explain key decisions.
 
-**Present the plan to the user and await explicit approval before proceeding.**
+**Write the plan to disk immediately.** Present a high-level summary to the user and await explicit approval of the phased approach before proceeding. 
 
-### 4. Test-Driven Development
+*If using djt-kanban, sync these phases to the active ticket in `3_doing/` now.*
 
-Write failing tests before any implementation code.
+### 4. Test-Driven Development & Branching
 
-- If the project has an existing test framework, adhere to it.
-- If no test framework exists, examine the codebase and language, then suggest the best options for both unit AND integration tests. Await user confirmation before setting anything up.
-- Goal: programmatic confidence the change works as intended — unit tests for logic, integration tests for behavior.
-- Have the user run the tests to confirm they compile and fail as expected. Do not run them yourself.
-- Write a Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.md` (see definition in AGENTS.md).
+1. **Create a Branch:** Create a new git branch before writing any code. Branch naming: `feat/short-description`.
+2. **Write Failing Tests:** Write failing tests for the *first phase* only. Adhere to project conventions.
+3. **Confirm Failure:** Have the user run the tests to confirm they compile and fail as expected.
 
-### 5. Create a Branch
+Write a Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.md` for the current phase.
 
-Create a new git branch before writing any implementation code.
+### 5. [Step Removed]
 
-Branch naming: `type/short-description` (e.g. `feat/oauth-login`)
+*(TDD and Branching are now consolidated in Step 4)*
 
-### 6. Implement
+### 6. Iterative Implementation
 
-Code against the approved plan **as it exists on disk** — do not implement from memory.
+Implement the feature one phase at a time. For each phase:
 
-- Follow the project's style and linting rules.
-- Update the Doer Test Plan if steps or details change during implementation.
-- **Verification Gate:** Once finished, **STOP** and prompt the user to:
-  1. Run the unit tests and verify they pass.
-  2. Run e2e tests (if they exist) and verify they pass.
-  3. Run the manual steps in the Doer Test Plan.
-  4. Report back any issues or confirm all tests pass.
-- Await user confirmation of completeness before moving to Step 7. Do not move to Step 7 until all verification steps have been confirmed by the user.
+1. **Implement:** Code against the plan for the current phase.
+2. **Verify:** Once the phase is implemented, **STOP** and prompt the user to:
+   - Run unit/e2e tests and verify they pass.
+   - Run the manual steps in the Doer Test Plan.
+3. **Commit:** After user confirmation that the phase is correct and tests pass, **COMMIT** the changes. Use the phase description as the basis for the commit message.
+4. **Next Phase:** Repeat for the next phase until the entire plan is complete.
 
-### 7. Commit & PR
+### 7. Finalize & PR
 
 Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 
