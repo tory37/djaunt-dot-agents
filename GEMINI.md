@@ -12,7 +12,7 @@ scripts/
   sync.sh          — Deploys src/ to the active toolchain on this machine
 setup/
   tools.md         — Bootstrap guide for CLI tools on a new machine
-tools/             — Optional add-on integrations (Trello MCP, project-sync, etc.)
+tools/             — Optional add-on integrations (djt-trello, djt-project-sync, etc.)
 README.md          — Human-facing docs
 ```
 
