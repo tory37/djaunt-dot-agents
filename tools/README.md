@@ -26,7 +26,7 @@ Each tool provides an `install.sh` script to deploy it into a target project.
 1. Navigate to the tool directory:
 
    ```bash
-   cd tools/trello
+   cd tools/djt-trello
    ```
 
 2. Run the installer:

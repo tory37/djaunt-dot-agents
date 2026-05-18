@@ -160,7 +160,7 @@ if [ -f "$GITIGNORE" ]; then
 fi
 
 # 4. Expand and Copy remaining files
-expand_template "template/djt-trello/SKILL.md" "$SKILL_TRELLO_DIR/SKILL.md"
+expand_template "template/trello/SKILL.md" "$SKILL_TRELLO_DIR/SKILL.md"
 expand_template "template/mcp-config.json.template" "$MCP_DIR/trello.json"
 expand_template "template/README.md.template" "$TARGET/.agents/skills/README.trello.md"
 
