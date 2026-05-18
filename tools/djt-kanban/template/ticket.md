@@ -25,6 +25,13 @@ What's included in this ticket (and what's explicitly NOT included).
 - [ ] Criterion 2
 - [ ] Criterion 3
 
+## Implementation Phases
+
+*Populate this section after writing your plan (via /djt-feature, etc.). Each phase should be committed upon completion.*
+
+- [ ] **Phase 1: [Short Title]** - [Brief goal]
+- [ ] **Phase 2: [Short Title]** - [Brief goal]
+
 ## Notes
 
 Any additional context, constraints, or references to related tickets.

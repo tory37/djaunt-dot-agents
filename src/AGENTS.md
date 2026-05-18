@@ -4,13 +4,20 @@
 
 **Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`, `sessions/`). Create the directory if needed. Then direct the user to the written files instead of printing output to the screen unnecessarily.
 
-## Strict Review & Authorization
+## Iterative Implementation & Commit Gates
 
-**MANDATE:** The agent MUST NOT modify any files (write_file, replace) or execute system-altering commands (pip install, etc.) without first presenting the specific intended change to the user and awaiting explicit approval.
+**MANDATE:** Prioritize writing to disk immediately (plans, tests, implementation). Do not waste tokens printing full file contents to the console if they are being written to a file. Use git commits to separate logical phases of work.
 
-1. **Proposed Changes:** Present the exact code diff or file content in a clear Markdown block.
-2. **Approval Gate:** Use a distinct "Awaiting approval to proceed with these changes..." message.
-3. **No Batch Commit/Push:** Never combine implementation, linting, and committing into a single autonomous sequence. Each stage requires a fresh review.
+1. **Write Immediately:** When a plan or implementation chunk is ready, write it to the appropriate file. Direct the user to the file for review rather than printing it all.
+2. **Phase-Based Implementation:** Break features and fixes into discrete, testable phases (like user stories). 
+3. **Commit as Gate:** After completing a phase and verifying it (tests pass, manual checks done), COMMIT the changes. This commit acts as the approval gate for that phase. Only move to the next phase after the current one is committed.
+4. **Clean Diffs:** This approach ensures each phase has a clean, focused diff in the version history.
+
+### Kanban Integration
+
+If the project uses the `djt-kanban` system (detected by `.agents/.kanban/` folder):
+- **Sync Phases:** After writing an implementation plan, immediately update the active ticket in `.agents/.kanban/3_doing/` to include the implementation phases.
+- **Tally Progress:** Tick off phases in the markdown ticket as they are committed.
 
 ## Handling Interjectory Requests
 
@@ -23,7 +30,9 @@ When the user makes a request that is outside the scope of the current feature o
 
 ## Workflow
 
-Use `/djt-feature` to start a new feature (full 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Use `/djt-techdebt` for refactoring or tech debt. Use `/djt-research` to synthesize research into a strategy. These accept an optional spec/issue/context file: `/djt-feature @path/to/spec.md`.
+Use `/djt-feature` to start a new feature (iterative 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Use `/djt-techdebt` for refactoring or tech debt. Use `/djt-research` to synthesize research into a strategy. These accept an optional spec/issue/context file: `/djt-feature @path/to/spec.md`.
+
+**Core Flow:** Gather info -> Write plan (phases) -> implement phase -> verify -> commit -> repeat.
 
 Use `/djt-suspend` to snapshot a session; `/djt-resume <slug>` to reload one. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
 

@@ -36,35 +36,38 @@ Write a failing test that captures the bug. The test should:
 
 **Have the user run the test to confirm it fails as expected before proceeding.**
 
-### 4. Propose Fix
+### 4. Propose Fix & Branch
 
-Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.md`. Include:
-- Root cause explanation
-- Proposed minimal code change
-- Any side effects or related risk areas
+1. **Write Fix Plan:** Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.md`. Include:
+   - Root cause explanation.
+   - Proposed minimal code change (broken into phases if complex).
+   - Any side effects or related risk areas.
+2. **Create a Branch:** Create a new git branch: `fix/short-description`.
 
-**Present the plan and await explicit user approval before writing any fix code.**
+**Write the plan to disk immediately.** Present a high-level summary and await explicit user approval before writing any fix code.
 
-### 5. Create a Branch
+*If using djt-kanban, sync these phases to the active ticket in `3_doing/` now.*
 
-Create a new git branch before writing any fix code.
+### 5. [Step Removed]
 
-Branch naming: `fix/short-description` (e.g. `fix/token-refresh-crash`)
+*(Branching consolidated in Step 4)*
 
-### 6. Fix
+### 6. Iterative Fix
 
-Implement the minimal production code change that makes the failing test pass. Do not refactor or expand scope beyond the bug.
+Implement the fix. If the fix was broken into phases, follow the iterative pattern:
 
-### 7. Verify
+1. **Implement:** Apply the minimal production code change for the current phase.
+2. **Verify:** Once implemented, **STOP** and prompt the user to run the test suite to confirm:
+   - The new test passes.
+   - No regressions in related tests.
+3. **Commit:** After confirmation, **COMMIT** the changes. Use the phase/fix description for the commit message.
+4. **Repeat:** If there are more phases, repeat until the bug is fully resolved.
 
-**Verification Gate:** Once the fix is implemented, **STOP** and prompt the user to run the test suite to confirm:
-- The new test passes.
-- No regressions in related tests.
-- (If applicable) Manual verification steps pass.
+### 7. Final Verification & PR
 
-Await user confirmation and report back any issues before moving to Step 8. Do not move to Step 8 until all verification steps have been confirmed by the user.
+**Verification Gate:** Ensure all verification steps have been confirmed by the user.
 
-### 8. Commit & PR
+### 8. PR & Documentation
 
 Commit the fix and open a Pull Request (follow git conventions in AGENTS.md).
 
