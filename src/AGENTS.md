@@ -2,7 +2,7 @@
 
 > This file is instructions for the AI agent, not the user. It applies across all projects on this machine.
 
-**Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`, `sessions/`). Create the directory if needed. Then direct the user to the written files instead of printing output to the screen unnecessarily.
+**Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`). Output files are styled **HTML** (`.html`), not markdown — see **HTML Output Convention** below. Sessions (`.agents/output/sessions/`) are the only exception and stay `.md` because the AI reads them back directly. Create directories as needed. Direct the user to the written files instead of printing output to the screen unnecessarily.
 
 ## Iterative Implementation & Commit Gates
 
@@ -56,7 +56,86 @@ A Doer Test Plan is a written list of manual steps that tells both the implement
 
 It should be written in plain language, sequentially, with explicit checkpoints. Leave placeholders (`[TODO: determine exact route]`) for details not yet known. Update it as implementation reveals specifics.
 
-Write the Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.md`.
+Write the Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.html`.
+
+---
+
+## HTML Output Convention
+
+All human-facing output files (plans, reviews, research, coverage reports) are written as styled `.html` files, not markdown. This makes them visually scannable when opened in a browser.
+
+### Stylesheet Bootstrap
+
+Before writing the first HTML output file in a project, ensure the stylesheet exists:
+
+```bash
+mkdir -p .agents/output/assets
+[ -f .agents/output/assets/style.css ] || cp ~/.agents/assets/style.css .agents/output/assets/style.css
+```
+
+### Relative Path to Stylesheet
+
+Use a relative path from the HTML file to `.agents/output/assets/style.css`:
+
+- File at `.agents/output/<type>/<file>.html` (one level deep) → `../assets/style.css`
+- File at `.agents/output/<type>/<name>/<file>.html` (two levels deep) → `../../assets/style.css`
+
+### Standard HTML Shell
+
+Every output HTML file uses this base structure:
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{Title}} — {{type}}</title>
+  <link rel="stylesheet" href="{{relative-path}}/assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <header class="doc-header">
+      <div class="doc-meta">
+        <span class="badge badge-{{type}}">{{TYPE}}</span>
+        <span class="doc-date">{{YYYY-MM-DD}}</span>
+      </div>
+      <h1>{{Title}}</h1>
+    </header>
+    <main>
+      {{sections}}
+    </main>
+  </div>
+</body>
+</html>
+```
+
+### Type Badges
+
+Use `badge-feature`, `badge-bug`, `badge-research`, `badge-review`, `badge-techdebt`, or `badge-coverage` on `.badge` elements in `.doc-meta`.
+
+### Severity / Status Badges
+
+Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `badge-pending`, or `badge-in-progress`.
+
+### Key Component Classes
+
+| Class | Use for |
+|---|---|
+| `.phase-card` | Each implementation phase (feature/techdebt plans) |
+| `.phase-number`, `.phase-title`, `.phase-header` | Phase card header |
+| `.phase-steps` | Ordered list of steps inside a phase |
+| `.test-criteria` | Verification criteria block inside a phase |
+| `.finding-card` + `.critical/.warning/.suggestion/.positive` | Review/coverage findings |
+| `.finding-header`, `.finding-title`, `.finding-body`, `.finding-file` | Finding card anatomy |
+| `.checklist` | Unordered list with checkbox-style bullets |
+| `.test-steps` + `.test-step` | Numbered manual test steps (doer plans) |
+| `.test-step .checkpoint` | Expected outcome inside a test step |
+| `.meta-block` + `.meta-item` | Key/value metadata grid |
+| `.section` + `.accent/.success/.warning/.danger` | Left-bordered content block |
+| `.files-list` + `.file-chip` | Inline file path chips |
+| `.bibliography` | Numbered sources list |
+| `table` | Standard dark-styled data table |
 
 ---
 
@@ -122,7 +201,7 @@ Never silently match a bad pattern. Never silently ignore it and "do it right" w
 
 ## Session Management
 
-Use `/djt-suspend` to snapshot the current session to `.agents/output/sessions/<slug>.md`.
+Use `/djt-suspend` to snapshot the current session to `.agents/output/sessions/<slug>.md` (stays `.md` — the AI reads it back directly).
 Use `/djt-resume <slug>` to reload a saved session and continue where work left off.
 
 ---
