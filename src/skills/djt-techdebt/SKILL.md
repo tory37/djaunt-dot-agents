@@ -29,10 +29,10 @@ Surface all unknowns or ambiguities regarding the current implementation and the
 
 ### 3. Plan & Branch
 
-1. **Write Refactoring Plan:** Write a step-by-step refactoring plan to `.agents/output/techdebt/<name>/plan.md`. The plan MUST:
-   - **Break into Phases:** Organize the refactor into discrete, verifiable phases.
-   - **Regression tests:** Define how to ensure functional parity at each step.
-   - **Rationale:** Explain the approach and risks.
+1. **Write Refactoring Plan:** Write a step-by-step refactoring plan to `.agents/output/techdebt/<name>/plan.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-techdebt`, depth-2 stylesheet path `../../assets/style.css`). Bootstrap the stylesheet first if not present. The plan MUST:
+   - **Break into Phases:** Organize the refactor into discrete, verifiable phases — each as a `.phase-card`.
+   - **Regression tests:** Define how to ensure functional parity at each step — as a `.test-criteria` block inside each phase card.
+   - **Rationale:** Explain the approach and risks as a `.callout.info` block at the top.
 2. **Create a Branch:** Create a new git branch: `refactor/short-description`.
 
 **Write the plan to disk immediately.** Present a high-level summary and await explicit approval before proceeding.
@@ -43,7 +43,7 @@ Surface all unknowns or ambiguities regarding the current implementation and the
 
 Ensure existing tests pass and add new tests if needed to cover the changes.
 - Have the user run the tests to confirm they pass before refactoring begins.
-- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.md` for the current phase.
+- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.html` for the current phase. Use the standard HTML shell (`badge-techdebt`, depth-2 path). Structure steps as a `.test-steps` list with `.test-step` items and `.checkpoint` spans for expected outcomes.
 
 ### 5. [Step Removed]
 

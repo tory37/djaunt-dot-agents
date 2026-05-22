@@ -13,7 +13,7 @@ This skill transforms broad research topics into a "Research-backed Strategy Doc
 ### Core Mandates
 
 - **Grounded Truth**: ZERO hallucination. Every claim, data point, or technical assertion MUST be backed by a source and cited inline.
-- **File-First Delivery**: All reports MUST be written to `.agents/output/research/<domain>-<timestamp>.md`. Do NOT print the report to the terminal.
+- **File-First Delivery**: All reports MUST be written to `.agents/output/research/<domain>-<timestamp>.html`. Do NOT print the report to the terminal. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-research`, depth-1 stylesheet path `../assets/style.css`). Bootstrap the stylesheet first if not present.
 - **Concise Reporting**: After writing the file, provide only a high-level summary of the research effort in the terminal.
 
 ## 2. Intake Protocol (CRITICAL)
@@ -35,7 +35,7 @@ Please provide the following to begin:
 
 ## 3. Execution Phase
 
-Produce a single Markdown document with the following sections. Maintain a "Senior Applied Researcher" persona. Every claim must be followed by an inline citation: `[Source Name](URL)`.
+Produce a single HTML document with the following sections. Maintain a "Senior Applied Researcher" persona. Every claim must be followed by an inline citation: `<a href="URL">[Source Name]</a>`.
 
 ### Section I: The Success/Failure Matrix
 
@@ -50,7 +50,7 @@ Produce a single Markdown document with the following sections. Maintain a "Seni
 ### Section III: The "Working" Stack
 
 - Provide the top 3 evidence-based methodologies.
-- Use a table to show: **Method | Theoretical Basis | Practical Implementation.**
+- Use an HTML `<table>` with columns: **Method | Theoretical Basis | Practical Implementation**.
 
 ### Section IV: Implementation & Retention
 
@@ -75,11 +75,11 @@ Once the report is written to disk, output ONLY the following summary to the use
 >
 > - **Sources searched**: [X]
 > - **Sources cited**: [Y]
-> - **Report location**: `.agents/output/research/<filename>.md`
+> - **Report location**: `.agents/output/research/<filename>.html`
 
 ### Constraints
 
 - **Mandatory Citations**: Any claim lacking a citation must be removed or marked explicitly as an "Unverified Hypothesis."
 - **No Terminal Bloat**: Do NOT print the report content to the console.
 - **High-Density Text**: Prioritize facts and mechanics over flowery prose.
-- **Strictly Markdown**: The report file must follow clean Markdown formatting.
+- **Styled HTML**: The report file must be valid HTML using the dark-theme design system from AGENTS.md. Use `<section>` tags for each numbered section, `<h2>` for section headings, `<table>` for the working stack, and `.bibliography` for sources.

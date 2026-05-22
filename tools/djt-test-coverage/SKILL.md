@@ -93,68 +93,23 @@ For any conditional block (`if/else`, `switch/match`, `ternary`) with more than 
 
 ### Step 4: Write the Coverage Gap Report
 
-Write the report to `.agents/output/coverage/<scope>-<YYYY-MM-DD>.md`.
+Write the report to `.agents/output/coverage/<scope>-<YYYY-MM-DD>.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-coverage`, depth-1 stylesheet path `../assets/style.css`). Bootstrap the stylesheet first if not present.
 
-The report format:
+Structure the report with these sections:
 
-```markdown
-# Test Coverage Audit — <scope>
-**Date:** <date>
-**Framework(s):** <detected frameworks>
-**Test command:** <runner command>
-**Scope:** <files or directory audited>
+**Header** — `.doc-header` with `badge-coverage` badge, date, and title "Test Coverage Audit — \<scope\>".
 
-## Framework Boundaries
+**Framework Boundaries** (`<h2>`) — `.callout.info` block listing what's in/out of scope.
 
-> These boundaries constrain what counts as a missing test in this audit.
-> Items that fall outside the framework's testable surface are excluded.
+**Coverage Summary** (`<h2>`) — `<table>` with columns Status / Count (Fully covered, Partially covered, No coverage, Skipped).
 
-- <boundary 1>
-- <boundary 2>
+**Missing Tests — Prioritized Checklist** (`<h2>`) — Include this instruction paragraph: *"Check the boxes for additions you want implemented, then run: `/djt-test-coverage --apply .agents/output/coverage/<this-file>.html`"*
 
-## Coverage Summary
+Render four sub-sections (Critical / High / Medium / Low), each as `<h3>` followed by a `<ul class="checklist">`. Each `<li>` must use `data-gap-id` for machine readability and include the file path in `<code>`, the function name, the gap category code in brackets, and the explanation. Mark severity via `class="priority-high"` (Critical/High) or leave default (Medium/Low). Use `<input type="checkbox">` inside each `<li>` so the Apply phase can parse checked state.
 
-| Status | Count |
-|---|---|
-| Fully covered | N |
-| Partially covered | N |
-| No coverage | N |
-| Skipped (untestable) | N |
+**Fully Covered Files** (`<h2>`) — `.files-list` of `.file-chip` elements.
 
-## Missing Tests — Prioritized Checklist
-
-Instructions: Check the boxes for additions you want implemented, then run:
-  `/djt-test-coverage --apply .agents/output/coverage/<this-file>.md`
-
-### Critical (blocks correctness or safety)
-
-- [ ] `path/to/file.ts` — `functionName` — **[B] Error path not tested**: the catch block at line 47 has no test
-- [ ] `path/to/file.ts` — `functionName` — **[D] State mutation untested**: writes to `userStore` with no assertion on resulting state
-
-### High (public API gaps, integration seams)
-
-- [ ] `path/to/file.ts` — `functionName` — **[A] No test file exists**
-- [ ] `path/to/other.ts` — `ClassName.method` — **[E] Integration seam untested**: HTTP call at line 23 has no stub or integration test
-
-### Medium (edge cases, branch gaps)
-
-- [ ] `path/to/file.ts` — `parseInput` — **[C] Missing boundary test**: no test for empty string input
-- [ ] `path/to/file.ts` — `handleResponse` — **[G] Branch gap**: the `status === 404` branch at line 88 is not exercised
-
-### Low (async correctness, minor gaps)
-
-- [ ] `path/to/file.ts` — `fetchData` — **[F] Async not tested with await**: test does not await the resolved value
-
-## Fully Covered Files
-
-- path/to/covered.ts — all public API, error paths, and boundaries tested
-- path/to/other-covered.ts
-
-## Skipped Files
-
-- path/to/config.ts — pure constants, no testable logic
-- path/to/generated.pb.ts — auto-generated protobuf output
-```
+**Skipped Files** (`<h2>`) — `.files-list` of `.file-chip` elements with brief reason in a `<span>`.
 
 ### Step 5: Present Summary
 
@@ -164,13 +119,13 @@ Print a concise terminal summary:
 - Counts: critical / high / medium / low gaps
 - Top 3 most important findings
 - Path to the full report
-- Next step instruction: check the boxes in the report, then run `/djt-test-coverage --apply <report-path>`
+- Next step instruction: open the HTML report in a browser, check the boxes for gaps to address, then run `/djt-test-coverage --apply <report-path>`
 
 ---
 
 ## Phase 2 — Apply (`--apply` flag)
 
-Triggered by: `/djt-test-coverage --apply .agents/output/coverage/<report>.md`
+Triggered by: `/djt-test-coverage --apply .agents/output/coverage/<report>.html`
 
 ### Step 1: Re-read the Report
 

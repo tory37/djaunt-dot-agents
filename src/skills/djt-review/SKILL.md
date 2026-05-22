@@ -37,33 +37,22 @@ Evaluate the code against the following criteria:
 Verify that the changes are accompanied by appropriate tests (unit, integration). If tests are missing or insufficient, note this as a high-priority finding.
 
 ### 4. Generate Report
-Write a detailed review report to `.agents/output/reviews/<name>-<timestamp>.md`.
 
-The report must follow this structure:
+Write a detailed review report to `.agents/output/reviews/<name>-<timestamp>.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-review`, depth-1 stylesheet path `../assets/style.css`). Bootstrap the stylesheet first if not present.
 
-# Code Review Report
+Structure the report with these sections:
 
-## Summary
-<!-- High-level overview of the changes and overall quality. -->
+**Summary** (`<h2>`) — High-level overview of the changes and overall quality. Include a `.meta-block` with key facts (files changed, overall verdict badge).
 
-## Critical Findings
-<!-- Bugs, security issues, or major architectural concerns. -->
-- [FINDING 1]: [EXPLANATION]
+**Critical Findings** (`<h2>`) — For each finding: a `.finding-card.critical` with `.badge-critical` badge, `.finding-title`, `.finding-body` explanation, and `.finding-file` chip(s) for affected files.
 
-## Suggested Improvements
-<!-- Non-critical but valuable refactors or optimizations. -->
-- [IMPROVEMENT 1]: [RATIONALE]
+**Suggested Improvements** (`<h2>`) — Each as `.finding-card.warning` with `.badge-warning`.
 
-## Positive Notes
-<!-- What was done well. -->
-- [NOTE 1]
+**Positive Notes** (`<h2>`) — Each as `.finding-card.positive` with `.badge-suggestion`.
 
-## Test Coverage
-<!-- Summary of existing tests and what might be missing. -->
+**Test Coverage** (`<h2>`) — Summary paragraph, then a `.checklist` of what's covered and what's missing.
 
-## Files Reviewed
-- [FILE 1]
-
+**Files Reviewed** (`<h2>`) — Render file paths as `.file-chip` elements inside a `.files-list` div.
 
 ### 5. Present Summary
 

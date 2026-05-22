@@ -29,14 +29,18 @@ If there are unknowns or ambiguities, surface them all at once in a single messa
 
 ### 3. Plan
 
-Write a step-by-step implementation plan to `.agents/output/features/<feature-name>/plan.md`. The plan MUST:
+Write a step-by-step implementation plan to `.agents/output/features/<feature-name>/plan.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-feature`, depth-2 stylesheet path `../../assets/style.css`).
 
-- **Break into Phases:** Organize the work into discrete, testable phases (like user stories). Each phase should deliver a small, verifiable piece of value.
+The plan MUST cover:
+
+- **Break into Phases:** Organize the work into discrete, testable phases. Each phase should deliver a small, verifiable piece of value.
 - **Tests First:** Define what needs to be tested for each phase.
 - **Implementation steps:** Detail the steps for each phase.
 - **Brief rationale:** Explain key decisions.
 
-**Write the plan to disk immediately.** Present a high-level summary to the user and await explicit approval of the phased approach before proceeding. 
+Structure each phase as a `.phase-card` with a `.phase-number`, `.phase-title`, a `.phase-steps` ordered list, and a `.test-criteria` block for verification criteria.
+
+**Write the plan to disk immediately.** Bootstrap the stylesheet first (`mkdir -p .agents/output/assets && cp ~/.agents/assets/style.css .agents/output/assets/style.css` if not present). Present a high-level summary to the user and await explicit approval of the phased approach before proceeding.
 
 *If using djt-kanban or djt-trello, sync these phases to the active ticket/card now.*
 
@@ -46,7 +50,7 @@ Write a step-by-step implementation plan to `.agents/output/features/<feature-na
 2. **Write Failing Tests:** Write failing tests for the *first phase* only. Adhere to project conventions.
 3. **Confirm Failure:** Have the user run the tests to confirm they compile and fail as expected.
 
-Write a Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.md` for the current phase.
+Write a Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.html` for the current phase. Use the standard HTML shell (`badge-feature`, depth-2 stylesheet path). Structure steps as a `.test-steps` ordered list where each `<li class="test-step">` contains the action and a `<span class="checkpoint">` for the expected outcome.
 
 ### 5. [Step Removed]
 
