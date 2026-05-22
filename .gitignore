@@ -1,3 +1,5 @@
 .agents/
+!tools/*/template/.agents/
+!tools/*/template/.agents/**
 .DS_Store
 .claude
