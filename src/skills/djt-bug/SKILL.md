@@ -38,10 +38,10 @@ Write a failing test that captures the bug. The test should:
 
 ### 4. Propose Fix & Branch
 
-1. **Write Fix Plan:** Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.md`. Include:
-   - Root cause explanation.
-   - Proposed minimal code change (broken into phases if complex).
-   - Any side effects or related risk areas.
+1. **Write Fix Plan:** Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-bug`, depth-2 stylesheet path `../../assets/style.css`). Bootstrap the stylesheet first if not present. Include:
+   - Root cause as a `.finding-card.critical` block.
+   - Proposed minimal code change as `.phase-card` blocks (one per phase if complex).
+   - Side effects or related risk areas as a `.callout.warning`.
 2. **Create a Branch:** Create a new git branch: `fix/short-description`.
 
 **Write the plan to disk immediately.** Present a high-level summary and await explicit user approval before writing any fix code.
