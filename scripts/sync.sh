@@ -30,6 +30,10 @@ cp "$REPO_ROOT/src/AGENTS.md" "$AGENTS_DIR/AGENTS.md"
 ((++COUNT_DOTAGENTS))
 ok "Copied src/AGENTS.md → ~/.agents/AGENTS.md"
 
+mkdir -p "$AGENTS_DIR/assets"
+cp "$REPO_ROOT/src/assets/style.css" "$AGENTS_DIR/assets/style.css"
+ok "Copied src/assets/style.css → ~/.agents/assets/style.css"
+
 if [ -L "$AGENTS_DIR/skills" ] || [ -d "$AGENTS_DIR/skills" ]; then
     rm -rf "$AGENTS_DIR/skills"
 fi
