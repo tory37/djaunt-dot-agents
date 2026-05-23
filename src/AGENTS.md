@@ -93,7 +93,7 @@ Every output HTML file uses this base structure:
   <title>{{Title}} — {{type}}</title>
   <link rel="stylesheet" href="{{relative-path}}/assets/style.css">
 </head>
-<body>
+<body data-type="{{type}}">
   <div class="container">
     <header class="doc-header">
       <div class="doc-meta">
@@ -109,6 +109,19 @@ Every output HTML file uses this base structure:
 </body>
 </html>
 ```
+
+### Rainbow Type System
+
+The stylesheet maps each doc type to a bold `--primary` color via `data-type` on `<body>`. Every component (H1 gradient, H3, phase numbers, card accents, table headers, code tint, etc.) automatically inherits this color — no extra CSS needed per doc.
+
+| Type | Color | Hex |
+|---|---|---|
+| `feature` | Electric blue | `#3b9eff` |
+| `bug` | Hot red | `#ff4d4d` |
+| `research` | Vivid purple | `#b060ff` |
+| `review` | Neon green | `#22d167` |
+| `techdebt` | Vivid amber | `#f5a623` |
+| `coverage` | Bright cyan | `#00d4ff` |
 
 ### Type Badges
 
