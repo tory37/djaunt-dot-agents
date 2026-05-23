@@ -6,7 +6,7 @@
 /* ─── Tokens ──────────────────────────────────────────────────────────────── */
 :root {
   /* Near-black backgrounds */
-  --bg:         #04040a;
+  --bg:         #000000;
   --surface:    #09090f;
   --surface2:   #0f0f1a;
   --border:     #1a1a2e;
