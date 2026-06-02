@@ -158,6 +158,8 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 - Branch names: `type/short-description` (e.g. `feat/oauth-login`, `fix/token-refresh`)
 - Commits: imperative mood, <72 chars subject, body explains *why* not *what*
 - PRs: link related issues, request review before merge
+- NEVER commit until the user explicitly confirms the request is fully handled and says it is ready to commit
+- NEVER push (including force-push) unless the user explicitly tells you to push
 - NEVER force-push to the project's default protected branch
 
 ## IMPORTANT Rules
