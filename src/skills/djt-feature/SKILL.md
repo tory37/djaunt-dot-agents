@@ -50,7 +50,7 @@ Structure each phase as a `.phase-card` with a `.phase-number`, `.phase-title`, 
 2. **Write Failing Tests:** Write failing tests for the *first phase* only. Adhere to project conventions.
 3. **Confirm Failure:** Have the user run the tests to confirm they compile and fail as expected.
 
-Write a Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.html` for the current phase. Use the standard HTML shell (`badge-feature`, depth-2 stylesheet path). Structure steps as a `.test-steps` ordered list where each `<li class="test-step">` contains the action and a `<span class="checkpoint">` for the expected outcome.
+Produce the Doer Test Plan for the current phase by invoking **`/djt-test-plan`** (the single entry point for manual test cases). It scopes the plan to the phase's change, ranks cases by importance, and writes to `.agents/output/features/<feature-name>/doer-test-plan.html`.
 
 ### 5. [Step Removed]
 

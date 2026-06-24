@@ -40,23 +40,19 @@ Use `/djt-feature` to start a new feature (iterative 7-step workflow). Use `/djt
 
 **Core Flow:** Gather info -> Write plan (phases) -> implement phase -> verify -> commit -> repeat.
 
-Use `/djt-suspend` to snapshot a session; `/djt-resume <slug>` to reload one. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
+Use `/djt-test-plan` to write a manual test plan for a change (and generate any Proxyman fault-injection configs it needs). Use `/djt-suspend` to snapshot a session; `/djt-resume <slug>` to reload one. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
 
 For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and act directly.
 
 ---
 
-## Doer Test Plan
+## Manual Test Plans — always via `/djt-test-plan`
 
-A Doer Test Plan is a written list of manual steps that tells both the implementer and a QA engineer how to:
+**Any** request to write manual test cases — a doer test plan, QA steps, "how do I test this", validation steps for a change — goes through the `/djt-test-plan` skill. Do not hand-roll manual test plans inline; invoke the skill so scope, importance ranking, environment/URL resolution, and Proxyman fault-injection configs are handled consistently.
 
-1. Navigate to the feature from the app's entry point (e.g. "Start at the login page, navigate to Settings > Notifications")
-2. Exercise the change or new behavior
-3. Verify the expected outcome at each step
+A doer test plan tells both the implementer and a QA engineer how to: navigate to the change from the app's entry point, exercise the new behavior, and verify the expected outcome at each step — written tersely, scoped tightly to what the change puts at risk (not a regression sweep), and ordered by importance.
 
-It should be written in plain language, sequentially, with explicit checkpoints. Leave placeholders (`[TODO: determine exact route]`) for details not yet known. Update it as implementation reveals specifics.
-
-Write the Doer Test Plan to `.agents/output/features/<feature-name>/doer-test-plan.html`.
+The skill places the plan on the active ticket when one is in play, otherwise writes it to `.agents/output/<type>/<name>/doer-test-plan.html`, with any generated Proxyman configs alongside.
 
 ---
 
