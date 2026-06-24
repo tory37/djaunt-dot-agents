@@ -113,7 +113,7 @@ The reproduction primitive is **operation-level fault injection on a shared Grap
   }
   ```
 
-- **Per-environment suite folder.** One folder per environment (e.g. `proxyman/dev2/`, `proxyman/prod2/`), each containing the readable `.js` script per case, named to the test case (`tc7-fail-getamiralicenses.js`), plus a short `README.md` with: the environment host, the SSL-proxying domain(s) to enable, and how to load + toggle each script as you walk the cases.
+- **Per-environment suite folder.** One folder per environment (e.g. `proxyman/dev2/`, `proxyman/prod2/`), each containing the readable `.js` script per case, named to the test case (`tc7-fail-getamiralicenses.js`), plus a short `README.md` with: the environment host, the SSL-proxying domain(s) to enable (named by what they are — e.g. "Student Record Store API" — not just the raw hostname), and how to load + toggle each script as you walk the cases. **SSL Proxying allow-list entries must be added manually** in Proxyman → Preferences → SSL Proxying; there is no import mechanism for this setting.
 - **Why the host still matters** even though scripts are host-agnostic: Proxyman needs the domain in its SSL-proxying allow-list to intercept HTTPS at all; scoping to the host prevents a prod fault from misfiring on local traffic; and any non-GraphQL/URL-based case needs the URL.
 - **Import format caveat (verify on first real use).** Proxyman supports per-tool export/import of Scripting rules, but the exact bundle file format/extension is not pinned down in the docs. Emit the readable `.js` sources (always paste-able into the Scripting tool) and import instructions now; once the installed Proxyman's export format is confirmed, upgrade the skill to also emit a single one-click importable bundle. Do not fabricate a bundle format.
 
@@ -131,5 +131,4 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
   - *Expected* — inline checkpoint.
   - *Config* — filename reference when the case needs a fault (`→ proxyman/<env>/tcN-*.js`).
   - *Env* — note only if behavior differs by environment.
-- **Not covered** — one line listing the adjacent regression surface deliberately excluded (so tightness is a choice, not an oversight).
 - **Gaps / confidence** — speculative cases and anything that couldn't be determined.
