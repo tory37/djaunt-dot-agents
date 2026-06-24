@@ -1,0 +1,2 @@
+trigger: When the user types /djt-test-plan, or asks to write a manual test plan, QA steps, doer test plan, or "how do I test this change", always execute the following workflow exactly.
+notes: Input-agnostic — work from whatever is given (diff, ticket, PR, spec, or current branch). Keep scope tight to the change (exclude normal regression), rank cases by importance, and only bake in target URLs you can directly observe in the repo — otherwise ask the user which environments/URLs to target before generating Proxyman configs.

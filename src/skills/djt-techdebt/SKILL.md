@@ -43,7 +43,7 @@ Surface all unknowns or ambiguities regarding the current implementation and the
 
 Ensure existing tests pass and add new tests if needed to cover the changes.
 - Have the user run the tests to confirm they pass before refactoring begins.
-- Write a Doer Test Plan to `.agents/output/techdebt/<name>/doer-test-plan.html` for the current phase. Use the standard HTML shell (`badge-techdebt`, depth-2 path). Structure steps as a `.test-steps` list with `.test-step` items and `.checkpoint` spans for expected outcomes.
+- Produce the Doer Test Plan for the current phase by invoking **`/djt-test-plan`** (the single entry point for manual test cases). It scopes the plan to the phase's change and writes to `.agents/output/techdebt/<name>/doer-test-plan.html`.
 
 ### 5. [Step Removed]
 
