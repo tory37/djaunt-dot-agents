@@ -164,14 +164,24 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
 
 - **Header** — the change under test, source (ticket/diff), environments covered.
 - **Setup (once)** — preconditions, accounts, flags, how to start `mitmweb` with the scripts + verify the mitmproxy CA cert is trusted. Never repeat per case.
-- **Cases (ranked, most important first)** — each a single block covering the behavior once:
-  - *Intent* — one line.
-  - *Steps* — terse, imperative. Written without any environment name — they describe what to do, not where.
-  - *Expected* — inline checkpoint.
-  - *Env config* — when the case needs environment-specific values (URLs, fault-injection commands), list them as a compact inline block at the bottom of the case, **not as a separate case**. Example shape:
-    ```
-    dev2:   mitmweb --allow-hosts app.dev2.example.com -s mitmproxy/dev2/tc3-fail-x.py
-    prod2:  mitmweb --allow-hosts app.prod2.example.com -s mitmproxy/prod2/tc3-fail-x.py
-    ```
-  - Only call out an environment by name when its *behavior or expected result differs* from the others — otherwise a single env-config block is enough.
+- **Cases (sequenced per Principle 2)** — each a minimal block. Use this exact shape:
+
+  ```
+  TC1 — <intent> (<importance: highest / high / medium / low>)
+
+  <real-data alternative when a fault script exists>
+  Use fault injection (TC1 Script below) or: <what real state to find/use instead>.
+
+  1. <step>
+  2. <step>
+  ✓ <expected result>
+  ```
+
+  Rules:
+  - Every case that has a fault script **must also state the real-data alternative** — the tester chooses their path; do not assume injection is required.
+  - Cases that need no injection just have steps + expected, no injection line.
+  - Do not embed script content or mitmweb commands in the case body — reference by name only (`TC1 Script below`). Scripts live at the bottom.
+  - Env-specific values (URLs, hosts) appear as a compact inline block only when they differ by environment; otherwise omit.
+
+- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command(s) per environment and the Python script body. Keeping scripts out of the case list is what makes the cases scannable.
 - **Gaps / confidence** — speculative cases and anything that couldn't be determined (e.g. a value that needed to be asked for but wasn't provided). Omit this section entirely if there are no genuine gaps.
