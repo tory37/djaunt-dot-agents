@@ -1,12 +1,12 @@
 ---
 name: djt-test-plan
-description: "Produce a tight, importance-ranked manual test plan scoped to a single change, with Proxyman fault-injection configs generated per target environment. Places the plan on the active ticket or on disk. /djt-test-plan [target]"
+description: "Produce a tight, importance-ranked manual test plan scoped to a single change, with mitmweb fault-injection scripts generated per target environment. Places the plan on the active ticket or on disk. /djt-test-plan [target]"
 trigger: /djt-test-plan
 ---
 
 # /djt-test-plan
 
-Write a manual test plan that validates **one change** — usable unchanged for local pre-merge checks, QA on dev, and post-deploy production validation — and generate the Proxyman configs needed to exercise the hard-to-reach cases.
+Write a manual test plan that validates **one change** — usable unchanged for local pre-merge checks, QA on dev, and post-deploy production validation — and generate the mitmweb (mitmproxy) scripts needed to exercise the hard-to-reach cases.
 
 This is the single entry point for **all manual-test-case authoring**. Any request to "write a test plan", "manual test steps", "QA steps", "how do I test this", or "doer test plan" routes through this skill.
 
@@ -27,9 +27,9 @@ The skill is **input-agnostic**: it works on whatever it is given (diff, PR, tic
 
 1. **Tight, change-driven scope.** A case belongs in the plan only if its outcome *could change because of this change* — it hits a path the diff touched, a branch whose condition moved, or behavior the source explicitly claims. Everything else is normal regression and is **excluded**. Name the exclusions in a short "Not covered" note so the reader trusts the tightness.
 2. **Importance ranking, not time budgeting.** Order cases by `likelihood-of-breakage × impact`. Acceptance criteria and the riskiest changed path float to the top. No time estimates, no budget input.
-3. **One plan, three environments.** The same cases validate local → dev → prod. A case names an environment only when behavior legitimately differs there.
+3. **One case per behavior, not one case per environment.** Write test cases that describe the behavior being validated. Environment-specific details (URLs, mitmweb commands, config values) appear as **inline blocks inside the case**, not as separate cases. Never write "TC2: test X on dev2" and "TC3: test X on prod2" — that is always wrong. If two environments test the same thing, it is one case with two env config blocks.
 4. **See-it-or-ask URL resolution.** Bake in only values you can directly observe in the repo. If a target host is not discoverable, **ask the user** — never guess, synthesize, or pattern-match a production endpoint.
-5. **Terse house style.** Setup stated once, never repeated per case. One line of intent + terse steps + inline expected result per case. Configs referenced by filename.
+5. **Terse house style.** Setup stated once, never repeated per case. One line of intent + terse steps + inline expected result per case. Scripts referenced by filename.
 6. **Honest about confidence.** Flag speculative cases vs. certain ones, and list gaps.
 
 ---
@@ -55,67 +55,104 @@ For each case capture: a one-line **intent**, terse **steps**, the **expected re
 
 For each case that cannot be reached by clicks alone (network failure, empty/odd payloads, latency races), map it to the fault vocabulary:
 
-| Fault | Reproduces | Proxyman mechanism |
+| Fault | Reproduces | mitmweb mechanism |
 |---|---|---|
-| **Drop / fail** | "network blocked", request rejected, `undefined`/thrown responses | Script matches the operation → overwrite response with a non-2xx status + error body so the client's error path fires |
-| **Empty / malformed** | no-data edges, parse failures, empty-state UI | Script or Map Local returns an empty/garbled body |
-| **Mutate** | "has X but not Y" permutations (e.g. assess but no evaluar) | Script rewrites specific response fields |
-| **Latency** | loading-state flashes, race conditions, debounce/cancel bugs | Throttle/delay the matched operation |
+| **Drop / fail** | "network blocked", request rejected, `undefined`/thrown responses | Python script intercepts the flow and overwrites `flow.response` with a non-2xx status + error body so the client's error path fires |
+| **Empty / malformed** | no-data edges, parse failures, empty-state UI | Python script overwrites `flow.response.text` with an empty/garbled body |
+| **Mutate** | "has X but not Y" permutations (e.g. assess but no evaluar) | Python script parses JSON response body, rewrites specific fields, and re-encodes |
+| **Latency** | loading-state flashes, race conditions, debounce/cancel bugs | Python script calls `time.sleep()` before allowing the flow to continue |
 
-Only the cases that earn a fault get a config. Most cases are plain interaction steps.
+Only the cases that earn a fault get a script. Most cases are plain interaction steps.
 
 ### Step 4 — Resolve environments and target URLs
 
-- Determine which environments the user is validating. **If not explicit, ask** (e.g. "dev2 + prod2?") before generating configs.
+- Determine which environments the user is validating. **If not explicit, ask** (e.g. "dev2 + prod2?") before generating scripts.
 - Resolve each environment's host/base URL on the **see-it-or-ask** rule:
   - **Directly discoverable** in repo config/env (e.g. `configs/exports.*.js`, `process.env.*_URL`, build profiles) → bake it in, no questions.
   - **Not discoverable** (e.g. a production endpoint that isn't embedded locally) → **ask the user for the exact URL(s).** Do not invent one.
-- Produce **one fully-populated suite per environment**, values hardcoded — favor ready-to-go over parameterized scripts so prod-deploy validation needs zero edits.
+- Map each environment's host/values so they can be dropped inline into cases. **Do not plan to emit one case per environment** — environment values are inserted into the single case that already covers that behavior.
 
-### Step 5 — Generate the Proxyman configs
+### Step 5 — Generate the mitmweb scripts
 
-See **Proxyman config conventions** below. Generate host-agnostic, operation-matched scripts (so the fault logic is portable across environments), grouped into one folder per environment that also carries that environment's host for SSL-proxying scope and any URL-based cases.
+See **mitmproxy script conventions** below. Generate host-agnostic, operation-matched Python scripts (so the fault logic is portable across environments), grouped into one folder per environment that also carries that environment's host for the CLI `--allow-hosts` scope and any URL-based cases.
 
 ### Step 6 — Write the test plan
 
-Follow the **test plan format** below. Importance-ordered, terse, setup-once, each fault case referencing its config file by name.
+Follow the **test plan format** below. Importance-ordered, terse, setup-once, each fault case referencing its Python file by name.
 
 ### Step 7 — Place the output
 
-- **Active ticket in play** (the input is a ticket key, or the current branch matches a ticket pattern such as `ASSMNT-####`): post the plan as a **comment on the ticket** (via the available Jira tooling). Write the config files into the repo output folder and reference their paths in the comment; also inline each short script in a fenced block so it can be pasted directly.
-- **No ticket**: write the plan to `.agents/output/bugs/<slug>/doer-test-plan.html` (or `features/`/`techdebt/` per the change type), with config files alongside it. Use the standard HTML shell + stylesheet from the **HTML Output Convention** in AGENTS.md (`badge-bug`/`badge-feature`, bootstrap the stylesheet first).
+- **Active ticket in play** (the input is a ticket key, or the current branch matches a ticket pattern such as `ASSMNT-####`): post the plan as a **comment on the ticket** (via the available Jira tooling). The Jira comment **must be fully self-contained** — a tester reading it has no access to the local repo or `.agents/output/`. For every fault-injection case, include: (1) a copy-pasteable `mkdir` + heredoc block to create the script file at `~/tc-scripts/<TICKET>/`, (2) the full `mitmweb` command referencing that path, and (3) the proxy enable/disable commands. No repo paths, no external file references. Also write the Python files to `.agents/output/` as the implementer's local reference copy.
+- **No ticket**: write the plan to `.agents/output/bugs/<slug>/doer-test-plan.html` (or `features/`/`techdebt/` per the change type), with Python files alongside it. Use the standard HTML shell + stylesheet from the **HTML Output Convention** in AGENTS.md (`badge-bug`/`badge-feature`, bootstrap the stylesheet first).
 
 ### Step 8 — Present a summary
 
-In the terminal: the change under test, count of in-scope cases by importance, which cases carry Proxyman configs, the environments covered, and the path/ticket where the plan landed. Restate any gaps or values you had to ask for.
+In the terminal: the change under test, count of in-scope cases by importance, which cases carry mitmproxy scripts, the environments covered, and the path/ticket where the plan landed. Restate any gaps or values you had to ask for.
 
 ---
 
-## Proxyman config conventions
+## mitmproxy script conventions
 
-The reproduction primitive is **operation-level fault injection on a shared GraphQL endpoint**. Because every GraphQL call hits the same URL, matching must happen on the **request POST body** (the `operationName` / query name), not the URL. Proxyman's **Scripting** tool reads the body and can return a custom status/body — verified capability.
+The reproduction primitive is **operation-level fault injection on a shared GraphQL endpoint** using mitmproxy's Python API. Because every GraphQL call hits the same URL, matching must happen on the **request POST body** (the `operationName` / query name), not the URL.
 
-- **Match on the operation, not the host.** This makes the fault logic identical across local/dev/prod. Example shape (confirm the exact scripting API against `https://docs.proxyman.com/scripting` for the installed version):
+- **Match on the operation, not the host.** This makes the fault logic identical across local/dev/prod. Example shape:
 
-  ```js
-  // TC<n> — <fault> <OperationName>  (djt-test-plan)
-  // Host-agnostic: matches the GraphQL operation in the request body.
-  // Enable Proxyman SSL proxying for <env host> so this only fires on <env>.
-  async function onResponse(context, url, request, response) {
-    const body = request.body; // JSON dict for application/json
-    const op = body && (body.operationName
-      || (typeof body.query === "string" && (body.query.match(/\b(?:query|mutation)\s+(\w+)/) || [])[1]));
-    if (op === "<OperationName>") {
-      response.statusCode = 503;                 // drop/fail: client error path fires
-      response.body = { errors: [{ message: "Simulated failure (djt-test-plan TC<n>)" }] };
-    }
-    return response;
-  }
+  ```python
+  import json
+  import re
+  from mitmproxy import http
+
+  # TC<n> — <fault> <OperationName>  (djt-test-plan)
+  # Host-agnostic: matches the GraphQL operation in the request body.
+  # Run via: mitmweb --allow-hosts <env host> -s <script_name>.py
+
+  def request(flow: http.HTTPFlow):
+      if "/graphql" in flow.request.path and flow.request.method == "POST":
+          try:
+              body = flow.request.json()
+              # Extract operation name directly or fallback to regex on query
+              op = body.get("operationName")
+              if not op and body.get("query"):
+                  match = re.search(r'\b(?:query|mutation)\s+(\w+)', body["query"])
+                  if match:
+                      op = match.group(1)
+              
+              if op == "<OperationName>":
+                  # Drop/fail: client error path fires
+                  flow.response = http.Response.make(
+                      503,
+                      json.dumps({ "errors": [{ "message": "Simulated failure (djt-test-plan TC<n>)" }] }),
+                      {"Content-Type": "application/json"}
+                  )
+          except ValueError:
+              pass # Ignore invalid JSON
   ```
 
-- **Per-environment suite folder.** One folder per environment (e.g. `proxyman/dev2/`, `proxyman/prod2/`), each containing the readable `.js` script per case, named to the test case (`tc7-fail-getamiralicenses.js`), plus a short `README.md` with: the environment host, the SSL-proxying domain(s) to enable (named by what they are — e.g. "Student Record Store API" — not just the raw hostname), and how to load + toggle each script as you walk the cases. **SSL Proxying allow-list entries must be added manually** in Proxyman → Preferences → SSL Proxying; there is no import mechanism for this setting.
-- **Why the host still matters** even though scripts are host-agnostic: Proxyman needs the domain in its SSL-proxying allow-list to intercept HTTPS at all; scoping to the host prevents a prod fault from misfiring on local traffic; and any non-GraphQL/URL-based case needs the URL.
-- **Import format caveat (verify on first real use).** Proxyman supports per-tool export/import of Scripting rules, but the exact bundle file format/extension is not pinned down in the docs. Emit the readable `.js` sources (always paste-able into the Scripting tool) and import instructions now; once the installed Proxyman's export format is confirmed, upgrade the skill to also emit a single one-click importable bundle. Do not fabricate a bundle format.
+- **Per-environment suite folder.** One folder per environment (e.g. `mitmproxy/dev2/`, `mitmproxy/prod2/`), each containing the readable `.py` script per case named to the test case (`tc7-fail-getamiralicenses.py`), plus a `README.md` with the exact copy-paste terminal sequence below. **Every command in a README must be fully populated with real values — no `<placeholders>`.** Each README is scoped to one environment; there is no reason to leave any variable for the reader to fill in.
+- **Why the host still matters** even though scripts are host-agnostic: `--allow-hosts` prevents a prod fault from misfiring on local traffic and reduces mitmweb UI noise; any non-GraphQL/URL-based case needs the URL explicitly.
+- **READMEs must use the full repo-relative path in the mitmweb `-s` flag** — never a bare filename. The reader opens a README cold; they don't know which folder to `cd` into. Using the full path (e.g. `.agents/output/bugs/slug/mitmproxy/dev2/tc1-fail-x.py`) means the command works from the repo root with zero navigation. Ticket comments are different — see Step 7.
+- **Every README must include the full run sequence** using these exact macOS commands (assume Wi-Fi; user can substitute their interface name):
+
+  ```bash
+  # 1. From the repo root — start mitmweb with the full script path
+  # --listen-port 9090: proxy (avoids local dev servers on 8080)
+  # --set web_port=19191: web UI on an uncommon port (8080-8083 are all commonly taken by local apps)
+  mitmweb --listen-port 9090 --set web_port=19191 --allow-hosts <env-host> -s .agents/output/<type>/<slug>/mitmproxy/<env>/<script>.py
+  # mitmweb UI is now visible at http://127.0.0.1:19191
+
+  # 2. Enable system proxy (new terminal tab — leave mitmweb running)
+  networksetup -setwebproxy "Wi-Fi" 127.0.0.1 9090
+  networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 9090
+  networksetup -setwebproxystate "Wi-Fi" on
+  networksetup -setsecurewebproxystate "Wi-Fi" on
+
+  # --- run your test case now ---
+
+  # 3. Disable proxy when done
+  networksetup -setwebproxystate "Wi-Fi" off
+  networksetup -setsecurewebproxystate "Wi-Fi" off
+  # Then Ctrl+C in the mitmweb terminal to stop it
+  ```
 
 ---
 
@@ -124,11 +161,15 @@ The reproduction primitive is **operation-level fault injection on a shared Grap
 Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
 
 - **Header** — the change under test, source (ticket/diff), environments covered.
-- **Setup (once)** — preconditions, accounts, flags, how to attach Proxyman + enable SSL proxying for the environment host. Never repeat per case.
-- **Cases (ranked, most important first)** — each a single block:
+- **Setup (once)** — preconditions, accounts, flags, how to start `mitmweb` with the scripts + verify the mitmproxy CA cert is trusted. Never repeat per case.
+- **Cases (ranked, most important first)** — each a single block covering the behavior once:
   - *Intent* — one line.
-  - *Steps* — terse, imperative.
+  - *Steps* — terse, imperative. Written without any environment name — they describe what to do, not where.
   - *Expected* — inline checkpoint.
-  - *Config* — filename reference when the case needs a fault (`→ proxyman/<env>/tcN-*.js`).
-  - *Env* — note only if behavior differs by environment.
+  - *Env config* — when the case needs environment-specific values (URLs, fault-injection commands), list them as a compact inline block at the bottom of the case, **not as a separate case**. Example shape:
+    ```
+    dev2:   mitmweb --allow-hosts app.dev2.example.com -s mitmproxy/dev2/tc3-fail-x.py
+    prod2:  mitmweb --allow-hosts app.prod2.example.com -s mitmproxy/prod2/tc3-fail-x.py
+    ```
+  - Only call out an environment by name when its *behavior or expected result differs* from the others — otherwise a single env-config block is enough.
 - **Gaps / confidence** — speculative cases and anything that couldn't be determined.
