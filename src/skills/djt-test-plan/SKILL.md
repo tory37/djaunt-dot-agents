@@ -26,7 +26,7 @@ The skill is **input-agnostic**: it works on whatever it is given (diff, PR, tic
 ## Principles (non-negotiable)
 
 1. **Tight, change-driven scope.** A case belongs in the plan only if its outcome *could change because of this change* — it hits a path the diff touched, a branch whose condition moved, or behavior the source explicitly claims. Everything else is normal regression and is **excluded**. Name the exclusions in a short "Not covered" note so the reader trusts the tightness.
-2. **Importance ranking, not time budgeting.** Order cases by `likelihood-of-breakage × impact`. Acceptance criteria and the riskiest changed path float to the top. No time estimates, no budget input.
+2. **Sequential efficiency first, importance second.** Order cases to minimize configuration changes — proxy script swaps, account switches, feature flag toggles. Group cases that share the same setup together and run them back-to-back. Within a setup group, order by `likelihood-of-breakage × impact`. **Never force the tester to return to a previous configuration to cover a higher-ranked case** — a test plan that requires backtracking is worse than one that doesn't, regardless of importance order. Importance informs which group runs first, not individual case position within the sequence.
 3. **One case per behavior, not one case per environment.** Write test cases that describe the behavior being validated. Environment-specific details (URLs, mitmweb commands, config values) appear as **inline blocks inside the case**, not as separate cases. Never write "TC2: test X on dev2" and "TC3: test X on prod2" — that is always wrong. If two environments test the same thing, it is one case with two env config blocks.
 4. **See-it-or-ask URL resolution.** Bake in only values you can directly observe in the repo. If a target host is not discoverable, **ask the user** — never guess, synthesize, or pattern-match a production endpoint.
 5. **Terse house style.** Setup stated once, never repeated per case. One line of intent + terse steps + inline expected result per case. Scripts referenced by filename.
@@ -47,9 +47,11 @@ Determine **what changed** and **why**:
 
 ### Step 2 — Derive the change-driven test cases
 
-Apply the scope discriminator (Principle 1). For each candidate behavior, decide **in-scope** (could break *because of this change*) or **out-of-scope regression** (pre-existing behavior the change doesn't touch). Keep only in-scope cases. Rank the survivors by importance.
+Apply the scope discriminator (Principle 1). For each candidate behavior, decide **in-scope** (could break *because of this change*) or **out-of-scope regression** (pre-existing behavior the change doesn't touch). Keep only in-scope cases.
 
-For each case capture: a one-line **intent**, terse **steps**, the **expected result**, and whether it needs network fault injection.
+For each case capture: a one-line **intent**, terse **steps**, the **expected result**, and what setup it requires (proxy script, account state, feature flag, etc.).
+
+Then sequence the cases (Principle 2): group by shared setup, order groups by importance, order within each group by importance. The final sequence must be executable top-to-bottom with no backtracking.
 
 ### Step 3 — Identify fault-injection points
 
