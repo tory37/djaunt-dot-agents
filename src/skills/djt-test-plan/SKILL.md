@@ -25,7 +25,7 @@ The skill is **input-agnostic**: it works on whatever it is given (diff, PR, tic
 
 ## Principles (non-negotiable)
 
-1. **Tight, change-driven scope.** A case belongs in the plan only if its outcome *could change because of this change* — it hits a path the diff touched, a branch whose condition moved, or behavior the source explicitly claims. Everything else is normal regression and is **excluded**. Name the exclusions in a short "Not covered" note so the reader trusts the tightness.
+1. **Tight, change-driven scope.** A case belongs in the plan only if its outcome *could change because of this change* — it hits a path the diff touched, a branch whose condition moved, or behavior the source explicitly claims. Everything else is out of scope. Do not list or explain what is out of scope — the plan's silence is the answer.
 2. **Sequential efficiency first, importance second.** Order cases to minimize configuration changes — proxy script swaps, account switches, feature flag toggles. Group cases that share the same setup together and run them back-to-back. Within a setup group, order by `likelihood-of-breakage × impact`. **Never force the tester to return to a previous configuration to cover a higher-ranked case** — a test plan that requires backtracking is worse than one that doesn't, regardless of importance order. Importance informs which group runs first, not individual case position within the sequence.
 3. **One case per behavior, not one case per environment.** Write test cases that describe the behavior being validated. Environment-specific details (URLs, mitmweb commands, config values) appear as **inline blocks inside the case**, not as separate cases. Never write "TC2: test X on dev2" and "TC3: test X on prod2" — that is always wrong. If two environments test the same thing, it is one case with two env config blocks.
 4. **See-it-or-ask URL resolution.** Bake in only values you can directly observe in the repo. If a target host is not discoverable, **ask the user** — never guess, synthesize, or pattern-match a production endpoint.
@@ -174,4 +174,4 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
     prod2:  mitmweb --allow-hosts app.prod2.example.com -s mitmproxy/prod2/tc3-fail-x.py
     ```
   - Only call out an environment by name when its *behavior or expected result differs* from the others — otherwise a single env-config block is enough.
-- **Gaps / confidence** — speculative cases and anything that couldn't be determined.
+- **Gaps / confidence** — speculative cases and anything that couldn't be determined (e.g. a value that needed to be asked for but wasn't provided). Omit this section entirely if there are no genuine gaps.
