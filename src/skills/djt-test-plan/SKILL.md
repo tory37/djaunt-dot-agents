@@ -28,9 +28,10 @@ The skill is **input-agnostic**: it works on whatever it is given (diff, PR, tic
 1. **Tight, change-driven scope.** A case belongs in the plan only if its outcome *could change because of this change* — it hits a path the diff touched, a branch whose condition moved, or behavior the source explicitly claims. Everything else is out of scope. Do not list or explain what is out of scope — the plan's silence is the answer.
 2. **Sequential efficiency first, importance second.** Order cases to minimize configuration changes — proxy script swaps, account switches, feature flag toggles. Group cases that share the same setup together and run them back-to-back. Within a setup group, order by `likelihood-of-breakage × impact`. **Never force the tester to return to a previous configuration to cover a higher-ranked case** — a test plan that requires backtracking is worse than one that doesn't, regardless of importance order. Importance informs which group runs first, not individual case position within the sequence.
 3. **One case per behavior, not one case per environment.** Write test cases that describe the behavior being validated. Environment-specific details (URLs, mitmweb commands, config values) appear as **inline blocks inside the case**, not as separate cases. Never write "TC2: test X on dev2" and "TC3: test X on prod2" — that is always wrong. If two environments test the same thing, it is one case with two env config blocks.
-4. **See-it-or-ask URL resolution.** Bake in only values you can directly observe in the repo. If a target host is not discoverable, **ask the user** — never guess, synthesize, or pattern-match a production endpoint.
-5. **Terse house style.** Setup stated once, never repeated per case. One line of intent + terse steps + inline expected result per case. Scripts referenced by filename.
-6. **Honest about confidence.** Flag speculative cases vs. certain ones, and list gaps.
+4. **Real API when the contract changed; injection when the pathway is unchanged.** Ask first: *does this change touch how the app calls the API — a new operation, a new request field, a new expected response shape, or a newly consumed field?* If yes, a mitmproxy-injected response **cannot verify that contract** — it bypasses the real network entirely. Those cases must hit the live endpoint directly. Use fault injection only when the behavior under test uses **existing, verified API pathways** and the goal is to simulate a specific network condition or response variant that is hard to produce by clicking alone. Mislabeling an API-contract case as "use injection" hides real integration failures.
+5. **See-it-or-ask URL resolution.** Bake in only values you can directly observe in the repo. If a target host is not discoverable, **ask the user** — never guess, synthesize, or pattern-match a production endpoint.
+6. **Terse house style.** Setup stated once, never repeated per case. One line of intent + terse steps + inline expected result per case. Scripts referenced by filename.
+7. **Honest about confidence.** Flag speculative cases vs. certain ones, and list gaps.
 
 ---
 
@@ -49,11 +50,18 @@ Determine **what changed** and **why**:
 
 Apply the scope discriminator (Principle 1). For each candidate behavior, decide **in-scope** (could break *because of this change*) or **out-of-scope regression** (pre-existing behavior the change doesn't touch). Keep only in-scope cases.
 
+Apply two additional filters before finalizing the case list:
+
+1. **Condition reachability gate.** When the fix is gated on a compound boolean condition (e.g. `A && B`), trace each candidate case's preconditions against that gate. If the proposed test conditions make one or more branches of the gate permanently false — meaning the new code path cannot fire regardless of what the tester does — discard the case. It is structurally unreachable and cannot validate the change.
+2. **Setup-step deduplication.** Before keeping a pure happy-path case, check whether its core assertion is already an implicit checkpoint in the setup or early steps of a higher-priority in-scope case. If the happy path must succeed for another case to even begin, it is already covered. Discard the duplicate.
+
 For each case capture: a one-line **intent**, terse **steps**, the **expected result**, and what setup it requires (proxy script, account state, feature flag, etc.).
 
 Then sequence the cases (Principle 2): group by shared setup, order groups by importance, order within each group by importance. The final sequence must be executable top-to-bottom with no backtracking.
 
 ### Step 3 — Identify fault-injection points
+
+**Before assigning injection to any case, apply Principle 4:** if the change alters the API contract (new operation called, new field sent or consumed, changed response shape expected), that case must hit the real API — label it `[real API]`, not a fault script. Injection is only valid when the pathway is established and you are simulating a condition that is hard to reach by clicking alone.
 
 For each case that cannot be reached by clicks alone (network failure, empty/odd payloads, latency races), map it to the fault vocabulary:
 
@@ -66,13 +74,21 @@ For each case that cannot be reached by clicks alone (network failure, empty/odd
 
 Only the cases that earn a fault get a script. Most cases are plain interaction steps.
 
-### Step 4 — Resolve environments and target URLs
+**If any case is marked for injection**: do not proceed to Step 5 or Step 6 until the Step 4 environment gate is satisfied. The gate is blocking.
 
-- Determine which environments the user is validating. **If not explicit, ask** (e.g. "dev2 + prod2?") before generating scripts.
-- Resolve each environment's host/base URL on the **see-it-or-ask** rule:
-  - **Directly discoverable** in repo config/env (e.g. `configs/exports.*.js`, `process.env.*_URL`, build profiles) → bake it in, no questions.
-  - **Not discoverable** (e.g. a production endpoint that isn't embedded locally) → **ask the user for the exact URL(s).** Do not invent one.
-- Map each environment's host/values so they can be dropped inline into cases. **Do not plan to emit one case per environment** — environment values are inserted into the single case that already covers that behavior.
+### Step 4 — Resolve environments and target URLs (blocking gate when injection is in play)
+
+**Gate trigger:** If zero cases require injection, skip this gate — no URLs are needed for a plain-interaction plan and you may proceed directly to Step 6.
+
+**If any case requires injection**, stop and ask the user before writing anything further:
+
+1. "Which environments do you need this tested against? (e.g. dev2, prod2, local)"
+2. For each fault-injection case, list the specific host you need: "For TC{n} ({fault} `{OperationName}`), I need the GraphQL host for each environment above."
+3. If you found a candidate URL in the repo (env config, build profiles, `process.env.*_URL`, etc.), present it for confirmation — do **not** silently assume it is correct: "I found `<URL>` in `<file>` — does that map to `<env>`?"
+
+Do not generate scripts, READMEs, or the final plan until all needed hosts are confirmed by the user.
+
+Once confirmed: map each environment's host values so they can be dropped as inline blocks into the single case that covers that behavior. **Do not emit one case per environment** — env-specific values live inside the case, not as separate cases.
 
 ### Step 5 — Generate the mitmweb scripts
 
@@ -183,5 +199,5 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
   - Do not embed script content or mitmweb commands in the case body — reference by name only (`TC1 Script below`). Scripts live at the bottom.
   - Env-specific values (URLs, hosts) appear as a compact inline block only when they differ by environment; otherwise omit.
 
-- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command(s) per environment and the Python script body. Keeping scripts out of the case list is what makes the cases scannable.
+- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command per environment (one labeled line each, not grouped with inline comments) and the Python script body. Each environment's command must be a complete, copy-pasteable line on its own — never collapse multiple envs into one block with `# on dev2` / `# on prod2` comment prefixes. The tester should be able to copy the one line for their environment without editing anything. Keeping scripts out of the case list is what makes the cases scannable.
 - **Gaps / confidence** — speculative cases and anything that couldn't be determined (e.g. a value that needed to be asked for but wasn't provided). Omit this section entirely if there are no genuine gaps.
