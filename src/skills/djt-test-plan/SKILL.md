@@ -199,5 +199,16 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
   - Do not embed script content or mitmweb commands in the case body — reference by name only (`TC1 Script below`). Scripts live at the bottom.
   - Env-specific values (URLs, hosts) appear as a compact inline block only when they differ by environment; otherwise omit.
 
-- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command per environment (one labeled line each, not grouped with inline comments) and the Python script body. Each environment's command must be a complete, copy-pasteable line on its own — never collapse multiple envs into one block with `# on dev2` / `# on prod2` comment prefixes. The tester should be able to copy the one line for their environment without editing anything. Keeping scripts out of the case list is what makes the cases scannable.
+- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command per environment and the Python script body. **Every individually copy-pasteable item gets its own fenced code block** — one command per block, never multiple commands in one block. Jira and most ticket systems render a copy button on each fenced block; grouping commands into one block kills that affordance and forces the tester to highlight-and-copy. Example shape for two environments:
+
+  **TC1 — dev2**
+  ` ` `bash
+  mitmweb --listen-port 9090 ...dev2-host... -s ~/tc-scripts/TICKET/tc1-fail-x.py
+  ` ` `
+  **TC1 — prod2**
+  ` ` `bash
+  mitmweb --listen-port 9090 ...prod2-host... -s ~/tc-scripts/TICKET/tc1-fail-x.py
+  ` ` `
+
+  Never use `# --- TC1 — dev2 ---` comment lines inside a shared block. Keeping scripts out of the case list is what makes the cases scannable.
 - **Gaps / confidence** — speculative cases and anything that couldn't be determined (e.g. a value that needed to be asked for but wasn't provided). Omit this section entirely if there are no genuine gaps.
