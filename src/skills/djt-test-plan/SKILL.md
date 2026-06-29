@@ -199,7 +199,7 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
   - Do not embed script content or mitmweb commands in the case body — reference by name only (`TC1 Script below`). Scripts live at the bottom.
   - Env-specific values (URLs, hosts) appear as a compact inline block only when they differ by environment; otherwise omit.
 
-- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command per environment and the Python script body. **Every individually copy-pasteable item gets its own fenced code block** — one command per block, never multiple commands in one block. Jira and most ticket systems render a copy button on each fenced block; grouping commands into one block kills that affordance and forces the tester to highlight-and-copy. Example shape for two environments:
+- **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command per environment and the Python script body. **Block granularity = one independently-run unit per block.** A unit is the set of commands the tester runs in one go without stopping — all four `networksetup` enable lines are one unit (one block), both disable lines are one unit (one block), and each per-environment mitmweb command is its own unit (one block each, since the tester picks exactly one). Jira renders a copy button per block; splitting commands that belong together is just as bad as grouping commands that must be chosen between. Example shape for two environments:
 
   **TC1 — dev2**
   ` ` `bash
@@ -208,6 +208,18 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
   **TC1 — prod2**
   ` ` `bash
   mitmweb --listen-port 9090 ...prod2-host... -s ~/tc-scripts/TICKET/tc1-fail-x.py
+  ` ` `
+  **Enable proxy** (new tab; leave mitmweb running)
+  ` ` `bash
+  networksetup -setwebproxy "Wi-Fi" 127.0.0.1 9090
+  networksetup -setsecurewebproxy "Wi-Fi" 127.0.0.1 9090
+  networksetup -setwebproxystate "Wi-Fi" on
+  networksetup -setsecurewebproxystate "Wi-Fi" on
+  ` ` `
+  **Disable proxy** when done
+  ` ` `bash
+  networksetup -setwebproxystate "Wi-Fi" off
+  networksetup -setsecurewebproxystate "Wi-Fi" off
   ` ` `
 
   Never use `# --- TC1 — dev2 ---` comment lines inside a shared block. Keeping scripts out of the case list is what makes the cases scannable.
