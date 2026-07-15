@@ -1,0 +1,2 @@
+trigger: When the user types /djt-frontend-design, or asks for a landing page, dashboard, component, or other HTML/React UI to be designed or redesigned, always execute the following workflow exactly.
+notes: Input-agnostic — works from a vague brief, a written brief, or an existing file/view to audit. If the brief is vague, pause in Advisor Mode and offer the 3 design directions before writing any code. Use references/boilerplate.html as the exact starting skeleton for every generated artifact.
