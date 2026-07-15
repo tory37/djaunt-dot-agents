@@ -49,7 +49,7 @@ Use `/djt-feature` to start a new feature (iterative 7-step workflow). Use `/djt
 
 **Core Flow:** Gather info -> Write plan (phases) -> implement phase -> verify -> commit -> repeat.
 
-Use `/djt-test-plan` to write a manual test plan for a change (and generate any Proxyman fault-injection configs it needs). Use `/djt-suspend` to snapshot a session; `/djt-resume <slug>` to reload one. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
+Use `/djt-test-plan` to write a manual test plan for a change (and generate any Proxyman fault-injection configs it needs). Use `/djt-frontend-design` whenever a task involves designing or building UI. Use `/djt-suspend` to snapshot a session; `/djt-resume <slug>` to reload one. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
 
 For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and act directly.
 
@@ -62,6 +62,14 @@ For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and a
 A doer test plan tells both the implementer and a QA engineer how to: navigate to the change from the app's entry point, exercise the new behavior, and verify the expected outcome at each step — written tersely, scoped tightly to what the change puts at risk (not a regression sweep), and ordered by importance.
 
 The skill places the plan on the active ticket when one is in play, otherwise writes it to `.agents/output/<type>/<name>/doer-test-plan.html`, with any generated Proxyman configs alongside.
+
+---
+
+## UI/Frontend Design — always via `/djt-frontend-design`
+
+**Any** task that designs or builds a UI — a new page or component, a redesign of an existing view, a "make this look better" ask — goes through the `/djt-frontend-design` skill before code is written. Do not hand-roll interface design inline; invoke the skill so anti-slop constraints, current design paradigms, and the pre-flight design plan are applied consistently.
+
+This applies inside `/djt-feature`, `/djt-bug`, and `/djt-techdebt` as well: whenever a phase or fix touches visual/UI work, invoke `/djt-frontend-design` for that phase before implementing it, the same way `/djt-test-plan` is invoked for manual test cases.
 
 ---
 
