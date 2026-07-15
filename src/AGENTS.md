@@ -2,6 +2,15 @@
 
 > This file is instructions for the AI agent, not the user. It applies across all projects on this machine.
 
+## Communication — Be Terse
+
+Fear verbosity. Say exactly what is needed and nothing more, in the most direct way possible, while fully capturing the idea. No fluff, no preamble, no restating the question, no summarizing what you just did unless asked. Get to the point.
+
+- Answer first. Add context only if it changes what the user does next.
+- Prefer the shortest form that is still complete: a word over a sentence, a sentence over a paragraph, a list over prose.
+- Cut hedging, throat-clearing, and filler ("I think", "it's worth noting", "as you can see", "in order to").
+- Do not explain what you're about to do and then do it — just do it.
+
 **Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`). Output files are styled **HTML** (`.html`), not markdown — see **HTML Output Convention** below. Sessions (`.agents/output/sessions/`) are the only exception and stay `.md` because the AI reads them back directly. Create directories as needed. Direct the user to the written files instead of printing output to the screen unnecessarily.
 
 ## Iterative Implementation & Commit Gates
