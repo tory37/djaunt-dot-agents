@@ -44,6 +44,8 @@ Write a failing test that captures the bug. The test should:
    - Side effects or related risk areas as a `.callout.warning`.
 2. **Create a Branch:** Create a new git branch: `fix/short-description`.
 
+If the bug is visual/UI (broken layout, styling regression, a component that needs redesigning as part of the fix), invoke **`/djt-frontend-design`** before writing the fix — the single entry point for interface design and anti-slop review.
+
 **Write the plan to disk immediately.** Present a high-level summary and await explicit user approval before writing any fix code.
 
 *If using djt-kanban or djt-trello, sync these phases to the active ticket/card now.*

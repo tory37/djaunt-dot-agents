@@ -44,6 +44,7 @@ Surface all unknowns or ambiguities regarding the current implementation and the
 Ensure existing tests pass and add new tests if needed to cover the changes.
 - Have the user run the tests to confirm they pass before refactoring begins.
 - Produce the Doer Test Plan for the current phase by invoking **`/djt-test-plan`** (the single entry point for manual test cases). It scopes the plan to the phase's change and writes to `.agents/output/techdebt/<name>/doer-test-plan.html`.
+- If the current phase involves designing or building UI, invoke **`/djt-frontend-design`** before refactoring it — the single entry point for interface design and anti-slop review.
 
 ### 5. [Step Removed]
 
