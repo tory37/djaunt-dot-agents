@@ -16,6 +16,7 @@ Fear verbosity. Say exactly what is needed and nothing more, in the most direct 
 - **Cap chat responses.** Prefer under ~10 lines for a status update or explanation. If more detail is genuinely needed, write it to a file and point to it — don't inline the long version in chat.
 - **One idea per line/bullet.** Don't chain multiple claims into one run-on sentence with semicolons or "and" — split them.
 - **Compress subagent/tool output before relaying it.** A subagent's report is yours to hold, not to print. Reduce it to verdict + strongest supporting evidence line — never forward its full report structure or line-item detail dump verbatim.
+- **Never splice code into prose.** File paths, line numbers, function/variable names, and code snippets always go in backticks, on their own bullet — never stitched into a sentence with "and"/commas. One fact (one file:line, one function, one claim) per bullet. A paragraph with more than one inline code reference must become a list.
 
 **Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`). Output files are styled **HTML** (`.html`), not markdown — see **HTML Output Convention** below. Sessions (`.agents/output/sessions/`) are the only exception and stay `.md` because the AI reads them back directly. Create directories as needed. Direct the user to the written files instead of printing output to the screen unnecessarily.
 
