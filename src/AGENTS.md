@@ -10,6 +10,11 @@ Fear verbosity. Say exactly what is needed and nothing more, in the most direct 
 - Prefer the shortest form that is still complete: a word over a sentence, a sentence over a paragraph, a list over prose.
 - Cut hedging, throat-clearing, and filler ("I think", "it's worth noting", "as you can see", "in order to").
 - Do not explain what you're about to do and then do it — just do it.
+- **Structure over prose, always.** Any response longer than ~3 sentences must use headers, bullets, or numbered steps — never a wall of paragraphs. If the content doesn't obviously fit a list, that's a signal to compress it, not to prose it out.
+- **Lead with the outcome.** The first line answers the question or states what changed. Reasoning, caveats, and detail come after, and only if they change what the user does next.
+- **Assume no shared context, but don't over-explain.** The user did not watch the work happen — tool calls, searches, and intermediate steps are invisible to them. A wrap-up must be readable standalone (name what was touched, what was found), but stay in list/fragment form, not narrative form. State the fact, not the journey to it.
+- **Cap chat responses.** Prefer under ~10 lines for a status update or explanation. If more detail is genuinely needed, write it to a file and point to it — don't inline the long version in chat.
+- **One idea per line/bullet.** Don't chain multiple claims into one run-on sentence with semicolons or "and" — split them.
 
 **Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`). Output files are styled **HTML** (`.html`), not markdown — see **HTML Output Convention** below. Sessions (`.agents/output/sessions/`) are the only exception and stay `.md` because the AI reads them back directly. Create directories as needed. Direct the user to the written files instead of printing output to the screen unnecessarily.
 
@@ -283,23 +288,6 @@ When presenting a diagnosis or solution, especially in plan mode summaries, be e
 ### Example (Bad)
 >
 > **Root Cause Confirmed:** Missing error handler in login flow.
-
-### Example (Good)
->
-> **Most Likely Cause:** Missing error handler in auth/login.ts around line 47, based on:
->
-> - Stack trace shows uncaught error at that location
-> - Code inspection confirms no try/catch wrapping the async call
-> - Two similar handlers in the file *do* have error handling (lines 23, 61), suggesting this is a pattern oversight
->
-> **Not yet confirmed because:**
->
-> - We haven't reproduced the failure with a fresh token refresh
-> - We don't know what triggers the specific code path (needs test environment access)
->
-> **To fully confirm:** Run integration tests with an expired token; expected: graceful error handling instead of crash.
-
-ed:** Missing error handler in login flow.
 
 ### Example (Good)
 >
