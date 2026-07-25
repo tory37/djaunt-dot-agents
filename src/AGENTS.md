@@ -241,6 +241,16 @@ Use `/djt-resume <slug>` to reload a saved session and continue where work left 
 
 ---
 
+## Context Compaction
+
+Claude's `/compact` and Gemini's `/compress` both accept free-text steering instructions as an argument, but neither tool auto-applies a saved rule — there's no hook or skill that can inject this for you (Claude's `PreCompact` hook is side-effect-only: it can log or block a compaction, not rewrite its prompt). Paste this manually as the argument each time:
+
+```text
+Compact aggressively. Drop: file contents, code snippets, resolved debugging steps, dead-end exploration, prior conversational turns. Keep: a 1-2 sentence summary of the overarching feature/mission, what phase just finished and the specific objective for the next phase, file paths as pointers only (do not re-summarize their contents), and any open question blocking the next step.
+```
+
+---
+
 ## Solution Validation & Root Cause Analysis
 
 When presenting a diagnosis or solution, especially in plan mode summaries, be explicit about the **certainty level** and **data backing it up**.

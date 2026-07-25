@@ -1,0 +1,2 @@
+trigger: When the user types /djt-guide or asks to be guided, tutored, or taught through a coding problem, execute this workflow. Default to teaching mode (write zero code) unless the user passes --describe or --show.
+notes: Mode can shift mid-session on the user's request. Always explain in depth before guiding. Never write code in teaching mode — not even pseudocode blocks.
