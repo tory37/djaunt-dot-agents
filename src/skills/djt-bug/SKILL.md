@@ -50,11 +50,7 @@ If the bug is visual/UI (broken layout, styling regression, a component that nee
 
 *If using djt-kanban or djt-trello, sync these phases to the active ticket/card now.*
 
-### 5. [Step Removed]
-
-*(Branching consolidated in Step 4)*
-
-### 6. Iterative Fix
+### 5. Iterative Fix
 
 Implement the fix. If the fix was broken into phases, follow the iterative pattern:
 
@@ -65,11 +61,11 @@ Implement the fix. If the fix was broken into phases, follow the iterative patte
 3. **Commit:** After confirmation, **COMMIT** the changes. Use the phase/fix description for the commit message.
 4. **Repeat:** If there are more phases, repeat until the bug is fully resolved.
 
-### 7. Final Verification & PR
+### 6. Final Verification & PR
 
 **Verification Gate:** Ensure all verification steps have been confirmed by the user.
 
-### 8. PR & Documentation
+### 7. PR & Documentation
 
 Commit the fix and open a Pull Request (follow git conventions in AGENTS.md).
 

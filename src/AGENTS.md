@@ -63,11 +63,11 @@ For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and a
 
 ## Manual Test Plans — always via `/djt-test-plan`
 
-**Any** request to write manual test cases — a doer test plan, QA steps, "how do I test this", validation steps for a change — goes through the `/djt-test-plan` skill. Do not hand-roll manual test plans inline; invoke the skill so scope, importance ranking, environment/URL resolution, and Proxyman fault-injection configs are handled consistently.
+**Any** request to write manual test cases — a doer test plan, QA steps, "how do I test this", validation steps for a change — goes through the `/djt-test-plan` skill. Do not hand-roll manual test plans inline; invoke the skill so scope, importance ranking, environment/URL resolution, and mitmproxy (mitmweb) fault-injection scripts are handled consistently.
 
 A doer test plan tells both the implementer and a QA engineer how to: navigate to the change from the app's entry point, exercise the new behavior, and verify the expected outcome at each step — written tersely, scoped tightly to what the change puts at risk (not a regression sweep), and ordered by importance.
 
-The skill places the plan on the active ticket when one is in play, otherwise writes it to `.agents/output/<type>/<name>/doer-test-plan.html`, with any generated Proxyman configs alongside.
+The skill places the plan on the active ticket when one is in play, otherwise writes it to `.agents/output/<type>/<name>/doer-test-plan.html`, with any generated mitmproxy scripts alongside.
 
 ---
 
@@ -81,7 +81,7 @@ This applies inside `/djt-feature`, `/djt-bug`, and `/djt-techdebt` as well: whe
 
 ## HTML Output Convention
 
-All human-facing output files (plans, reviews, research, coverage reports) are written as styled `.html` files, not markdown. This makes them visually scannable when opened in a browser.
+All human-facing output files (plans, reviews, research) are written as styled `.html` files, not markdown. This makes them visually scannable when opened in a browser.
 
 ### Stylesheet Bootstrap
 
@@ -140,11 +140,10 @@ The stylesheet maps each doc type to a bold `--primary` color via `data-type` on
 | `research` | Vivid purple | `#b060ff` |
 | `review` | Neon green | `#22d167` |
 | `techdebt` | Vivid amber | `#f5a623` |
-| `coverage` | Bright cyan | `#00d4ff` |
 
 ### Type Badges
 
-Use `badge-feature`, `badge-bug`, `badge-research`, `badge-review`, `badge-techdebt`, or `badge-coverage` on `.badge` elements in `.doc-meta`.
+Use `badge-feature`, `badge-bug`, `badge-research`, `badge-review`, or `badge-techdebt` on `.badge` elements in `.doc-meta`.
 
 ### Severity / Status Badges
 
@@ -158,7 +157,7 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 | `.phase-number`, `.phase-title`, `.phase-header` | Phase card header |
 | `.phase-steps` | Ordered list of steps inside a phase |
 | `.test-criteria` | Verification criteria block inside a phase |
-| `.finding-card` + `.critical/.warning/.suggestion/.positive` | Review/coverage findings |
+| `.finding-card` + `.critical/.warning/.suggestion/.positive` | Review findings |
 | `.finding-header`, `.finding-title`, `.finding-body`, `.finding-file` | Finding card anatomy |
 | `.checklist` | Unordered list with checkbox-style bullets |
 | `.test-steps` + `.test-step` | Numbered manual test steps (doer plans) |

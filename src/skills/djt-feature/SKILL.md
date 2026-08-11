@@ -54,11 +54,7 @@ Produce the Doer Test Plan for the current phase by invoking **`/djt-test-plan`*
 
 If the current phase involves designing or building UI, invoke **`/djt-frontend-design`** before implementing it — the single entry point for interface design. It enforces the anti-slop constraints and pre-flight design plan before any markup is written.
 
-### 5. [Step Removed]
-
-*(TDD and Branching are now consolidated in Step 4)*
-
-### 6. Iterative Implementation
+### 5. Iterative Implementation
 
 Implement the feature one phase at a time. For each phase:
 
@@ -69,7 +65,7 @@ Implement the feature one phase at a time. For each phase:
 3. **Commit:** After user confirmation that the phase is correct and tests pass, **COMMIT** the changes. Use the phase description as the basis for the commit message.
 4. **Next Phase:** Repeat for the next phase until the entire plan is complete.
 
-### 7. Finalize & PR
+### 6. Finalize & PR
 
 Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 

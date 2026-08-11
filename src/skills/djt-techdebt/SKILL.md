@@ -46,11 +46,7 @@ Ensure existing tests pass and add new tests if needed to cover the changes.
 - Produce the Doer Test Plan for the current phase by invoking **`/djt-test-plan`** (the single entry point for manual test cases). It scopes the plan to the phase's change and writes to `.agents/output/techdebt/<name>/doer-test-plan.html`.
 - If the current phase involves designing or building UI, invoke **`/djt-frontend-design`** before refactoring it — the single entry point for interface design and anti-slop review.
 
-### 5. [Step Removed]
-
-*(Branching consolidated in Step 3)*
-
-### 6. Iterative Implementation
+### 5. Iterative Implementation
 
 Perform the refactor phase by phase:
 
@@ -61,7 +57,7 @@ Perform the refactor phase by phase:
 3. **Commit:** After confirmation, **COMMIT** the changes. Use the phase description for the commit message.
 4. **Next Phase:** Repeat until the refactor is complete.
 
-### 7. Finalize & PR
+### 6. Finalize & PR
 
 Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 
