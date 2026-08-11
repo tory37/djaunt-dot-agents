@@ -20,28 +20,25 @@ Fear verbosity. Say exactly what is needed and nothing more, in the most direct 
 - **Compress subagent/tool output before relaying it.** A subagent's report is yours to hold, not to print. Reduce it to verdict + strongest supporting evidence line — never forward its full report structure or line-item detail dump verbatim.
 - **Never splice code into prose.** File paths, line numbers, function/variable names, and code snippets always go in backticks, on their own bullet — never stitched into a sentence with "and"/commas. One fact (one file:line, one function, one claim) per bullet. A paragraph with more than one inline code reference must become a list.
 
-**Overview**: When presenting anything non-conversational to the user, write things out to `.agents/output/<type>/` using the appropriate subfolder for the type of work (e.g. `features/`, `bugs/`, `research/`). Output files are styled **HTML** (`.html`), not markdown — see **HTML Output Convention** below. Sessions (`.agents/output/sessions/`) are the only exception and stay `.md` because the AI reads them back directly. Create directories as needed. Direct the user to the written files instead of printing output to the screen unnecessarily.
+## Output Files
+
+Write anything non-conversational to `.agents/output/<type>/` under the matching subfolder (`features/`, `bugs/`, `research/`, etc.). Files are styled **HTML**, not markdown — see **HTML Output Convention** below. `.agents/output/sessions/` stays `.md` since the AI reads it back directly. Create directories as needed. Point the user to the file instead of printing its content to chat.
 
 ## Iterative Implementation & Commit Gates
 
-**MANDATE:** Prioritize writing to disk immediately (plans, tests, implementation). Do not waste tokens printing full file contents to the console if they are being written to a file. Use git commits to separate logical phases of work.
+**MANDATE:** Write plans, tests, and implementation to disk immediately — don't print file contents to chat when they're already on disk. Use git commits to separate logical phases of work.
 
 1. **Write Immediately:** When a plan or implementation chunk is ready, write it to the appropriate file. Direct the user to the file for review rather than printing it all.
-2. **Phase-Based Implementation:** Break features and fixes into discrete, testable phases (like user stories). 
-3. **Commit as Gate:** After completing a phase and verifying it (tests pass, manual checks done), COMMIT the changes. This commit acts as the approval gate for that phase. Only move to the next phase after the current one is committed.
-4. **Clean Diffs:** This approach ensures each phase has a clean, focused diff in the version history.
+2. **Phase-Based Implementation:** Break features and fixes into discrete, testable phases (like user stories).
+3. **Verify, Then Wait, Then Commit:** After a phase is implemented, verify it (tests pass, manual checks done) and report that to the user. Do not commit yet — wait for the user's explicit confirmation that it's working. Commit only after that confirmation. This applies even at the end of a phase: confirmation always comes before the commit, never after.
+4. **Clean Diffs:** Each phase gets its own focused commit, keeping the version history readable.
 
-### Kanban Integration
+### Ticket Sync (Kanban / Trello)
 
-If the project uses the `djt-kanban` system (detected by `.agents/.kanban/` folder):
-- **Sync Phases:** After writing an implementation plan, immediately update the active ticket in `.agents/.kanban/3_doing/` to include the implementation phases.
-- **Tally Progress:** Tick off phases in the markdown ticket as they are committed.
+If the project uses `djt-kanban` (`.agents/.kanban/` folder present) or `djt-trello` (Trello skill in use), keep the active ticket in sync with implementation phases:
 
-### Trello Integration
-
-If the project uses the `djt-trello` system (detected by Trello skill usage):
-- **Sync Phases:** After writing an implementation plan, immediately create/update the "Implementation Phases" checklist on the active Trello card.
-- **Tally Progress:** Tick off phases in Trello as they are committed.
+- After writing a plan, add the phases to the ticket — the markdown card in `.agents/.kanban/3_doing/` for Kanban, or an "Implementation Phases" checklist on the card for Trello.
+- Tick off each phase there once its commit lands.
 
 ## Handling Interjectory Requests
 
@@ -56,9 +53,9 @@ When the user makes a request that is outside the scope of the current feature o
 
 Use `/djt-feature` to start a new feature (iterative 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Use `/djt-techdebt` for refactoring or tech debt. Use `/djt-research` to synthesize research into a strategy. These accept an optional spec/issue/context file: `/djt-feature @path/to/spec.md`.
 
-**Core Flow:** Gather info -> Write plan (phases) -> implement phase -> verify -> commit -> repeat.
+**Core Flow:** Gather info -> Write plan (phases) -> implement phase -> verify -> confirm with user -> commit -> repeat.
 
-Use `/djt-test-plan` to write a manual test plan for a change (and generate any Proxyman fault-injection configs it needs). Use `/djt-frontend-design` whenever a task involves designing or building UI. Use `/djt-suspend` to snapshot a session; `/djt-resume <slug>` to reload one. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
+Manual test plans, UI/frontend work, and session snapshot/resume each route to their own skill — see the dedicated sections below. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
 
 For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and act directly.
 
@@ -180,7 +177,7 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 - Branch names: `type/short-description` (e.g. `feat/oauth-login`, `fix/token-refresh`)
 - Commits: imperative mood, <72 chars subject, body explains *why* not *what*
 - PRs: link related issues, request review before merge
-- NEVER commit until the user explicitly confirms the request is fully handled and says it is ready to commit
+- NEVER commit until the user explicitly confirms the change is working — this holds even mid-workflow, after each phase (see Iterative Implementation & Commit Gates)
 - NEVER push (including force-push) unless the user explicitly tells you to push
 - NEVER force-push to the project's default protected branch
 
@@ -255,66 +252,15 @@ Compact aggressively. Drop: file contents, code snippets, resolved debugging ste
 
 ## Solution Validation & Root Cause Analysis
 
-When presenting a diagnosis or solution, especially in plan mode summaries, be explicit about the **certainty level** and **data backing it up**.
+State a certainty level with every diagnosis, backed by the data behind it. Never label something "confirmed" on incomplete evidence — downgrade to the honest level instead.
 
-### Three Levels of Confidence
+| Level | Evidence required | Say it as |
+| --- | --- | --- |
+| **Confirmed** | Reproduction, causal-chain code inspection, isolating test results, or a pinpointing stack trace — competing hypotheses ruled out | "Root cause confirmed: [fact], backed by [evidence]" |
+| **High Probability** | Mechanism is clear but not yet reproduced, or evidence favors one hypothesis without ruling out others | "Most likely cause: [fact] because [evidence], but [what would confirm it]" |
+| **Possible / Speculative** | Several hypotheses fit; limited visibility into the failure | "Possible causes (ranked): [list], investigation stopped because [reason]" |
 
-1. **Confirmed** — The root cause is backed by:
-   - Direct observation or reproduction
-   - Code inspection with clear causal chain
-   - Test results that isolate the problem
-   - Logs/stack traces that pinpoint the failure
-   - Evidence that rules out competing hypotheses
+For every report, answer: what data backs this, what data is missing, why wasn't it gathered, and what would disprove it. Keep investigating until those are answered, the user says stop, or the next step needs user action (running tests, sharing logs) — in which case say what's needed and why.
 
-   Use language like: "Root cause confirmed: [specific fact]" with supporting evidence cited.
-
-2. **High Probability** — The cause is strongly supported but not definitively proven:
-   - Evidence points in one direction but competing hypotheses aren't fully ruled out
-   - Code inspection shows a clear mechanism, but we haven't reproduced the failure yet
-   - Pattern matches known issues in similar codebases
-
-   Use language like: "Most likely cause: [specific fact] because [evidence], but [what would confirm it]" and list what's missing.
-
-3. **Possible / Speculative** — Multiple causes remain plausible:
-   - Several hypotheses fit the available data
-   - We have limited visibility into the failure
-   - Initial hunch based on code structure, not empirical evidence
-
-   Use language like: "Possible causes (ranked by likelihood): [list with evidence for each]" and explain why deeper investigation wasn't feasible/done.
-
-### Standards for All Reports
-
-**Always answer these questions:**
-
-- What **data** backs this solution? (logs, test results, code inspection, reproduction)
-- What **data is missing** that would make this more certain?
-- Why didn't you gather that data? (scope constraint, time, blocked, user hasn't provided it yet)
-- What would **disprove** this solution?
-
-**Never report "Root Cause Confirmed" without evidence.** Use "Most Likely" or "Possible" instead when you're working from incomplete information.
-
-**Go as deep as possible.** If you haven't answered the four questions above, keep investigating. Only stop when:
-
-- You've exhausted available data / logs / code paths
-- The user has asked you to stop or move on
-- Completing the investigation would require user action (running tests, providing logs, etc.) — in that case, explain what's needed and why
-
-### Example (Bad)
->
-> **Root Cause Confirmed:** Missing error handler in login flow.
-
-### Example (Good)
->
-> **Most Likely Cause:** Missing error handler in auth/login.ts around line 47, based on:
->
-> - Stack trace shows uncaught error at that location
-> - Code inspection confirms no try/catch wrapping the async call
-> - Two similar handlers in the file *do* have error handling (lines 23, 61), suggesting this is a pattern oversight
->
-> **Not yet confirmed because:**
->
-> - We haven't reproduced the failure with a fresh token refresh
-> - We don't know what triggers the specific code path (needs test environment access)
->
-> **To fully confirm:** Run integration tests with an expired token; expected: graceful error handling instead of crash.
+**Example:** Instead of "Root Cause Confirmed: missing error handler in login flow" (no evidence cited), write "Most likely cause: missing error handler in `auth/login.ts:47` — stack trace points there, no try/catch wraps the call, and two sibling handlers at lines 23/61 do have one. Not yet confirmed: haven't reproduced with an expired token. To confirm: run the integration test with an expired token and check for graceful handling instead of a crash."
 
