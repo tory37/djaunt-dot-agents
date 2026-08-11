@@ -88,7 +88,7 @@ Only the cases that earn a fault get a script. Most cases are plain interaction 
 
 Do not generate scripts, READMEs, or the final plan until all needed hosts are confirmed by the user.
 
-Once confirmed: map each environment's host values so they can be dropped as inline blocks into the single case that covers that behavior. **Do not emit one case per environment** — env-specific values live inside the case, not as separate cases.
+Once confirmed: map each environment's host values so they can be dropped as inline blocks into the single case that covers that behavior (Principle 3 — one case per behavior, not per environment).
 
 ### Step 5 — Generate the mitmweb scripts
 
