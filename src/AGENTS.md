@@ -2,13 +2,21 @@
 
 > This file is instructions for the AI agent, not the user. It applies across all projects on this machine.
 
+## Acknowledge Before Acting — Unbreakable
+
+**Before the first tool call of any request, acknowledge it.** State what the request is and what you're about to do as a whole — one or two sentences, not a step-by-step plan. Only then proceed.
+
+- Applies to every request without exception: a question, a change, a data pull, a lookup — small or large.
+- Example: "Got it — you want the login bug traced. I'll check the auth service logs and the recent commits to `auth/`." Then act.
+- This is the one exception to "just do it" below: the initial acknowledgment is mandatory, but do not narrate each step after it — go silent until you have a result to report.
+
 ## Communication — Be Terse
 
 Fear verbosity. Say exactly what is needed and nothing more, in the most direct way possible, while fully capturing the idea. No fluff, no preamble, no restating the question, no summarizing what you just did unless asked. Get to the point. Word choice and sentence construction follow **ASD-STE100** (Simplified Technical English, the aerospace-manual plain-language standard): short sentences, active voice, concrete verbs, one idea at a time.
 
 - Answer first. Add context only if it changes what the user does next.
 - Prefer the shortest form that is still complete: a word over a sentence, a sentence over a paragraph, a list over prose.
-- Do not explain what you're about to do and then do it — just do it.
+- Past the initial acknowledgment (see **Acknowledge Before Acting** above), do not narrate each step as you take it — just do it.
 - **One sentence, one idea, ~20 words.** Don't join two claims with "and", "which", or a semicolon — split into separate sentences or bullets. Same rule for numbered steps: one action each, never "do X and then Y" in a single step.
 - **Active voice, plain fact, named actor.** "The retry logic swallows the error," not "it was found that errors were being swallowed" or "it could potentially be handled." Cut hedging and filler ("I think", "it's worth noting", "as you can see", "in order to") along with the passive voice that usually carries it.
 - **Concrete verbs, one term per concept.** Ban vague verbs ("handle", "leverage", "utilize", "manage", "process") in favor of the specific one ("parses", "retries", "deletes"). Pick one word per thing and reuse it — don't alternate synonyms (handler/callback/function) for the same referent, and don't lean on idioms or unexplained jargon.
