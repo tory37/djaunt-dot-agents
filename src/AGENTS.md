@@ -221,11 +221,13 @@ Write code that reads like a clear sentence. A future reader (or the AI picking 
 
 ### When to Add a Comment
 
-Add a comment when a future reader would reasonably be confused about *why* this code does what it does — a hidden constraint, a non-obvious invariant, a workaround for a specific external behavior. One focused sentence is almost always enough.
+Default to zero comments. Rely on names and structure to carry meaning, not prose next to the code.
+
+Add a comment only when a future reader would reasonably be confused about *why* this code does what it does — a hidden constraint, a non-obvious invariant, a workaround for a specific external behavior — and no rename or restructure can make that clear on its own. One focused sentence, almost never more.
 
 Do NOT add comments that restate the code: `// increment counter` above `count++` adds noise.
 
-For larger blocks (a complex algorithm, a multi-step data transformation, a non-obvious state machine), a brief header comment stating the *goal* and any important *preconditions or side effects* is appropriate. Keep it to 2–4 lines max.
+When editing code that already has a comment, update it only if the change makes it factually wrong. Edit the minimum words needed to make it accurate again — don't rewrite, expand, or restyle it.
 
 ### Existing Patterns That Conflict with Best Practices
 
