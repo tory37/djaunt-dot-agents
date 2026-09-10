@@ -74,11 +74,11 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/amira-intervention-selection
 - [x] AmiraLearning/evaluar-blueprint-testing
 - [x] AmiraLearning/network-monitoring-service-analyzer
-- [ ] AmiraLearning/AmiraAnimalRescue (102 commits, 3 batches)
-  - [ ] batch 1/3 (page 1)
+- [x] AmiraLearning/AmiraAnimalRescue (102 commits, 3 batches)
+  - [x] batch 1/3 (page 1)
   - [x] batch 2/3 (page 2)
   - [x] batch 3/3 (page 3)
-  - [ ] merged into digest
+  - [x] merged into digest
 - [x] AmiraLearning/cordova-plugin-googleplus
 - [x] amira-rnd/amira-forge
 - [x] amira-rnd/assessments-data
