@@ -93,7 +93,7 @@ commits endpoint paginates directly.
 - [x] amira-rnd/torys-script-library
 - [x] amira-rnd/assessments-item-bank-reviewer
 - [x] istation-cloud/isweb
-- [ ] istation-hydra/olp-student-experience
+- [x] istation-hydra/olp-student-experience
 - [x] istation-hydra/olp-html-practice
 
 ## Stage 4 — Cross-repo synthesis
