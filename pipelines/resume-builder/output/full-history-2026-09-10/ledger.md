@@ -1,6 +1,6 @@
 # Ledger — full-history-2026-09-10
 
-**Status:** IN_PROGRESS
+**Status:** DONE
 **Started:** 2026-09-10
 **Login:** tory37
 
@@ -98,11 +98,15 @@ commits endpoint paginates directly.
 
 ## Stage 4 — Cross-repo synthesis
 
-- [ ] Synthesis complete
+- [x] Synthesis complete — 28 org-repo digests read, clustered into 8 bullets
+  per resume-writing-guide.md. Scope: Amira-org repos only (AmiraLearning,
+  amira-rnd, istation-cloud, istation-hydra) — personal repos explicitly
+  out of scope for this Amira-focused section per user (2026-09-10:
+  "my personal repos would not factor into the amira section").
 
 ## Stage 5 — Final output
 
-- [ ] resume-summary.md written
+- [x] resume-summary.md written — output/full-history-2026-09-10/resume-summary.md
 
 ## Resume notes
 
