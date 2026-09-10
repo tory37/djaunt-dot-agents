@@ -76,7 +76,7 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/network-monitoring-service-analyzer
 - [ ] AmiraLearning/AmiraAnimalRescue (102 commits, 3 batches)
   - [ ] batch 1/3 (page 1)
-  - [ ] batch 2/3 (page 2)
+  - [x] batch 2/3 (page 2)
   - [x] batch 3/3 (page 3)
   - [ ] merged into digest
 - [x] AmiraLearning/cordova-plugin-googleplus
