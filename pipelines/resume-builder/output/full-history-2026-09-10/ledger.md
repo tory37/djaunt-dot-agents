@@ -66,10 +66,10 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/studentapp-AI
 - [x] AmiraLearning/amira-configuration-manager
 - [x] AmiraLearning/amira-intervention-library
-- [ ] AmiraLearning/torys-scripts (93 commits, 2 batches)
-  - [ ] batch 1/2 (page 1)
+- [x] AmiraLearning/torys-scripts (93 commits, 2 batches)
+  - [x] batch 1/2 (page 1)
   - [x] batch 2/2 (page 2)
-  - [ ] merged into digest
+  - [x] merged into digest
 - [x] AmiraLearning/amira-sis-api
 - [x] AmiraLearning/amira-intervention-selection
 - [x] AmiraLearning/evaluar-blueprint-testing
