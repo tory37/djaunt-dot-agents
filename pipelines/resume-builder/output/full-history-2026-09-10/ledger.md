@@ -14,10 +14,10 @@
 
 - [ ] Personal repos listed (`gh repo list tory37`)
 - [x] AmiraLearning scanned and filtered by authorship (280 scanned, 17 kept: amira-student-record-store, lexa-studentapp, amira-admin-reports-domo, amira-assignment-service, amira-parent-portal, content-deployment-pipeline, amira-story-editor, studentapp-AI, amira-configuration-manager, amira-intervention-library, torys-scripts, amira-sis-api, amira-intervention-selection, evaluar-blueprint-testing, network-monitoring-service-analyzer, AmiraAnimalRescue, cordova-plugin-googleplus)
-- [ ] amira-rnd scanned and filtered by authorship
+- [x] amira-rnd scanned and filtered by authorship (125 scanned, 8 kept: amira-forge, assessments-data, amira-educators-client, amira-shared-models, amira-sis-api, student-shared-services, torys-script-library, assessments-item-bank-reviewer)
 - [x] istation-cloud scanned and filtered by authorship (106 scanned, 1 kept: isweb)
 - [x] istation-hydra scanned and filtered by authorship (26 scanned, 2 kept: olp-student-experience, olp-html-practice)
-- [ ] repos.json merged (personal + org fragments)
+- [x] repos.json merged (personal + org fragments) — 103 total: 75 personal, 17 AmiraLearning, 8 amira-rnd, 1 istation-cloud, 2 istation-hydra
 - [ ] Condensed table presented to user in chat
 
 ## Stage 2 — Scope with the user

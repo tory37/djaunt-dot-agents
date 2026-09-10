@@ -1,0 +1,66 @@
+[
+  {
+    "name": "amira-forge",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-09-10T20:19:48Z",
+    "primaryLanguage": "TypeScript",
+    "url": "https://github.com/amira-rnd/amira-forge",
+    "isFork": false
+  },
+  {
+    "name": "assessments-data",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-09-10T19:49:10Z",
+    "primaryLanguage": "Python",
+    "url": "https://github.com/amira-rnd/assessments-data",
+    "isFork": false
+  },
+  {
+    "name": "amira-educators-client",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-09-10T16:11:52Z",
+    "primaryLanguage": "TypeScript",
+    "url": "https://github.com/amira-rnd/amira-educators-client",
+    "isFork": false
+  },
+  {
+    "name": "amira-shared-models",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-09-09T19:56:38Z",
+    "primaryLanguage": "Python",
+    "url": "https://github.com/amira-rnd/amira-shared-models",
+    "isFork": false
+  },
+  {
+    "name": "amira-sis-api",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-09-08T19:39:17Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/amira-rnd/amira-sis-api",
+    "isFork": false
+  },
+  {
+    "name": "student-shared-services",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-09-03T15:50:22Z",
+    "primaryLanguage": "TypeScript",
+    "url": "https://github.com/amira-rnd/student-shared-services",
+    "isFork": false
+  },
+  {
+    "name": "torys-script-library",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-06-24T18:51:52Z",
+    "primaryLanguage": "HTML",
+    "url": "https://github.com/amira-rnd/torys-script-library",
+    "isFork": false
+  },
+  {
+    "name": "assessments-item-bank-reviewer",
+    "owner": "amira-rnd",
+    "pushedAt": "2026-04-08T16:21:19Z",
+    "primaryLanguage": "TypeScript",
+    "url": "https://github.com/amira-rnd/assessments-item-bank-reviewer",
+    "isFork": false
+  }
+]
