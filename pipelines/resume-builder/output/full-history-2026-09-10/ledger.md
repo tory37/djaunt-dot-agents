@@ -50,7 +50,7 @@ commits endpoint paginates directly.
   - [ ] batch 2/8 (page 2)
   - [ ] batch 3/8 (page 3)
   - [ ] batch 4/8 (page 4)
-  - [ ] batch 5/8 (page 5)
+  - [x] batch 5/8 (page 5)
   - [ ] batch 6/8 (page 6)
   - [ ] batch 7/8 (page 7)
   - [x] batch 8/8 (page 8)
