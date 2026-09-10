@@ -15,7 +15,7 @@
 - [ ] Personal repos listed (`gh repo list tory37`)
 - [ ] AmiraLearning scanned and filtered by authorship
 - [ ] amira-rnd scanned and filtered by authorship
-- [ ] istation-cloud scanned and filtered by authorship
+- [x] istation-cloud scanned and filtered by authorship (106 scanned, 1 kept: isweb)
 - [x] istation-hydra scanned and filtered by authorship (26 scanned, 2 kept: olp-student-experience, olp-html-practice)
 - [ ] repos.json merged (personal + org fragments)
 - [ ] Condensed table presented to user in chat
