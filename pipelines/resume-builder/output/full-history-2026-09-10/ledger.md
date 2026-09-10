@@ -70,7 +70,7 @@ commits endpoint paginates directly.
   - [ ] batch 1/2 (page 1)
   - [ ] batch 2/2 (page 2)
   - [ ] merged into digest
-- [ ] AmiraLearning/amira-sis-api
+- [x] AmiraLearning/amira-sis-api
 - [x] AmiraLearning/amira-intervention-selection
 - [x] AmiraLearning/evaluar-blueprint-testing
 - [x] AmiraLearning/network-monitoring-service-analyzer
