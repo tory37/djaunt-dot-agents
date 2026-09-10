@@ -91,7 +91,7 @@ commits endpoint paginates directly.
 - [x] amira-rnd/amira-sis-api
 - [ ] amira-rnd/student-shared-services
 - [x] amira-rnd/torys-script-library
-- [ ] amira-rnd/assessments-item-bank-reviewer
+- [x] amira-rnd/assessments-item-bank-reviewer
 - [ ] istation-cloud/isweb
 - [ ] istation-hydra/olp-student-experience
 - [x] istation-hydra/olp-html-practice
