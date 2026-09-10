@@ -62,7 +62,7 @@ commits endpoint paginates directly.
   - [ ] batch 2/2 (page 2)
   - [ ] merged into digest
 - [ ] AmiraLearning/content-deployment-pipeline
-- [ ] AmiraLearning/amira-story-editor
+- [x] AmiraLearning/amira-story-editor
 - [x] AmiraLearning/studentapp-AI
 - [ ] AmiraLearning/amira-configuration-manager
 - [ ] AmiraLearning/amira-intervention-library
