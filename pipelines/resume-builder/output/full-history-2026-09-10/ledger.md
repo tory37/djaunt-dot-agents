@@ -55,7 +55,7 @@ commits endpoint paginates directly.
   - [ ] batch 7/8 (page 7)
   - [ ] batch 8/8 (page 8)
   - [ ] merged into digest
-- [ ] AmiraLearning/amira-admin-reports-domo
+- [x] AmiraLearning/amira-admin-reports-domo
 - [x] AmiraLearning/amira-assignment-service
 - [ ] AmiraLearning/amira-parent-portal (68 commits, 2 batches)
   - [ ] batch 1/2 (page 1)
