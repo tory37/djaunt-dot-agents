@@ -59,7 +59,7 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/amira-assignment-service
 - [ ] AmiraLearning/amira-parent-portal (68 commits, 2 batches)
   - [ ] batch 1/2 (page 1)
-  - [ ] batch 2/2 (page 2)
+  - [x] batch 2/2 (page 2)
   - [ ] merged into digest
 - [x] AmiraLearning/content-deployment-pipeline
 - [x] AmiraLearning/amira-story-editor
