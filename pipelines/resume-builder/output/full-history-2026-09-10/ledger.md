@@ -65,7 +65,7 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/amira-story-editor
 - [x] AmiraLearning/studentapp-AI
 - [x] AmiraLearning/amira-configuration-manager
-- [ ] AmiraLearning/amira-intervention-library
+- [x] AmiraLearning/amira-intervention-library
 - [ ] AmiraLearning/torys-scripts (93 commits, 2 batches)
   - [ ] batch 1/2 (page 1)
   - [ ] batch 2/2 (page 2)
