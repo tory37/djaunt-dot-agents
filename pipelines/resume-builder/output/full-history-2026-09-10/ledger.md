@@ -89,7 +89,7 @@ commits endpoint paginates directly.
   - [ ] merged into digest
 - [x] amira-rnd/amira-shared-models
 - [x] amira-rnd/amira-sis-api
-- [ ] amira-rnd/student-shared-services
+- [x] amira-rnd/student-shared-services
 - [x] amira-rnd/torys-script-library
 - [x] amira-rnd/assessments-item-bank-reviewer
 - [x] istation-cloud/isweb
