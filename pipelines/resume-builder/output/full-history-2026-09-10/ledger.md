@@ -84,7 +84,7 @@ commits endpoint paginates directly.
 - [x] amira-rnd/assessments-data
 - [ ] amira-rnd/amira-educators-client (125 commits, 3 batches)
   - [x] batch 1/3 (page 1)
-  - [ ] batch 2/3 (page 2)
+  - [x] batch 2/3 (page 2)
   - [ ] batch 3/3 (page 3)
   - [ ] merged into digest
 - [x] amira-rnd/amira-shared-models
