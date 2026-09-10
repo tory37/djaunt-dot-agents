@@ -44,7 +44,7 @@ commits endpoint paginates directly.
 - torys-scripts: 93 commits → 2 batches (pages 1-2)
 - amira-parent-portal: 68 commits → 2 batches (pages 1-2)
 
-- [ ] AmiraLearning/amira-student-record-store
+- [x] AmiraLearning/amira-student-record-store
 - [ ] AmiraLearning/lexa-studentapp (384 commits, 8 batches)
   - [ ] batch 1/8 (page 1)
   - [ ] batch 2/8 (page 2)
