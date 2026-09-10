@@ -1,6 +1,6 @@
 ---
 name: djt-test-plan
-description: "Produce a tight, importance-ranked manual test plan scoped to a single change, with mitmweb fault-injection scripts generated per target environment. Places the plan on the active ticket or on disk. /djt-test-plan [target]"
+description: "Produce a tight, importance-ranked manual test plan scoped to a single change, with mitmweb fault-injection scripts generated per target environment. Posts the plan to the ticket or PR that owns the change; writes a local file only when no remote owner exists. /djt-test-plan [target]"
 trigger: /djt-test-plan
 ---
 
@@ -92,20 +92,43 @@ Once confirmed: map each environment's host values so they can be dropped as inl
 
 ### Step 5 — Generate the mitmweb scripts
 
-See **mitmproxy script conventions** below. Generate host-agnostic, operation-matched Python scripts (so the fault logic is portable across environments), grouped into one folder per environment that also carries that environment's host for the CLI `--allow-hosts` scope and any URL-based cases.
+See **mitmproxy script conventions** below. Generate host-agnostic, operation-matched Python scripts (so the fault logic is portable across environments), one per case, with each environment's host supplied for the CLI `--allow-hosts` scope and any URL-based cases.
+
+Hold the scripts in memory until Step 7 decides where they go. Do **not** write them to disk yet — when a remote owner exists they are embedded in the comment as heredocs and never touch the repo.
 
 ### Step 6 — Write the test plan
 
 Follow the **test plan format** below. Importance-ordered, terse, setup-once, each fault case referencing its Python file by name.
 
-### Step 7 — Place the output
+### Step 7 — Place the output (a remote owner wins over local files)
 
-- **Active ticket in play** (the input is a ticket key, or the current branch matches a ticket pattern such as `ASSMNT-####`): post the plan as a **comment on the ticket** (via the available Jira tooling). The Jira comment **must be fully self-contained** — a tester reading it has no access to the local repo or `.agents/output/`. For every fault-injection case, include: (1) a copy-pasteable `mkdir` + heredoc block to create the script file at `~/tc-scripts/<TICKET>/`, (2) the full `mitmweb` command referencing that path, and (3) the proxy enable/disable commands. No repo paths, no external file references. Also write the Python files to `.agents/output/` as the implementer's local reference copy.
-- **No ticket**: write the plan to `.agents/output/bugs/<slug>/doer-test-plan.html` (or `features/`/`techdebt/` per the change type), with Python files alongside it. Use the standard HTML shell + stylesheet from the **HTML Output Convention** in AGENTS.md (`badge-bug`/`badge-feature`, bootstrap the stylesheet first).
+First decide **whether a remote place owns this change**. Check in this order:
+
+1. **A ticket** — the input is a ticket key, the current branch matches a ticket pattern (e.g. `ASSMNT-####`), or a `djt-kanban` card sits in `.agents/.kanban/3_doing/`.
+2. **An open PR** for the current branch (`gh pr view`).
+3. **Any resource the user named** in the invocation (a ticket URL, a PR URL, a card).
+
+If more than one candidate exists, ask which one. Post to exactly one place.
+
+#### A remote owner exists → post there, write nothing locally
+
+The comment is the **only** artifact. Do not write `doer-test-plan.html`. Do not write a local copy of the Python scripts. Do not create `.agents/output/` folders or READMEs.
+
+The comment must be **fully self-contained** — the reader has no access to the repo. For every fault-injection case include:
+
+1. A `mkdir -p ~/tc-scripts/<key>/` + heredoc block that writes the script file (`<key>` = the ticket key, else a short slug).
+2. The full `mitmweb` command per environment, pointing at `~/tc-scripts/<key>/<script>.py`.
+3. The proxy enable block and the proxy disable block.
+
+No repo paths. No references to local files. If the post fails, then — and only then — fall back to the local file and say the post failed.
+
+#### No remote owner → write locally
+
+Write the plan to `.agents/output/<type>/<slug>/doer-test-plan.html` (`bugs/`, `features/`, or `techdebt/` per the change type), with the Python files alongside it. Use the standard HTML shell + stylesheet from the **HTML Output Convention** in AGENTS.md (`badge-bug`/`badge-feature`, bootstrap the stylesheet first).
 
 ### Step 8 — Present a summary
 
-In the terminal: the change under test, count of in-scope cases by importance, which cases carry mitmproxy scripts, the environments covered, and the path/ticket where the plan landed. Restate any gaps or values you had to ask for.
+In the terminal: the change under test, count of in-scope cases by importance, which cases carry mitmproxy scripts, the environments covered, and where the plan landed — the ticket/PR comment link, or the file path when there was no remote owner. Restate any gaps or values you had to ask for.
 
 ---
 
@@ -146,9 +169,10 @@ The reproduction primitive is **operation-level fault injection on a shared Grap
               pass # Ignore invalid JSON
   ```
 
-- **Per-environment suite folder.** One folder per environment (e.g. `mitmproxy/dev2/`, `mitmproxy/prod2/`), each containing the readable `.py` script per case named to the test case (`tc7-fail-getamiralicenses.py`), plus a `README.md` with the exact copy-paste terminal sequence below. **Every command in a README must be fully populated with real values — no `<placeholders>`.** Each README is scoped to one environment; there is no reason to leave any variable for the reader to fill in.
+- **Remote owner → inline heredocs, no files.** When the plan is posted to a ticket or PR, each script ships inside the comment as a `mkdir -p ~/tc-scripts/<key>/` + heredoc block that the reader pastes once. No per-environment folders, no README files, no repo copies. Name each file after its case (`tc7-fail-getamiralicenses.py`).
+- **Local fallback → per-environment suite folder.** Only when no remote owner exists: one folder per environment (e.g. `mitmproxy/dev2/`, `mitmproxy/prod2/`), each containing the readable `.py` script per case named to the test case, plus a `README.md` with the exact copy-paste terminal sequence below. **Every command in a README must be fully populated with real values — no `<placeholders>`.** Each README is scoped to one environment; there is no reason to leave any variable for the reader to fill in.
 - **Why the host still matters** even though scripts are host-agnostic: `--allow-hosts` prevents a prod fault from misfiring on local traffic and reduces mitmweb UI noise; any non-GraphQL/URL-based case needs the URL explicitly.
-- **READMEs must use the full repo-relative path in the mitmweb `-s` flag** — never a bare filename. The reader opens a README cold; they don't know which folder to `cd` into. Using the full path (e.g. `.agents/output/bugs/slug/mitmproxy/dev2/tc1-fail-x.py`) means the command works from the repo root with zero navigation. Ticket comments are different — see Step 7.
+- **Paths must always be absolute or repo-root-relative** — never a bare filename. The reader opens the plan cold and does not know which folder to `cd` into. In a ticket or PR comment, use `~/tc-scripts/<key>/tc1-fail-x.py`. In a local README, use the repo-relative path (e.g. `.agents/output/bugs/slug/mitmproxy/dev2/tc1-fail-x.py`) so the command works from the repo root.
 - **Every README must include the full run sequence** using these exact macOS commands (assume Wi-Fi; user can substitute their interface name):
 
   ```bash
@@ -176,28 +200,59 @@ The reproduction primitive is **operation-level fault injection on a shared Grap
 
 ## Test plan format
 
-Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
+**A table, not prose.** Same structure whether it lands as a ticket/PR comment or — no remote owner — an HTML file.
 
-- **Header** — the change under test, source (ticket/diff), environments covered.
-- **Setup (once)** — preconditions, accounts, flags, how to start `mitmweb` with the scripts + verify the mitmproxy CA cert is trusted. Never repeat per case.
-- **Cases (sequenced per Principle 2)** — each a minimal block. Use this exact shape:
+**Length budget, enforced:** the plan must be shorter than the change deserves, not longer. A small diff gets one heading, one setup line, one table, and a handful of notes. Nothing else. If it runs past that, compress — do not add sections.
 
-  ```
-  TC1 — <intent> (<importance: highest / high / medium / low>)
+- **Heading** — one line: the change under test, linked to the PR or ticket.
+- **Setup** — **one sentence**, inline under the heading. Environment, whether a proxy is needed, and the account/data precondition. Not a section, not a bullet list, never repeated per case. When injection is in play, add only "mitmweb running with `<script>`, CA cert trusted" — the commands live in the Scripts section.
+- **Cases** — a single markdown table, sequenced per Principle 2. Row order *is* run order, most important first within a setup group.
 
-  <real-data alternative when a fault script exists>
-  Use fault injection (TC1 Script below) or: <what real state to find/use instead>.
-
-  1. <step>
-  2. <step>
-  ✓ <expected result>
-  ```
+  | # | Do | Expect |
+  |---|---|---|
+  | 1 | `<terse imperative actions, one row per behavior>` | `<what the tester should see>` |
 
   Rules:
-  - Every case that has a fault script **must also state the real-data alternative** — the tester chooses their path; do not assume injection is required.
-  - Cases that need no injection just have steps + expected, no injection line.
-  - Do not embed script content or mitmweb commands in the case body — reference by name only (`TC1 Script below`). Scripts live at the bottom.
-  - Env-specific values (URLs, hosts) appear as a compact inline block only when they differ by environment; otherwise omit.
+  - **One row per behavior, not per assertion.** Gestures of the same family collapse into one row — "click the edge, click the text, drag from text off the edge" is one row with a combined expectation, not three.
+  - **No importance labels.** Row order carries it. `(highest)` / `(high)` on every row is noise.
+  - **No per-case rationale.** Why a case exists belongs in the PR, not the plan. The tester needs the action and the expectation.
+  - Merge no-regression checks into one row where they share a setup.
+  - Fault-injection rows name their script inline (`TC3 Script below`) and state the real-data alternative in the same cell. Never embed script bodies or mitmweb commands in a row.
+  - Env-specific values go in the Notes, not in rows.
+- **Notes** — a short bullet list after the table, only for things that change what the tester does or how they read a result. Typical members, and nothing beyond them:
+  - a target that is hard to hit or measure (exact pixel bands, timing windows),
+  - **known-expected behavior that looks like a bug** — say "expected, tracked on `<TICKET>`, not a regression", so it does not get filed against this change,
+  - collateral a tester will trip over (a dev tool that is unreachable in this state),
+  - which rows need an account, flag, or physical device that may not exist, and that they are skippable.
+
+  This list replaces a separate Gaps section for anything a note can carry.
+
+### Worked example
+
+A frontend fix to a modal's close button plus two new dismiss gestures — five changed files. The whole plan:
+
+> ## Doer test plan — [PR 6009](https://example.invalid/pr/6009)
+>
+> dev2, no proxy. Need a student with a reading-comprehension passage that has a reference story — the story button appears once the questions start.
+>
+> | # | Do | Expect |
+> |---|---|---|
+> | 1 | Badge showing (ISIP-visibility license, forced assessment), Chrome font size **Very large**. Reopen the story mid-questions, tap the X. | X visible at the book's top-right, drawn over the ribbon. Closes to the same question, answers intact. |
+> | 2 | Reopen the story, press Escape. | Closes. |
+> | 3 | Reopen, click near the left screen edge. Reopen, click the passage text. Reopen, drag from the text off the book. | Edge click closes. Text click and drag do not. |
+> | 4 | Story open, narrow the window (or rotate a tablet to portrait). | "Please rotate your device" sits **above** the book. |
+> | 5 | Nonverbal student, first read: press Escape, click off the book, then tap the green arrow. | No X. Escape and off-book do nothing. Only the arrow closes it and starts the questions. |
+> | 6 | On an iPad: story open, tap just inside the left screen edge. | Closes. If nothing happens, report it — the X and Escape still work. |
+> | 7 | Badge with no story open. Then the excerpts view in live reading: Escape, click off the book. | Badge unchanged. Excerpts close only via the X. |
+>
+> Notes
+>
+> - The off-book band is narrow — roughly 41px left, 68px right at 1366 wide. Aim at the screen edge.
+> - Nonverbal question 2+ still auto-opens the passage with the arrow and replays the intro audio. Expected, tracked on ASSMNT-2529 — not a regression.
+> - The debug menu cannot be opened while the story is up.
+> - Case 1 needs an ISIP-visibility account; skip it if none exists on dev2. Case 6 needs a physical iPad.
+
+Note what it does *not* contain: no restatement of the bug, no root-cause summary, no list of what the unit tests already cover, no per-case importance label, no rationale paragraphs, and no Gaps section — the two genuine gaps are the last Notes bullet.
 
 - **Scripts section (at the bottom, after all cases)** — one block per script, titled `TC{n} Script`. Contains: the full mitmweb command per environment and the Python script body. **Block granularity = one independently-run unit per block.** A unit is the set of commands the tester runs in one go without stopping — all four `networksetup` enable lines are one unit (one block), both disable lines are one unit (one block), and each per-environment mitmweb command is its own unit (one block each, since the tester picks exactly one). Jira renders a copy button per block; splitting commands that belong together is just as bad as grouping commands that must be chosen between. Example shape for two environments:
 
@@ -223,4 +278,4 @@ Terse and importance-ordered. Suggested structure (HTML doc or ticket comment):
   ` ` `
 
   Never use `# --- TC1 — dev2 ---` comment lines inside a shared block. Keeping scripts out of the case list is what makes the cases scannable.
-- **Gaps / confidence** — speculative cases and anything that couldn't be determined (e.g. a value that needed to be asked for but wasn't provided). Omit this section entirely if there are no genuine gaps.
+- **Gaps / confidence** — only for a case you could not write at all, or a value nobody could supply. Anything a Notes bullet can carry belongs there instead. Omit the section entirely otherwise, which is the common case.
