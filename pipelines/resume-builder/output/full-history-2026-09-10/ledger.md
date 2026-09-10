@@ -68,7 +68,7 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/amira-intervention-library
 - [ ] AmiraLearning/torys-scripts (93 commits, 2 batches)
   - [ ] batch 1/2 (page 1)
-  - [ ] batch 2/2 (page 2)
+  - [x] batch 2/2 (page 2)
   - [ ] merged into digest
 - [x] AmiraLearning/amira-sis-api
 - [x] AmiraLearning/amira-intervention-selection
