@@ -88,7 +88,7 @@ commits endpoint paginates directly.
   - [ ] batch 3/3 (page 3)
   - [ ] merged into digest
 - [x] amira-rnd/amira-shared-models
-- [ ] amira-rnd/amira-sis-api
+- [x] amira-rnd/amira-sis-api
 - [ ] amira-rnd/student-shared-services
 - [ ] amira-rnd/torys-script-library
 - [ ] amira-rnd/assessments-item-bank-reviewer
