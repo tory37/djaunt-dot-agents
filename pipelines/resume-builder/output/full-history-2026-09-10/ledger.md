@@ -94,7 +94,7 @@ commits endpoint paginates directly.
 - [ ] amira-rnd/assessments-item-bank-reviewer
 - [ ] istation-cloud/isweb
 - [ ] istation-hydra/olp-student-experience
-- [ ] istation-hydra/olp-html-practice
+- [x] istation-hydra/olp-html-practice
 
 ## Stage 4 — Cross-repo synthesis
 
