@@ -32,26 +32,61 @@ Note: `amira-sis-api` exists in both AmiraLearning (id 184444296, created
 via `gh api repos/<org>/amira-sis-api --jq '{id,full_name,created_at}'`
 to be two distinct repos, not a mirror/duplicate. Both analyzed separately.
 
+Commit counts (by author=tory37, via commits API Link-header pagination,
+not Search — Search 404s across these orgs) determined chunking:
+5 repos exceed ~60 commits and are batched by commit-API page number
+(per_page=50) instead of date range — simpler and exact since the
+commits endpoint paginates directly.
+
+- lexa-studentapp: 384 commits → 8 batches (pages 1-8)
+- amira-educators-client: 125 commits → 3 batches (pages 1-3)
+- AmiraAnimalRescue: 102 commits → 3 batches (pages 1-3)
+- torys-scripts: 93 commits → 2 batches (pages 1-2)
+- amira-parent-portal: 68 commits → 2 batches (pages 1-2)
+
 - [ ] AmiraLearning/amira-student-record-store
-- [ ] AmiraLearning/lexa-studentapp
+- [ ] AmiraLearning/lexa-studentapp (384 commits, 8 batches)
+  - [ ] batch 1/8 (page 1)
+  - [ ] batch 2/8 (page 2)
+  - [ ] batch 3/8 (page 3)
+  - [ ] batch 4/8 (page 4)
+  - [ ] batch 5/8 (page 5)
+  - [ ] batch 6/8 (page 6)
+  - [ ] batch 7/8 (page 7)
+  - [ ] batch 8/8 (page 8)
+  - [ ] merged into digest
 - [ ] AmiraLearning/amira-admin-reports-domo
 - [ ] AmiraLearning/amira-assignment-service
-- [ ] AmiraLearning/amira-parent-portal
+- [ ] AmiraLearning/amira-parent-portal (68 commits, 2 batches)
+  - [ ] batch 1/2 (page 1)
+  - [ ] batch 2/2 (page 2)
+  - [ ] merged into digest
 - [ ] AmiraLearning/content-deployment-pipeline
 - [ ] AmiraLearning/amira-story-editor
 - [ ] AmiraLearning/studentapp-AI
 - [ ] AmiraLearning/amira-configuration-manager
 - [ ] AmiraLearning/amira-intervention-library
-- [ ] AmiraLearning/torys-scripts
+- [ ] AmiraLearning/torys-scripts (93 commits, 2 batches)
+  - [ ] batch 1/2 (page 1)
+  - [ ] batch 2/2 (page 2)
+  - [ ] merged into digest
 - [ ] AmiraLearning/amira-sis-api
 - [ ] AmiraLearning/amira-intervention-selection
 - [ ] AmiraLearning/evaluar-blueprint-testing
 - [ ] AmiraLearning/network-monitoring-service-analyzer
-- [ ] AmiraLearning/AmiraAnimalRescue
+- [ ] AmiraLearning/AmiraAnimalRescue (102 commits, 3 batches)
+  - [ ] batch 1/3 (page 1)
+  - [ ] batch 2/3 (page 2)
+  - [ ] batch 3/3 (page 3)
+  - [ ] merged into digest
 - [ ] AmiraLearning/cordova-plugin-googleplus
 - [ ] amira-rnd/amira-forge
 - [ ] amira-rnd/assessments-data
-- [ ] amira-rnd/amira-educators-client
+- [ ] amira-rnd/amira-educators-client (125 commits, 3 batches)
+  - [ ] batch 1/3 (page 1)
+  - [ ] batch 2/3 (page 2)
+  - [ ] batch 3/3 (page 3)
+  - [ ] merged into digest
 - [ ] amira-rnd/amira-shared-models
 - [ ] amira-rnd/amira-sis-api
 - [ ] amira-rnd/student-shared-services
