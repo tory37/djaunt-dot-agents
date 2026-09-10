@@ -52,7 +52,7 @@ commits endpoint paginates directly.
   - [x] batch 4/8 (page 4)
   - [x] batch 5/8 (page 5)
   - [x] batch 6/8 (page 6)
-  - [ ] batch 7/8 (page 7)
+  - [x] batch 7/8 (page 7)
   - [x] batch 8/8 (page 8)
   - [ ] merged into digest
 - [x] AmiraLearning/amira-admin-reports-domo
