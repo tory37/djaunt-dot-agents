@@ -45,7 +45,7 @@ commits endpoint paginates directly.
 - amira-parent-portal: 68 commits → 2 batches (pages 1-2)
 
 - [x] AmiraLearning/amira-student-record-store
-- [ ] AmiraLearning/lexa-studentapp (384 commits, 8 batches)
+- [x] AmiraLearning/lexa-studentapp (384 commits, 8 batches)
   - [x] batch 1/8 (page 1)
   - [x] batch 2/8 (page 2)
   - [x] batch 3/8 (page 3)
@@ -54,7 +54,7 @@ commits endpoint paginates directly.
   - [x] batch 6/8 (page 6)
   - [x] batch 7/8 (page 7)
   - [x] batch 8/8 (page 8)
-  - [ ] merged into digest
+  - [x] merged into digest
 - [x] AmiraLearning/amira-admin-reports-domo
 - [x] AmiraLearning/amira-assignment-service
 - [x] AmiraLearning/amira-parent-portal (68 commits, 2 batches)
