@@ -71,8 +71,8 @@ commits endpoint paginates directly.
   - [ ] batch 2/2 (page 2)
   - [ ] merged into digest
 - [ ] AmiraLearning/amira-sis-api
-- [ ] AmiraLearning/amira-intervention-selection
-- [ ] AmiraLearning/evaluar-blueprint-testing
+- [x] AmiraLearning/amira-intervention-selection
+- [x] AmiraLearning/evaluar-blueprint-testing
 - [x] AmiraLearning/network-monitoring-service-analyzer
 - [ ] AmiraLearning/AmiraAnimalRescue (102 commits, 3 batches)
   - [ ] batch 1/3 (page 1)
