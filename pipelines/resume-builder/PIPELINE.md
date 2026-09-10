@@ -107,12 +107,44 @@ commits are correct for this pipeline's output.
 2. `gh repo list <login> --json name,owner,description,isPrivate,isFork,pushedAt,primaryLanguage,url --limit 200`
    for personal repos.
 3. `gh api user/orgs --jq '.[].login'` → list orgs the user belongs to.
-4. For each org: `gh repo list <org> --json name,owner,description,isPrivate,isFork,pushedAt,primaryLanguage,url --limit 200`.
-5. Merge all results, write raw to `output/<run-id>/discovery/repos.json`.
-6. Present a condensed table in chat: name, org/owner, primary language,
+4. Confirm with the user which orgs to include (a work org may span
+   multiple GitHub orgs — e.g. an acquired company's separate org — and
+   some orgs in the list may not apply at all). Don't assume; ask.
+
+### Org repos — filter by authorship before presenting
+
+A work org can hold hundreds of repos; most were never touched by the
+user. Listing all of them for manual scoping in Stage 2 doesn't scale, and
+GitHub's Search API (`search/commits`, `search/issues`) routinely 404s on
+orgs that restrict search indexing for private repos — so authorship
+filtering has to go through the plain (non-search) commits endpoint,
+per repo.
+
+This step is bulk, mechanical API traffic (hundreds of repos × one
+commits check each) — never do it inline. Spawn **one subagent per
+selected org**, in parallel:
+
+1. `gh repo list <org> --json name,owner,pushedAt,primaryLanguage,url,isFork --limit 1000`.
+2. For each repo, check authorship without Search:
+   `gh api repos/<org>/<repo>/commits -f author=<login> -f per_page=1`
+   (non-empty array → touched). If empty, retry without the `author`
+   filter and grep the first page's `commit.author.name`/`commit.author.email`
+   against the user's known local git identities — same null-`login`
+   linkage gap as personal repos (see Stage 3 note below) — before
+   concluding the repo is untouched.
+3. Keep only repos where authorship is confirmed. Write the filtered
+   list to `output/<run-id>/discovery/org-<org-name>.json`.
+4. Return only a one-line confirmation to the orchestrator: org name,
+   repos scanned, repos kept.
+
+Merge all org fragments plus the personal-repo list from steps 1-2 into
+`output/<run-id>/discovery/repos.json`. Check off each org's scan in the
+ledger as its subagent returns, not batched at the end.
+
+5. Present a condensed table in chat: name, org/owner, primary language,
    last pushed, fork y/n. Batch in groups of ~20 if the list is long —
    don't dump 100+ repos in one wall of text.
-7. Check off "repos.json written" in the ledger and commit.
+6. Check off "repos.json written" in the ledger and commit.
 
 ## Stage 2 — Scope with the user
 
