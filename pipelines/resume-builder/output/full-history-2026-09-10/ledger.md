@@ -22,11 +22,44 @@
 
 ## Stage 2 — Scope with the user
 
-- [ ] selected-repos.json written
+- [x] selected-repos.json written — 28 org repos, no cuts (user confirmed "no cuts").
+      Personal repos (75) not yet scoped — separate Stage 2 pass pending.
 
 ## Stage 3 — Per-repo deep analysis
 
-(populated after Stage 2 scoping)
+Note: `amira-sis-api` exists in both AmiraLearning (id 184444296, created
+2019-05-01) and amira-rnd (id 921229668, created 2025-01-23) — confirmed
+via `gh api repos/<org>/amira-sis-api --jq '{id,full_name,created_at}'`
+to be two distinct repos, not a mirror/duplicate. Both analyzed separately.
+
+- [ ] AmiraLearning/amira-student-record-store
+- [ ] AmiraLearning/lexa-studentapp
+- [ ] AmiraLearning/amira-admin-reports-domo
+- [ ] AmiraLearning/amira-assignment-service
+- [ ] AmiraLearning/amira-parent-portal
+- [ ] AmiraLearning/content-deployment-pipeline
+- [ ] AmiraLearning/amira-story-editor
+- [ ] AmiraLearning/studentapp-AI
+- [ ] AmiraLearning/amira-configuration-manager
+- [ ] AmiraLearning/amira-intervention-library
+- [ ] AmiraLearning/torys-scripts
+- [ ] AmiraLearning/amira-sis-api
+- [ ] AmiraLearning/amira-intervention-selection
+- [ ] AmiraLearning/evaluar-blueprint-testing
+- [ ] AmiraLearning/network-monitoring-service-analyzer
+- [ ] AmiraLearning/AmiraAnimalRescue
+- [ ] AmiraLearning/cordova-plugin-googleplus
+- [ ] amira-rnd/amira-forge
+- [ ] amira-rnd/assessments-data
+- [ ] amira-rnd/amira-educators-client
+- [ ] amira-rnd/amira-shared-models
+- [ ] amira-rnd/amira-sis-api
+- [ ] amira-rnd/student-shared-services
+- [ ] amira-rnd/torys-script-library
+- [ ] amira-rnd/assessments-item-bank-reviewer
+- [ ] istation-cloud/isweb
+- [ ] istation-hydra/olp-student-experience
+- [ ] istation-hydra/olp-html-practice
 
 ## Stage 4 — Cross-repo synthesis
 
