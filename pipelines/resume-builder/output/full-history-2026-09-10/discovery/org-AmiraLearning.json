@@ -1,0 +1,155 @@
+[
+  {
+    "name": "amira-student-record-store",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-10T20:40:09Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/amira-student-record-store",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "lexa-studentapp",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-10T20:11:43Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/lexa-studentapp",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-admin-reports-domo",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-10T19:48:57Z",
+    "primaryLanguage": "TypeScript",
+    "url": "https://github.com/AmiraLearning/amira-admin-reports-domo",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-assignment-service",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-10T19:35:47Z",
+    "primaryLanguage": "Python",
+    "url": "https://github.com/AmiraLearning/amira-assignment-service",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-parent-portal",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-08T19:35:31Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/amira-parent-portal",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "content-deployment-pipeline",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-03T21:28:11Z",
+    "primaryLanguage": "Python",
+    "url": "https://github.com/AmiraLearning/content-deployment-pipeline",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-story-editor",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-09-02T20:16:07Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/amira-story-editor",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "studentapp-AI",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-08-28T21:37:55Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/studentapp-AI",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-configuration-manager",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-08-26T19:14:06Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/amira-configuration-manager",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-intervention-library",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-08-13T14:42:56Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/amira-intervention-library",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "torys-scripts",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-08-08T01:55:58Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/torys-scripts",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-sis-api",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-08-08T01:55:40Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/amira-sis-api",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "amira-intervention-selection",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-07-23T19:49:09Z",
+    "primaryLanguage": "Makefile",
+    "url": "https://github.com/AmiraLearning/amira-intervention-selection",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "evaluar-blueprint-testing",
+    "owner": "AmiraLearning",
+    "pushedAt": "2026-07-08T19:54:43Z",
+    "primaryLanguage": "Python",
+    "url": "https://github.com/AmiraLearning/evaluar-blueprint-testing",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "network-monitoring-service-analyzer",
+    "owner": "AmiraLearning",
+    "pushedAt": "2023-08-17T16:07:26Z",
+    "primaryLanguage": "JavaScript",
+    "url": "https://github.com/AmiraLearning/network-monitoring-service-analyzer",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "AmiraAnimalRescue",
+    "owner": "AmiraLearning",
+    "pushedAt": "2023-06-05T17:19:36Z",
+    "primaryLanguage": "C#",
+    "url": "https://github.com/AmiraLearning/AmiraAnimalRescue",
+    "isFork": false,
+    "touched": true
+  },
+  {
+    "name": "cordova-plugin-googleplus",
+    "owner": "AmiraLearning",
+    "pushedAt": "2022-07-14T17:29:05Z",
+    "primaryLanguage": "Java",
+    "url": "https://github.com/AmiraLearning/cordova-plugin-googleplus",
+    "isFork": true,
+    "touched": true
+  }
+]

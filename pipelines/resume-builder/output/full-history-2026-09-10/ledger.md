@@ -13,7 +13,7 @@
 ## Stage 1 — Discover
 
 - [ ] Personal repos listed (`gh repo list tory37`)
-- [ ] AmiraLearning scanned and filtered by authorship
+- [x] AmiraLearning scanned and filtered by authorship (280 scanned, 17 kept: amira-student-record-store, lexa-studentapp, amira-admin-reports-domo, amira-assignment-service, amira-parent-portal, content-deployment-pipeline, amira-story-editor, studentapp-AI, amira-configuration-manager, amira-intervention-library, torys-scripts, amira-sis-api, amira-intervention-selection, evaluar-blueprint-testing, network-monitoring-service-analyzer, AmiraAnimalRescue, cordova-plugin-googleplus)
 - [ ] amira-rnd scanned and filtered by authorship
 - [x] istation-cloud scanned and filtered by authorship (106 scanned, 1 kept: isweb)
 - [x] istation-hydra scanned and filtered by authorship (26 scanned, 2 kept: olp-student-experience, olp-html-practice)
