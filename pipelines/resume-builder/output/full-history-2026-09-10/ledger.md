@@ -46,9 +46,9 @@ commits endpoint paginates directly.
 
 - [x] AmiraLearning/amira-student-record-store
 - [ ] AmiraLearning/lexa-studentapp (384 commits, 8 batches)
-  - [ ] batch 1/8 (page 1)
+  - [x] batch 1/8 (page 1)
   - [x] batch 2/8 (page 2)
-  - [ ] batch 3/8 (page 3)
+  - [x] batch 3/8 (page 3)
   - [x] batch 4/8 (page 4)
   - [x] batch 5/8 (page 5)
   - [x] batch 6/8 (page 6)
