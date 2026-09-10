@@ -110,3 +110,17 @@ commits endpoint paginates directly.
   AmiraLearning, amira-rnd, istation-cloud + istation-hydra in; hyperdesk-alliance
   and EpicGames out. Personal-repo dry run already done separately under
   `output/dryrun/` (two low-signal repos, not part of this run).
+- 2026-09-10 ~16:17 local: All 23 single-pass org repos digested and
+  committed. Moved to the 5 large chunked repos — wrote repo-context.md
+  for all 5 (lexa-studentapp, amira-parent-portal, torys-scripts,
+  AmiraAnimalRescue, amira-educators-client), committed. Launched 4 batch
+  subagents (amira-parent-portal batches 1-2, torys-scripts batches 1-2);
+  all 4 failed with "session limit · resets 5:20pm America/Chicago" before
+  writing any digest output. Confirmed no partial files were written —
+  only repo-context.md exists in each dir, already committed. Nothing lost.
+  **Resume point:** re-launch batch subagents for amira-parent-portal
+  (batch 1/2, 2/2) and torys-scripts (batch 1/2, 2/2) per the Stage 3
+  chunking plan above. AmiraAnimalRescue (3 batches), amira-educators-client
+  (3 batches), and lexa-studentapp (8 batches) haven't been started yet.
+  Personal repos (75) Stage 2 scoping also still pending — was deferred
+  earlier in this run to focus on orgs first.
