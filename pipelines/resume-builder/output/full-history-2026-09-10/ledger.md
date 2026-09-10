@@ -63,7 +63,7 @@ commits endpoint paginates directly.
   - [ ] merged into digest
 - [ ] AmiraLearning/content-deployment-pipeline
 - [ ] AmiraLearning/amira-story-editor
-- [ ] AmiraLearning/studentapp-AI
+- [x] AmiraLearning/studentapp-AI
 - [ ] AmiraLearning/amira-configuration-manager
 - [ ] AmiraLearning/amira-intervention-library
 - [ ] AmiraLearning/torys-scripts (93 commits, 2 batches)
