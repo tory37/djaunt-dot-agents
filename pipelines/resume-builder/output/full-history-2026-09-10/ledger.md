@@ -92,7 +92,7 @@ commits endpoint paginates directly.
 - [ ] amira-rnd/student-shared-services
 - [x] amira-rnd/torys-script-library
 - [x] amira-rnd/assessments-item-bank-reviewer
-- [ ] istation-cloud/isweb
+- [x] istation-cloud/isweb
 - [ ] istation-hydra/olp-student-experience
 - [x] istation-hydra/olp-html-practice
 
