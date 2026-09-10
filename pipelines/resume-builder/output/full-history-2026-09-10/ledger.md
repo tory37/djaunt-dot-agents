@@ -82,11 +82,11 @@ commits endpoint paginates directly.
 - [x] AmiraLearning/cordova-plugin-googleplus
 - [x] amira-rnd/amira-forge
 - [x] amira-rnd/assessments-data
-- [ ] amira-rnd/amira-educators-client (125 commits, 3 batches)
+- [x] amira-rnd/amira-educators-client (125 commits, 3 batches)
   - [x] batch 1/3 (page 1)
   - [x] batch 2/3 (page 2)
-  - [ ] batch 3/3 (page 3)
-  - [ ] merged into digest
+  - [x] batch 3/3 (page 3)
+  - [x] merged into digest
 - [x] amira-rnd/amira-shared-models
 - [x] amira-rnd/amira-sis-api
 - [x] amira-rnd/student-shared-services
