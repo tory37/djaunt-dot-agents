@@ -3,3 +3,5 @@
 !tools/*/template/.agents/**
 .DS_Store
 .claude
+src/skills/synced/
+src/skills/session-start-hook/
