@@ -82,8 +82,9 @@ Anything that stays with the user, for the user's own benefit — plans, reviews
 
 1. **Write Immediately:** When a plan or implementation chunk is ready, write it to the appropriate file. Direct the user to the file for review rather than printing it all.
 2. **Phase-Based Implementation:** Break features and fixes into discrete, testable phases (like user stories).
-3. **Verify, Then Wait, Then Commit:** After a phase is implemented, verify it (tests pass, manual checks done) and report that to the user. Do not commit yet — wait for the user's explicit confirmation that it's working. Commit only after that confirmation. This applies even at the end of a phase: confirmation always comes before the commit, never after.
+3. **Match the Project's Env, Then Run Tests, Then Wait, Then Commit:** After a phase is implemented, confirm you're running in the project's correct environment (Node/Python/Ruby version, package manager, venv, etc. — check `.nvmrc`, `.tool-versions`, `engines`, lockfiles, or an existing README/CI config before assuming) and run the project's own test commands yourself (unit, e2e, integration as applicable — don't just claim it works). Report the actual results to the user. Do not commit yet — wait for the user's explicit confirmation that it's working. Commit only after that confirmation. This applies even at the end of a phase: confirmation always comes before the commit, never after.
 4. **Clean Diffs:** Each phase gets its own focused commit, keeping the version history readable.
+5. **If Tests Can't Run:** If the right toolchain isn't available or tests genuinely can't be executed in this environment, say so explicitly and explain why — don't silently skip verification or claim it passed.
 
 ### Ticket Sync (Kanban / Trello)
 
@@ -235,7 +236,7 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 
 ## IMPORTANT Rules
 
-- **Token Efficiency:** To save context and cost, do not run tests (unit, e2e, integration) yourself. Always prompt the user to run the tests and report the results back to you. **Never over-deliver unrequested implementation plans or code.** If the user asks a question, answer it and stop.
+- **Run Your Own Tests:** Run the project's tests (unit, e2e, integration) yourself to validate changes — don't hand that off to the user. First confirm you're in the right environment for the project (correct Node/Python/etc. version, dependencies installed) before running them. **Never over-deliver unrequested implementation plans or code.** If the user asks a question, answer it and stop.
 - ALWAYS verify work before saying it's done
 - NEVER modify production databases/infra without explicit user confirmation
 - NEVER commit .env files, credentials, or secrets
