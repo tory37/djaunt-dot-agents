@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/brand/tokens.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/buttons/buttons.css">
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -55,16 +56,8 @@
   .hero p.lede { margin: 0; max-width: 62ch; font-size: clamp(16px, 2vw, 19px); color: var(--dj-text-muted); }
   .hero .actions { display: flex; flex-wrap: wrap; gap: var(--dj-space-3); }
 
-  .btn {
-    font-family: var(--dj-font-body); font-size: var(--dj-text-sm); font-weight: 500;
-    padding: 11px 20px; border-radius: var(--dj-radius-md); cursor: pointer;
-    border: var(--dj-border-width) solid var(--dj-border);
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-primary { background: var(--dj-accent); color: var(--dj-on-accent); border: none; box-shadow: var(--dj-glow); }
-  .btn-primary:hover { background: var(--dj-accent-hi); border-bottom: none; color: var(--dj-on-accent); }
-  .btn-ghost { background: transparent; color: var(--dj-text); }
-  .btn-ghost:hover { background: var(--dj-surface-raised); border-color: var(--dj-bone-500); color: var(--dj-text); border-bottom-color: var(--dj-bone-500); }
+  /* .dj-button / .dj-button-primary / .dj-button-ghost come from
+     djaunt-branding's components/buttons/buttons.css, linked above. */
 
   section { padding: clamp(56px, 8vw, 88px) 0; border-bottom: var(--dj-border-width) solid var(--dj-border); }
   section:last-of-type { border-bottom: none; }
@@ -152,8 +145,8 @@
       are instantly configured — same standards, same slash commands, everywhere.
     </p>
     <div class="actions">
-      <a class="btn btn-primary" href="https://github.com/tory37/djaunt-dot-agents">View on GitHub</a>
-      <a class="btn btn-ghost" href="#get-started">Get started</a>
+      <a class="dj-button dj-button-primary" href="https://github.com/tory37/djaunt-dot-agents">View on GitHub</a>
+      <a class="dj-button dj-button-ghost" href="#get-started">Get started</a>
     </div>
   </header>
 
@@ -277,7 +270,7 @@ cp ~/my-work-context.md ~/.agents/extensions/work.md</pre>
       <img src="assets/brand/logo/djaunt-icon-frost.svg" alt="">
       <span class="mono">djaunt-dot-agents · MIT-style personal config</span>
     </div>
-    <a class="btn btn-ghost" href="https://github.com/tory37/djaunt-dot-agents">github.com/tory37/djaunt-dot-agents</a>
+    <a class="dj-button dj-button-ghost" href="https://github.com/tory37/djaunt-dot-agents">github.com/tory37/djaunt-dot-agents</a>
   </footer>
 
 </div>
