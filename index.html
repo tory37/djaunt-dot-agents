@@ -14,6 +14,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="assets/brand/tokens.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/buttons/buttons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/badge/badge.css">
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -70,13 +71,6 @@
     text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--dj-border);
   }
   table.agents th { font-family: var(--dj-font-mono); font-size: var(--dj-text-xs); letter-spacing: var(--dj-tracking-label); text-transform: uppercase; color: var(--dj-text-muted); font-weight: 500; }
-  .badge {
-    font-family: var(--dj-font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 3px 8px; border-radius: var(--dj-radius-sm); border: 1px solid var(--dj-border);
-    color: var(--dj-success); border-color: color-mix(in srgb, var(--dj-success) 40%, var(--dj-border));
-    display: inline-block;
-  }
-
   .diagram {
     background: var(--dj-surface); border: 1px solid var(--dj-border); border-radius: var(--dj-radius-lg);
     padding: clamp(20px, 3vw, 32px); font-family: var(--dj-font-mono); font-size: 13px; line-height: 1.8;
@@ -164,17 +158,17 @@
         <tr>
           <td><a href="https://claude.ai/code">Claude Code</a></td>
           <td>Native skills — <code>~/.claude/skills/</code> symlinks straight back to this repo</td>
-          <td><span class="badge">Supported</span></td>
+          <td><span class="dj-badge dj-badge-success">Supported</span></td>
         </tr>
         <tr>
           <td><a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a></td>
           <td>Assembled — <code>sync.sh</code> inlines every skill into <code>~/.gemini/GEMINI.md</code></td>
-          <td><span class="badge">Supported</span></td>
+          <td><span class="dj-badge dj-badge-success">Supported</span></td>
         </tr>
         <tr>
           <td><a href="https://cursor.com/docs/cli/overview">Cursor CLI</a></td>
           <td>Native commands — one file per skill in <code>~/.cursor/commands/</code></td>
-          <td><span class="badge">Supported</span></td>
+          <td><span class="dj-badge dj-badge-success">Supported</span></td>
         </tr>
       </tbody>
     </table>
