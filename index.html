@@ -6,10 +6,18 @@
 <title>Dot Agents</title>
 <meta name="description" content="Portable AI agent config — one system prompt and one set of skills, synced to Claude Code, Gemini CLI, and Cursor CLI on any machine.">
 <link rel="icon" href="assets/brand/logo/djaunt-icon-gold.svg">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=IBM+Plex+Sans:wght@400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<!-- Djaunt design system — tokens vendored locally, components + fonts pulled from djaunt-branding via jsDelivr -->
 <link rel="stylesheet" href="assets/brand/tokens.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/brand/fonts.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/hero/hero.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/buttons/buttons.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/badge/badge.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/data-table/data-table.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/steps/steps.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/section-nav/section-nav.css">
+<script src="https://cdn.jsdelivr.net/gh/tory37/djaunt-branding@main/components/section-nav/section-nav.js" defer></script>
+
 <style>
   * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
@@ -42,44 +50,19 @@
     color: var(--dj-text);
   }
 
-  header.hero {
-    display: flex; flex-direction: column; gap: var(--dj-space-6);
-    padding: clamp(48px, 9vw, 104px) 0 clamp(40px, 6vw, 72px);
-    border-bottom: var(--dj-border-width) solid var(--dj-border);
-  }
-  .hero img.logo { width: min(220px, 55vw); height: auto; filter: drop-shadow(0 0 40px rgb(212 160 23 / 0.16)); }
-  .hero h1 { font-size: clamp(28px, 4.5vw, 44px); }
-  .hero p.lede { margin: 0; max-width: 62ch; font-size: clamp(16px, 2vw, 19px); color: var(--dj-text-muted); }
-  .hero .actions { display: flex; flex-wrap: wrap; gap: var(--dj-space-3); }
+  /* Hero: the .dj-hero component handles kicker/title/lede/actions —
+     this just places the brand lockup above it as a visible mark
+     (not the component's background watermark, which stays hidden). */
+  .wrap > .dj-hero { border-top: none; }
+  .hero-logo { width: min(200px, 50vw); height: auto; margin-bottom: var(--dj-space-6); filter: drop-shadow(0 0 40px rgb(212 160 23 / 0.16)); }
 
-  .btn {
-    font-family: var(--dj-font-body); font-size: var(--dj-text-sm); font-weight: 500;
-    padding: 11px 20px; border-radius: var(--dj-radius-md); cursor: pointer;
-    border: var(--dj-border-width) solid var(--dj-border);
-    display: inline-flex; align-items: center; gap: 8px;
-  }
-  .btn-primary { background: var(--dj-accent); color: var(--dj-on-accent); border: none; box-shadow: var(--dj-glow); }
-  .btn-primary:hover { background: var(--dj-accent-hi); border-bottom: none; color: var(--dj-on-accent); }
-  .btn-ghost { background: transparent; color: var(--dj-text); }
-  .btn-ghost:hover { background: var(--dj-surface-raised); border-color: var(--dj-bone-500); color: var(--dj-text); border-bottom-color: var(--dj-bone-500); }
+  .dj-section-nav { top: 0; }
 
   section { padding: clamp(56px, 8vw, 88px) 0; border-bottom: var(--dj-border-width) solid var(--dj-border); }
   section:last-of-type { border-bottom: none; }
   .section-head { display: flex; flex-direction: column; gap: var(--dj-space-2); margin-bottom: var(--dj-space-6); }
   .section-head h2 { font-size: clamp(26px, 3.6vw, 36px); }
   .section-head p { margin: 0; max-width: 66ch; color: var(--dj-text-muted); font-size: var(--dj-text-base); }
-
-  table.agents { width: 100%; border-collapse: collapse; font-size: var(--dj-text-sm); }
-  table.agents th, table.agents td {
-    text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--dj-border);
-  }
-  table.agents th { font-family: var(--dj-font-mono); font-size: var(--dj-text-xs); letter-spacing: var(--dj-tracking-label); text-transform: uppercase; color: var(--dj-text-muted); font-weight: 500; }
-  .badge {
-    font-family: var(--dj-font-mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 3px 8px; border-radius: var(--dj-radius-sm); border: 1px solid var(--dj-border);
-    color: var(--dj-success); border-color: color-mix(in srgb, var(--dj-success) 40%, var(--dj-border));
-    display: inline-block;
-  }
 
   .diagram {
     background: var(--dj-surface); border: 1px solid var(--dj-border); border-radius: var(--dj-radius-lg);
@@ -112,21 +95,6 @@
   .skill .name { font-family: var(--dj-font-mono); font-size: 13px; color: var(--dj-accent); }
   .skill p { margin: 0; font-size: var(--dj-text-sm); color: var(--dj-text-muted); }
 
-  .steps { display: flex; flex-direction: column; gap: var(--dj-space-5); margin-top: var(--dj-space-6); }
-  .step { display: flex; gap: var(--dj-space-5); align-items: flex-start; }
-  .step .num {
-    font-family: var(--dj-font-mono); font-weight: 500; font-size: var(--dj-text-sm);
-    width: 32px; height: 32px; flex: none; border-radius: var(--dj-radius-full);
-    border: 1px solid var(--dj-accent-deep); color: var(--dj-accent);
-    display: flex; align-items: center; justify-content: center;
-  }
-  .step .body { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
-  .step .body h3 { font-size: var(--dj-text-base); font-family: var(--dj-font-body); font-weight: 500; }
-  .step pre {
-    margin: 0; background: var(--dj-code-bg); border: 1px solid var(--dj-border); border-radius: var(--dj-radius-md);
-    padding: 12px 16px; font-family: var(--dj-font-mono); font-size: 13px; color: var(--dj-code-fg); overflow-x: auto;
-  }
-
   footer {
     padding: clamp(32px, 5vw, 48px) 0 clamp(56px, 8vw, 88px);
     display: flex; align-items: center; gap: var(--dj-space-4); flex-wrap: wrap; justify-content: space-between;
@@ -139,52 +107,61 @@
 <body>
 <div class="wrap">
 
-  <header class="hero">
-    <div class="eyebrow">Portable AI agent config — v1</div>
-    <img class="logo" src="assets/brand/logo/djaunt-lockup-gold.svg" alt="Djaunt">
-    <h1>djaunt-dot-agents</h1>
-    <p class="lede">
+  <header class="dj-hero">
+    <img class="hero-logo" src="assets/brand/logo/djaunt-lockup-gold.svg" alt="Djaunt">
+    <p class="dj-hero-kicker">Portable AI agent config — v1</p>
+    <h1 class="dj-hero-title">djaunt-dot-agents</h1>
+    <p class="dj-hero-lede">
       One system prompt. One set of skills. Clone this repo on any machine, run one script,
       and <strong>Claude Code</strong>, <strong>Gemini CLI</strong>, and <strong>Cursor CLI</strong>
       are instantly configured — same standards, same slash commands, everywhere.
     </p>
-    <div class="actions">
-      <a class="btn btn-primary" href="https://github.com/tory37/djaunt-dot-agents">View on GitHub</a>
-      <a class="btn btn-ghost" href="#get-started">Get started</a>
+    <div class="dj-hero-actions">
+      <a class="dj-button dj-button-primary" href="https://github.com/tory37/djaunt-dot-agents">View on GitHub</a>
+      <a class="dj-button dj-button-ghost" href="#get-started">Get started</a>
     </div>
   </header>
 
-  <section>
+  <nav class="dj-section-nav" aria-label="Section navigation">
+    <a class="dj-section-nav-link" href="#supported-agents" data-dj-nav-target="supported-agents">Supported agents</a>
+    <a class="dj-section-nav-link" href="#how-it-works" data-dj-nav-target="how-it-works">How it works</a>
+    <a class="dj-section-nav-link" href="#skills" data-dj-nav-target="skills">Skills</a>
+    <a class="dj-section-nav-link" href="#get-started" data-dj-nav-target="get-started">Get started</a>
+  </nav>
+
+  <section id="supported-agents">
     <div class="section-head">
       <div class="eyebrow">01 — Supported agents</div>
       <h2>Write once, sync everywhere</h2>
       <p>The same global instructions and skill set reach every supported tool, deployed by a single script.</p>
     </div>
-    <table class="agents">
-      <thead>
-        <tr><th>Agent</th><th>Mechanism</th><th>Status</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td><a href="https://claude.ai/code">Claude Code</a></td>
-          <td>Native skills — <code>~/.claude/skills/</code> symlinks straight back to this repo</td>
-          <td><span class="badge">Supported</span></td>
-        </tr>
-        <tr>
-          <td><a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a></td>
-          <td>Assembled — <code>sync.sh</code> inlines every skill into <code>~/.gemini/GEMINI.md</code></td>
-          <td><span class="badge">Supported</span></td>
-        </tr>
-        <tr>
-          <td><a href="https://cursor.com/docs/cli/overview">Cursor CLI</a></td>
-          <td>Native commands — one file per skill in <code>~/.cursor/commands/</code></td>
-          <td><span class="badge">Supported</span></td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="dj-table-scroll">
+      <table class="dj-table">
+        <thead>
+          <tr><th>Agent</th><th class="wrap">Mechanism</th><th>Status</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><a href="https://claude.ai/code">Claude Code</a></td>
+            <td class="wrap">Native skills — <code>~/.claude/skills/</code> symlinks straight back to this repo</td>
+            <td><span class="dj-badge dj-badge-success">Supported</span></td>
+          </tr>
+          <tr>
+            <td><a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a></td>
+            <td class="wrap">Assembled — <code>sync.sh</code> inlines every skill into <code>~/.gemini/GEMINI.md</code></td>
+            <td><span class="dj-badge dj-badge-success">Supported</span></td>
+          </tr>
+          <tr>
+            <td><a href="https://cursor.com/docs/cli/overview">Cursor CLI</a></td>
+            <td class="wrap">Native commands — one file per skill in <code>~/.cursor/commands/</code></td>
+            <td><span class="dj-badge dj-badge-success">Supported</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <section>
+  <section id="how-it-works">
     <div class="section-head">
       <div class="eyebrow">02 — How it works</div>
       <h2>One source of truth, three targets</h2>
@@ -215,7 +192,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="skills">
     <div class="section-head">
       <div class="eyebrow">03 — Skills</div>
       <h2>Twelve slash commands, one workflow</h2>
@@ -242,29 +219,20 @@
       <div class="eyebrow">04 — Get started</div>
       <h2>Three steps, any machine</h2>
     </div>
-    <div class="steps">
-      <div class="step">
-        <span class="num">1</span>
-        <div class="body">
-          <h3>Clone the repo</h3>
-          <pre>git clone https://github.com/tory37/djaunt-dot-agents.git ~/src/djaunt-dot-agents
+    <div class="dj-steps">
+      <div class="dj-step">
+        <h3>Clone the repo</h3>
+        <pre>git clone https://github.com/tory37/djaunt-dot-agents.git ~/src/djaunt-dot-agents
 cd ~/src/djaunt-dot-agents</pre>
-        </div>
       </div>
-      <div class="step">
-        <span class="num">2</span>
-        <div class="body">
-          <h3>Add machine-specific extensions (optional)</h3>
-          <pre>mkdir -p ~/.agents/extensions
+      <div class="dj-step">
+        <h3>Add machine-specific extensions (optional)</h3>
+        <pre>mkdir -p ~/.agents/extensions
 cp ~/my-work-context.md ~/.agents/extensions/work.md</pre>
-        </div>
       </div>
-      <div class="step">
-        <span class="num">3</span>
-        <div class="body">
-          <h3>Run the sync script</h3>
-          <pre>bash scripts/sync.sh</pre>
-        </div>
+      <div class="dj-step">
+        <h3>Run the sync script</h3>
+        <pre>bash scripts/sync.sh</pre>
       </div>
     </div>
   </section>
@@ -274,7 +242,7 @@ cp ~/my-work-context.md ~/.agents/extensions/work.md</pre>
       <img src="assets/brand/logo/djaunt-icon-gold.svg" alt="">
       <span class="mono">djaunt-dot-agents · MIT-style personal config</span>
     </div>
-    <a class="btn btn-ghost" href="https://github.com/tory37/djaunt-dot-agents">github.com/tory37/djaunt-dot-agents</a>
+    <a class="dj-button dj-button-ghost" href="https://github.com/tory37/djaunt-dot-agents">github.com/tory37/djaunt-dot-agents</a>
   </footer>
 
 </div>
