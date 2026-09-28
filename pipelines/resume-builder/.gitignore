@@ -1,1 +1,4 @@
-output/dryrun/**
+output/**
+!output/.gitkeep
+!output/*/
+!output/*/resume.md
