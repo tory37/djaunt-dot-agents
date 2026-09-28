@@ -15,8 +15,9 @@ Pick `<run-id>` once, the first time this pipeline is ever run for real
 (e.g. `full-history-2026-09-10`), and reuse the same `<run-id>` across
 every session until the run finishes — this is one long-running pass
 across the user's whole GitHub history, not a new run per day. `dryrun/`
-is reserved for throwaway test runs and is gitignored; a real run's
-`<run-id>` directory is not.
+is reserved for throwaway test runs. All of `output/` is gitignored except
+each run's final `resume.md`: this repo is public, and digests, discovery
+data, and the ledger describe private repos.
 
 Requires `gh` (GitHub CLI), authenticated. If `gh auth status` fails, stop
 and tell the user to run `gh auth login` first.
@@ -30,7 +31,7 @@ idle-wakeups waiting to continue; that drags accumulated chat history
 forward and burns context for no benefit. Instead:
 
 - The **ledger** (`output/<run-id>/ledger.md`) is the single source of
-  truth for what's done. It is committed to git, human-readable, and
+  truth for what's done. It lives on local disk (gitignored), is human-readable, and
   cheap for a brand-new agent (or a brand-new session) to read cold.
 - End the session freely once a batch of work lands and the ledger is
   updated. To resume — same session, new session, or a totally different
@@ -96,10 +97,10 @@ Update the ledger **immediately** after each unit of work completes, not
 batched at the end of a stage — if stage 3 spawns 5 repo subagents and
 the session ends after 3 return, the ledger must show exactly those 3 as
 done so the next session doesn't redo them or lose track of the other 2.
-Commit the ledger (and any newly written digests) after each meaningful
-update, since this is a private project and durability against a lost
-chat matters more than clean commit history here — small, frequent
-commits are correct for this pipeline's output.
+Write the ledger to disk after each meaningful update. **Never commit
+run output** (ledger, digests, discovery, selected repos, summary): this
+repo is public, and that output describes private repos. Only the final
+`resume.md` may be committed.
 
 ## Stage 1 — Discover
 
@@ -144,7 +145,7 @@ ledger as its subagent returns, not batched at the end.
 5. Present a condensed table in chat: name, org/owner, primary language,
    last pushed, fork y/n. Batch in groups of ~20 if the list is long —
    don't dump 100+ repos in one wall of text.
-6. Check off "repos.json written" in the ledger and commit.
+6. Check off "repos.json written" in the ledger.
 
 ## Stage 2 — Scope with the user
 
@@ -156,7 +157,7 @@ so just ask them to list names or say "all except X, Y."
 
 Write the confirmed subset to `output/<run-id>/selected-repos.json`. Check
 off "selected-repos.json written" in the ledger, add one pending checklist
-line per selected repo under Stage 3, and commit.
+line per selected repo under Stage 3.
 
 Stop here and wait for the user's answer before continuing — do not guess
 which repos matter.
@@ -179,7 +180,7 @@ own. Skip any repo whose ledger checklist line is already checked — its
 digest file already exists from a prior session.
 
 As each subagent's confirmation comes back, immediately check off that
-repo's line in the ledger and commit — do not wait for the whole batch to
+repo's line in the ledger — do not wait for the whole batch to
 finish before updating the ledger. This is what makes a mid-batch session
 end safe to resume: the ledger always reflects exactly which digests
 exist on disk, never "the whole batch, probably."
@@ -229,8 +230,7 @@ gh api search/commits -f q="repo:{owner}/{repo} author:<login>" --jq '.total_cou
   repo's fragment files (small, already digested — safe to read directly,
   no subagent needed) and combine them into one
   `output/<run-id>/digests/<repo-name>.md` covering the repo's full span.
-  Check off "merged into digest" and the repo's own top-level line, then
-  commit.
+  Check off "merged into digest" and the repo's own top-level line.
 
 For each repo (or each batch, if chunked) in `selected-repos.json`, spawn
 a subagent with a self-contained prompt (it has no memory of this
