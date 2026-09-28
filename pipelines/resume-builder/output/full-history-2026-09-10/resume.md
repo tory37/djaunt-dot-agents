@@ -1,72 +1,64 @@
 # Tory Hebert
 Senior Frontend Engineer · Lafayette, LA · (337) 380-0038 · tory37@gmail.com · toryh.dev · github.com/tory37 · linkedin.com/in/toryhebert
 
-Senior frontend engineer with 9+ years building production React/TypeScript web applications, including 4+ years owning the core client of a K-5 ed-tech platform serving live student assessments — real-time UI architecture, LLM-integrated features, and WebGL rendering. Known as the engineer who gets put on whatever the team needs next and figures it out, from assessment architecture to Unity/AR game development to backend and infrastructure work within these product domains (Node, Java, AWS Lambda/AppSync/DynamoDB) — partnering directly with product owners and designers to shape UX and technical approach along the way. Deeply fluent in AI-assisted engineering — design and run multi-agent development workflows daily, both on the job and in a self-built, portable agent-tooling system.
+Senior frontend engineer with 10 years building production React/TypeScript applications, including 4+ years on the core client of a K-5 reading and assessment platform serving 5.5M+ students. Goes full-stack when the work needs it (Node.js, Python, PostgreSQL, AWS Lambda/AppSync/DynamoDB). Works almost entirely through a self-designed agentic workflow — setting direction, architecture, and review while agents implement — and uses it to build the tools that remove friction for the team: a component workbench in 4 days, a partner-facing authoring platform in 3, and 11 browser extensions in 15.
 
 ## Skills
 
 **Languages:** JavaScript, TypeScript, Python, Java, C#, SQL
-**Frameworks/Libraries:** React, Redux, Angular, RxJS, Vue, Node.js, Java Spark, ASP.NET MVC
-**Cloud/Infra:** AWS (Lambda, AppSync, DynamoDB, API Gateway, S3, Cognito, SNS, SQS, CloudWatch), Terraform, Docker
-**APIs/Data:** GraphQL, REST, OpenAI API (GPT-4, DALL·E-3)
-**Testing:** Jest, pytest, JUnit, Mockito, Gatling
-**CI/CD & Tools:** GitHub Actions, Jenkins, Drone, Git, Datadog
-**Other:** Unity/WebGL, Scrum/Agile
-**AI/Agentic Engineering:** Claude Code, multi-agent orchestration, agentic pipeline design, prompt engineering, LLM API integration
+**Frameworks/Libraries:** React, Next.js, Redux, Angular, RxJS, Node.js
+**Cloud/Infra:** AWS (Lambda, AppSync, DynamoDB, API Gateway, S3, Cognito, SNS, SQS, CloudWatch, CloudFormation), Terraform, Docker
+**APIs/Data:** GraphQL, REST, PostgreSQL, Drizzle ORM, OpenAI API
+**Testing:** Jest, Vitest, Playwright, pytest, JUnit, Gatling
+**CI/CD & Tools:** GitHub Actions, Jenkins, Git, Datadog
+**AI/Agentic Engineering:** Claude Code, multi-agent orchestration, agentic pipeline design, MCP integration, prompt engineering, LLM API integration
+**Other:** Unity/WebGL, Chrome/Firefox extensions (Manifest V3)
 
 ## Experience
 
 ### Senior Software Engineer — Amira Learning
-*Lafayette, LA (remote) · 2022-07 – Current*
+*Lafayette, LA (remote) · 2022 – Present*
 
-- Owned Amira's core K-5 student reading and assessment client — now serving 5.5M+ students across 4,000+ districts — for 3+ years, migrating the real-time assessment engine from a client-authoritative to a server-orchestrated architecture now serving all English-language assessments in production.
-- Work daily inside an org-wide AI agent-tooling and MCP-integration stack — used to debug production issues against live platform data and build features across the codebase — making AI-native development the standard way the team ships. Adopted early (ChatGPT, then Cursor) and led internal Cursor adoption when it was the leading tool, pushing teammates to upgrade their own workflows; now run primarily through Claude Code, with Copilot, ChatGPT's coding agent, and Gemini as situational fallbacks, and contribute directly to the team's shared agent-tooling collection.
-- Built and maintained my own developer tooling whenever a recurring problem showed up rather than prompting for one-off fixes — Chrome extensions, CLI scripts, and a personal project-management system, each unblocking a specific piece of day-to-day friction on the team.
-- Shipped an LLM-powered conversational comprehension feature end-to-end — inference pipeline, timeout safeguards, and a teacher-facing transcript report — plus a WebGL-rendered animated tutor avatar system and a 6-brand white-label platform serving enterprise partners including NWEA and HMH.
-- Led frontend development on Amira's teacher/admin web application for 16 months, building the district-facing bilingual (Spanish) assessment configuration and screening-window scheduling system from the ground up, plus a client-side Word-document generator that renders live interactive report components into per-student intervention plans.
-- Built and maintained two production React/TypeScript admin tools (a parent portal with custom Cognito auth and an AppSync data layer, and a district license-configuration grid used by customer success managers), consistently replacing per-stack feature flags with per-district license entitlement checks across both.
-- Delivered cross-platform frontend work during the Amira/Istation platform merger, shipping 18 months of feature work on Istation's Angular student-experience app.
-- Took lead as the team's only Unity/C# expert on an acquired AR mobile game (Wonderscope) integrating Amira's tutor — taught Unity to coworkers from scratch, built a custom branching-path extension to the timeline editor, and shipped a new story with a dedicated 3D artist and new 3D assets. Owned 5 production releases and an in-house A/B experimentation framework.
-- Rotated across nearly every other major surface of the product as the team's go-to generalist: helped design the early Amira Forge platform, contributed to the internal story-curation tool, and built a programmatic After Effects scripting pipeline — working daily with the content, design, and art team, not my own — that auto-generated hundreds of instructional letter-teaching videos from a single skeleton project and dataset. Also picked up backend work in these same domains when it was the fastest path to shipping: GraphQL schema/contract changes serving roughly a dozen downstream services, a Lambda + DynamoDB microservice, and Python data work (Athena, S3).
+- Owned Amira's core K-5 reading and assessment client (React/TypeScript) for 3+ years, serving 5.5M+ students across 4,000+ districts. Migrated its real-time assessment engine to a server-orchestrated architecture that now runs every English-language assessment.
+- Shipped an LLM-powered conversational comprehension feature end-to-end (inference pipeline, timeout safeguards, teacher-facing transcript report), a WebGL animated tutor avatar, and a 6-brand white-label platform for partners including NWEA and HMH.
+- Cut every assessment UI check from a 3+ minute assignment run to instant by building a component workbench that renders real screens with live item-bank data and production text-to-speech. Used it that week to ship 5 layout fixes, each verified across up to 16 cases and 4 viewport sizes.
+- Built a partner-facing assessment authoring platform solo in ~3 days with an agentic workflow (Next.js, PostgreSQL): one type registry drives 12 item types through editing, CSV import, LLM prompt generation, and live preview in the real student app. Now extending it to open PRs for engineer approval.
+- Built internal tools wherever friction repeated: a GPT-4 pipeline that fixed homonym meanings across the story corpus, After Effects automation that generated hundreds of instructional videos, a one-command item-bank reviewer for content specialists, and daily-use browser extensions for test environments.
+- Led frontend on the teacher/admin web app for 16 months, building the district-facing bilingual assessment configuration and screening-window scheduling system from scratch, plus a client-side Word generator that turns live report components into per-student intervention plans.
+- Worked across the stack when it was the fastest path to ship: a parent portal (Cognito, AppSync), a license-configuration grid, GraphQL schema changes serving ~12 downstream services, a Lambda + DynamoDB microservice, and 18 months of Angular work during the Istation merger.
+- Took the lead as the team's only Unity/C# engineer on an acquired AR mobile game (Wonderscope): taught Unity to coworkers, built a branching-path timeline extension, and owned 5 production releases plus an in-house A/B testing framework.
 
 ### Senior Software Engineer (Fullstack) — Marqeta
-*Oakland, CA · 2020 – 2022-07*
+*Oakland, CA · 2020 – 2022*
 
-- Owned and maintained the Three Domain Secure (3DS) admin configuration panel and customer-facing forms (React, NodeJS, MustacheJS).
-- Also contributed to the 3DS backend service (Java, Java Spark) and its AWS infrastructure (Terraform-managed Lambda, API Gateway, SNS, SQS, S3, DynamoDB, CloudWatch).
-- Wrote integration and unit tests for the Java and JavaScript codebases, plus Gatling performance tests in Scala for the 3DS service.
-- Created designs and documentation for 3DS, ran Knowledge Sharing Sessions, and supported 3DS auditing.
-- Mentored a summer intern and served as primary onboarding mentor for two new hires on the team starting Q1 2022.
+- Helped launch Marqeta's in-house 3D Secure service in 2020 — one of the first verified on Visa's 3DS 2.2 standard — and owned its admin configuration panel and customer-facing authentication forms (React, Node.js), on a card platform that processed $111B across 122M active cards in 2021.
+- Built on the 3DS backend (Java) and its Terraform-managed AWS infrastructure (Lambda, API Gateway, SNS, SQS, S3, DynamoDB), and wrote its unit, integration, and Gatling load tests.
+- Wrote 3DS design docs, ran knowledge-sharing sessions, supported compliance audits, and mentored a summer intern plus two new hires through onboarding.
 
 ### Senior Software Engineer (Frontend) — Waitr, Inc.
 *Lafayette, LA · 2017 – 2020*
 
-- Contributed to Waitr's customer-facing web ordering application (React, Redux, Thunk), fixing bugs and implementing features from product/design specs.
-- Introduced Jest to the codebase and migrated existing Chai test suites.
-- Served as primary technical owner of an in-house AngularJS product used internally and by restaurant partners for order management — advised a small group of engineers, drove requirements into working solutions, and supported deployment and configuration updates.
+- Built Waitr's customer-facing web ordering app (React, Redux) for a food-delivery platform that grew to 2.4M active diners and ~24,000 restaurants by 2019.
+- Introduced Jest to the codebase and migrated the existing Chai test suites.
+- Owned an in-house AngularJS order-management product used by staff and restaurant partners, advising a small group of engineers from requirements through deployment.
 
 ### Associate Technical Consultant (Frontend) — Perficient, Inc.
 *Lafayette, LA · 2016 – 2017*
 
-- Built a single-page application for the Kaiser Permanente healthcare website using AngularJS 1.5, Angular 2, and TypeScript, styled with SASS/Bourbon-Neat against an existing styleguide, with unit tests in Karma/Jasmine/PhantomJS.
+- Built a single-page application for the Kaiser Permanente healthcare website (AngularJS, Angular 2, TypeScript, SASS) against an existing styleguide, with Karma/Jasmine unit tests.
 
 ## Personal Projects
 
-Solo-built, AI-assisted software outside of work — same daily-driver AI development practice applied to my own problems, not just Amira's.
+**djaunt-dot-agents** — the agentic workflow behind the work above. github.com/tory37/djaunt-dot-agents
+- One instruction set and skill library synced across Claude Code, Gemini CLI, and Cursor, so every workflow runs the same on any machine and any tool.
+- Designed resumable multi-agent pipelines: disk-backed ledger state, parallel subagents with isolated context per unit of work, and safe recovery mid-run. One of them built this resume from 30+ repos of git history.
 
-**djaunt-dot-agents** — a portable, cross-tool AI agent configuration system (Claude Code, Gemini CLI, Cursor CLI), open-sourced and actively maintained.
-- Single shared instruction set and skill library synced across three different AI CLIs via a symlink/assembly build script, so the same workflows work identically on any machine.
-- Designed a resumable, multi-agent pipeline architecture — disk-backed ledger state, parallel subagent fan-out with context isolation per unit of work, and safe mid-run recovery after interruption — built as a reusable foundation for new automated workflows as I add them over time.
-- github.com/tory37/djaunt-dot-agents
+**djaunt-browser-tools** — 11 Manifest V3 extensions for Chrome and Firefox, built in 15 days with an agentic workflow and used daily for Amira testing: rerouting launch URLs to temporary test environments, mocking APIs, and editing headers and query flags. 502 test assertions, CI-built releases. github.com/tory37/djaunt-browser-tools
 
-**Mealeo** — built solo, end-to-end, via AI-assisted development: a meal-planning/pantry app (Next.js/TypeScript) with Gemini built directly into the product for macro estimation and AI-merged shopping lists. github.com/tory37/djaunt-cooking
+**Mealeo** — meal-planning and pantry app (Next.js, TypeScript) with Gemini built in for macro estimation and AI-merged shopping lists. github.com/tory37/djaunt-cooking
 
-**Dekigo** — built solo, end-to-end, via AI-assisted development: a Japanese reading and spaced-repetition vocabulary tool (Next.js, Supabase, Kuromoji), fully tested (Vitest, Playwright). github.com/tory37/dekigo
+**Dekigo** — Japanese reading and spaced-repetition vocabulary tool (Next.js, Supabase, Kuromoji), tested with Vitest and Playwright. github.com/tory37/dekigo
 
 ## Education
 
 **Bachelor of Science, Computer Science** — University of Louisiana at Lafayette, 2012 – 2016
-
-## Certifications
-
-Certified Scrum Master (CSM), 2016
