@@ -31,7 +31,9 @@ If there are unknowns or ambiguities, surface them all at once in a single messa
 
 Write a step-by-step implementation plan to `.agents/output/features/<feature-name>/plan.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-feature`, depth-2 stylesheet path `../../assets/style.css`).
 
-The plan MUST cover:
+The plan MUST open with a **Problem / Goal** section in a `.section.accent` block, before any phases. Write it as if the reader has never seen the spec or this session: the need, who has it, and what done looks like. Never lead with the approach.
+
+The plan MUST then cover:
 
 - **Break into Phases:** Organize the work into discrete, testable phases. Each phase should deliver a small, verifiable piece of value.
 - **Tests First:** Define what needs to be tested for each phase.
@@ -70,5 +72,5 @@ Implement the feature one phase at a time. For each phase:
 Commit the changes and open a Pull Request (follow git conventions in AGENTS.md).
 
 - Commit body: explain what the feature does and why it was built this way.
-- PR description: feature explanation + brief implementation overview.
+- PR description: the problem or goal (written for a cold reader) + feature explanation + brief implementation overview.
 - Link related issues. Request review before merge.
