@@ -67,7 +67,9 @@ Run the test yourself and confirm it fails for the right reason. Report the actu
 
 Once the user approves the diagnosis:
 
-1. **Write Fix Plan:** Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-bug`, depth-2 stylesheet path `../../assets/style.css`). Bootstrap the stylesheet first if not present. Include:
+1. **Write Fix Plan:** Write a fix plan to `.agents/output/bugs/<bug-name>/fix-plan.html`. Use the standard HTML shell from the **HTML Output Convention** in AGENTS.md (`badge-bug`, depth-2 stylesheet path `../../assets/style.css`). Bootstrap the stylesheet first if not present. Include, in this order:
+   - **Original Problem** as the first section, in a `.section.accent` block. Write it as if the reader has never seen the bug: what happens, what should happen, where, and for whom. Use the approved Step 3 statement, corrected if the investigation changed it.
+   - **Findings** after it. Never lead with findings alone.
    - Root cause as a `.finding-card.critical` block.
    - Proposed minimal code change as `.phase-card` blocks (one per phase if complex).
    - Side effects or related risk areas as a `.callout.warning`.
@@ -97,5 +99,5 @@ Implement the fix. If the fix was broken into phases, follow the iterative patte
 Commit the fix and open a Pull Request (follow git conventions in AGENTS.md).
 
 - Commit body: explain why the bug occurred and why this fix is correct.
-- PR description: bug summary + root cause + fix approach.
+- PR description: original problem (written for a cold reader) + root cause + fix approach.
 - Link the original issue. Request review before merge.
