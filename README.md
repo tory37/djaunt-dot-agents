@@ -109,6 +109,14 @@ bash scripts/sync.sh
 | Gemini trigger / notes for a skill | `src/skills/<name>/gemini.meta` | Yes |
 | Machine-specific context | `~/.agents/extensions/<name>.md` | Yes |
 
+## Context compaction
+
+Claude's `/compact` and Gemini's `/compress` take free-text steering, but neither auto-applies a saved rule. Paste this as the argument each time:
+
+```text
+Compact aggressively. Drop: file contents, code snippets, resolved debugging steps, dead-end exploration, prior conversational turns. Keep: a 1-2 sentence summary of the overarching feature/mission, what phase just finished and the specific objective for the next phase, file paths as pointers only (do not re-summarize their contents), and any open question blocking the next step.
+```
+
 ## Extensions folder structure
 
 ```

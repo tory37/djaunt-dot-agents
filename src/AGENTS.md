@@ -105,122 +105,19 @@ When the user makes a request that is outside the scope of the current feature o
 
 ## Workflow
 
-Use `/djt-feature` to start a new feature (iterative 7-step workflow). Use `/djt-bug` to start a bug investigation (test-driven). Use `/djt-techdebt` for refactoring or tech debt. Use `/djt-research` to synthesize research into a strategy. These accept an optional spec/issue/context file: `/djt-feature @path/to/spec.md`.
-
-**Core Flow:** Gather info -> Write plan (phases) -> implement phase -> verify -> confirm with user -> commit -> repeat.
-
-Manual test plans, UI/frontend work, and session snapshot/resume each route to their own skill — see the dedicated sections below. Use `/djt-pup` to upgrade a vague prompt before starting a new session.
-
-For small, clear tasks (typo fix, rename, one-liner) — skip the workflow and act directly.
-
----
-
-## Manual Test Plans — always via `/djt-test-plan`
-
-**Any** request to write manual test cases — a doer test plan, QA steps, "how do I test this", validation steps for a change — goes through the `/djt-test-plan` skill. Do not hand-roll manual test plans inline; invoke the skill so scope, importance ranking, environment/URL resolution, and mitmproxy (mitmweb) fault-injection scripts are handled consistently.
-
-A doer test plan tells both the implementer and a QA engineer how to: navigate to the change from the app's entry point, exercise the new behavior, and verify the expected outcome at each step — written tersely, scoped tightly to what the change puts at risk (not a regression sweep), and ordered by importance.
-
-The skill places the plan on the active ticket when one is in play, otherwise writes it to `.agents/output/<type>/<name>/doer-test-plan.html`, with any generated mitmproxy scripts alongside.
-
----
-
-## UI/Frontend Design — always via `/djt-frontend-design`
-
-**Any** task that designs or builds a UI — a new page or component, a redesign of an existing view, a "make this look better" ask — goes through the `/djt-frontend-design` skill before code is written. Do not hand-roll interface design inline; invoke the skill so anti-slop constraints, current design paradigms, and the pre-flight design plan are applied consistently.
-
-This applies inside `/djt-feature`, `/djt-bug`, and `/djt-techdebt` as well: whenever a phase or fix touches visual/UI work, invoke `/djt-frontend-design` for that phase before implementing it, the same way `/djt-test-plan` is invoked for manual test cases.
+- `/djt-feature`, `/djt-bug`, `/djt-techdebt`, `/djt-research` start their workflows. Each takes an optional context file: `/djt-feature @path/to/spec.md`.
+- **Core Flow:** gather info → write plan (phases) → implement phase → verify → confirm with user → commit → repeat.
+- Small, clear tasks (typo, rename, one-liner): skip the workflow and act directly.
+- **Manual test plans** of any kind (doer plan, QA steps, "how do I test this") always go through `/djt-test-plan`. Never hand-roll them inline.
+- **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside the feature/bug/techdebt workflows too, per phase that touches UI.
 
 ---
 
 ## HTML Output Convention
 
-All human-facing output files the user keeps for themselves (plans, reviews, research) are written as styled `.html` files, not markdown. This makes them visually scannable when opened in a browser. Documents handed to other people are markdown instead — see **Handoff Documents — Markdown, Plain Language** above.
+All human-facing output files the user keeps for themselves (plans, reviews, research) are styled `.html`, not markdown. Documents handed to other people are markdown instead — see **Handoff Documents** above.
 
-### Stylesheet Bootstrap
-
-Before writing the first HTML output file in a project, ensure the stylesheet exists:
-
-```bash
-mkdir -p .agents/output/assets
-[ -f .agents/output/assets/style.css ] || cp ~/.agents/assets/style.css .agents/output/assets/style.css
-```
-
-### Relative Path to Stylesheet
-
-Use a relative path from the HTML file to `.agents/output/assets/style.css`:
-
-- File at `.agents/output/<type>/<file>.html` (one level deep) → `../assets/style.css`
-- File at `.agents/output/<type>/<name>/<file>.html` (two levels deep) → `../../assets/style.css`
-
-### Standard HTML Shell
-
-Every output HTML file uses this base structure:
-
-```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{{Title}} — {{type}}</title>
-  <link rel="stylesheet" href="{{relative-path}}/assets/style.css">
-</head>
-<body data-type="{{type}}">
-  <div class="container">
-    <header class="doc-header">
-      <div class="doc-meta">
-        <span class="badge badge-{{type}}">{{TYPE}}</span>
-        <span class="doc-date">{{YYYY-MM-DD}}</span>
-      </div>
-      <h1>{{Title}}</h1>
-    </header>
-    <main>
-      {{sections}}
-    </main>
-  </div>
-</body>
-</html>
-```
-
-### Rainbow Type System
-
-The stylesheet maps each doc type to a bold `--primary` color via `data-type` on `<body>`. Every component (H1 gradient, H3, phase numbers, card accents, table headers, code tint, etc.) automatically inherits this color — no extra CSS needed per doc.
-
-| Type | Color | Hex |
-|---|---|---|
-| `feature` | Electric blue | `#3b9eff` |
-| `bug` | Hot red | `#ff4d4d` |
-| `research` | Vivid purple | `#b060ff` |
-| `review` | Neon green | `#22d167` |
-| `techdebt` | Vivid amber | `#f5a623` |
-
-### Type Badges
-
-Use `badge-feature`, `badge-bug`, `badge-research`, `badge-review`, or `badge-techdebt` on `.badge` elements in `.doc-meta`.
-
-### Severity / Status Badges
-
-Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `badge-pending`, or `badge-in-progress`.
-
-### Key Component Classes
-
-| Class | Use for |
-|---|---|
-| `.phase-card` | Each implementation phase (feature/techdebt plans) |
-| `.phase-number`, `.phase-title`, `.phase-header` | Phase card header |
-| `.phase-steps` | Ordered list of steps inside a phase |
-| `.test-criteria` | Verification criteria block inside a phase |
-| `.finding-card` + `.critical/.warning/.suggestion/.positive` | Review findings |
-| `.finding-header`, `.finding-title`, `.finding-body`, `.finding-file` | Finding card anatomy |
-| `.checklist` | Unordered list with checkbox-style bullets |
-| `.test-steps` + `.test-step` | Numbered manual test steps (doer plans) |
-| `.test-step .checkpoint` | Expected outcome inside a test step |
-| `.meta-block` + `.meta-item` | Key/value metadata grid |
-| `.section` + `.accent/.success/.warning/.danger` | Left-bordered content block |
-| `.files-list` + `.file-chip` | Inline file path chips |
-| `.bibliography` | Numbered sources list |
-| `table` | Standard dark-styled data table |
+**Before writing the first HTML output file in a session, read `~/.agents/assets/html-output.md`.** It holds the stylesheet bootstrap, the HTML shell, the type colors, and the component classes.
 
 ---
 
@@ -230,14 +127,13 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 - Branch names: `type/short-description` (e.g. `feat/oauth-login`, `fix/token-refresh`)
 - Commits: imperative mood, <72 chars subject, body explains *why* not *what*
 - PRs: link related issues, request review before merge
-- NEVER commit until the user explicitly confirms the change is working — this holds even mid-workflow, after each phase (see Iterative Implementation & Commit Gates)
 - NEVER push (including force-push) unless the user explicitly tells you to push
 - NEVER force-push to the project's default protected branch
 - NEVER write a bare `#<number>` in a GitHub commit message, PR description, PR comment, or issue comment — GitHub auto-links it to an issue/PR, turning a plain number (a count, an ID, a version) into an unrelated hyperlink. Escape or reword it: back-ticks (`` `#42` ``), a zero-width space, or rephrasing ("issue count: 42") all prevent the auto-link.
 
 ## IMPORTANT Rules
 
-- **Run Your Own Tests:** Run the project's tests (unit, e2e, integration) yourself to validate changes — don't hand that off to the user. First confirm you're in the right environment for the project (correct Node/Python/etc. version, dependencies installed) before running them. **Never over-deliver unrequested implementation plans or code.** If the user asks a question, answer it and stop.
+- **Never over-deliver unrequested implementation plans or code.** If the user asks a question, answer it and stop.
 - ALWAYS verify work before saying it's done
 - NEVER modify production databases/infra without explicit user confirmation
 - NEVER commit .env files, credentials, or secrets
@@ -245,14 +141,7 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 
 ## Debug Logging
 
-Use a **single filterable/queryable prefix** for all debug logs in a session, and remove them before merging.
-
-The following is a TypeScript example — apply the same pattern in whatever language the project uses:
-
-```typescript
-const DEBUG_TAG = "[FEATURE-DEBUG]";
-console.log(`${DEBUG_TAG} context:`, data);
-```
+Use one filterable prefix for all debug logs in a session (e.g. `[FEATURE-DEBUG]`). Remove them before merging.
 
 ## Code Clarity & Documentation
 
@@ -260,9 +149,9 @@ Write code that reads like a clear sentence. A future reader (or the AI picking 
 
 ### Self-Documenting Code
 
-- **Names carry meaning.** Variables, functions, and types should say exactly what they hold or do. Prefer `userSessionToken` over `tok`, `calculateMonthlyRevenue` over `calc`, `isEligibleForPromotion` over `flag`.
+- **Names carry meaning.** Variables, functions, and types should say exactly what they hold or do. `userSessionToken`, not `tok`.
 - **Avoid clever compression.** No nested ternaries, chained optional chains on a single line doing multiple things, or one-liners that require mental parsing. Break them into named steps.
-- **Boolean conditions** should read as assertions: `isExpired`, `hasCompletedOnboarding`, `canEditRecord` — not `expiry`, `done`, `edit`.
+- **Boolean conditions** should read as assertions: `isExpired`, not `expiry`.
 - **Magic numbers and strings** get named constants: `const MAX_RETRY_ATTEMPTS = 3` not `if (retries > 3)`.
 
 ### When to Add a Comment
@@ -286,23 +175,6 @@ If you encounter existing code that uses patterns contrary to these standards (e
 3. Wait for the user's direction before proceeding.
 
 Never silently match a bad pattern. Never silently ignore it and "do it right" without flagging the divergence.
-
----
-
-## Session Management
-
-Use `/djt-suspend` to snapshot the current session to `.agents/output/sessions/<slug>.md` (stays `.md` — the AI reads it back directly).
-Use `/djt-resume <slug>` to reload a saved session and continue where work left off.
-
----
-
-## Context Compaction
-
-Claude's `/compact` and Gemini's `/compress` both accept free-text steering instructions as an argument, but neither tool auto-applies a saved rule — there's no hook or skill that can inject this for you (Claude's `PreCompact` hook is side-effect-only: it can log or block a compaction, not rewrite its prompt). Paste this manually as the argument each time:
-
-```text
-Compact aggressively. Drop: file contents, code snippets, resolved debugging steps, dead-end exploration, prior conversational turns. Keep: a 1-2 sentence summary of the overarching feature/mission, what phase just finished and the specific objective for the next phase, file paths as pointers only (do not re-summarize their contents), and any open question blocking the next step.
-```
 
 ---
 

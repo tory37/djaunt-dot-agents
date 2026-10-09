@@ -84,6 +84,8 @@ ok "Copied src/AGENTS.md → ~/.agents/AGENTS.md"
 mkdir -p "$AGENTS_DIR/assets"
 cp "$REPO_ROOT/src/assets/style.css" "$AGENTS_DIR/assets/style.css"
 ok "Copied src/assets/style.css → ~/.agents/assets/style.css"
+cp "$REPO_ROOT/src/assets/html-output.md" "$AGENTS_DIR/assets/html-output.md"
+ok "Copied src/assets/html-output.md → ~/.agents/assets/html-output.md"
 
 link_dir "$REPO_ROOT/src/skills" "$AGENTS_DIR/skills"
 ok "Linked $REPO_ROOT/src/skills → ~/.agents/skills"
