@@ -5,3 +5,4 @@
 .claude
 src/skills/synced/
 src/skills/session-start-hook/
+src/skills/.trash/
