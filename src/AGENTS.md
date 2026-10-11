@@ -117,7 +117,7 @@ When the user makes a request that is outside the scope of the current feature o
 
 All human-facing output files the user keeps for themselves (plans, reviews, research) are styled `.html`, not markdown. Documents handed to other people are markdown instead — see **Handoff Documents** above.
 
-**Before writing the first HTML output file in a session, read `~/.agents/assets/html-output.md`.** It holds the stylesheet bootstrap, the HTML shell, the type colors, and the component classes.
+**Before writing the first HTML output file in a session, read `~/.agents/assets/html-output.md`.** It holds the stylesheet bootstrap, the HTML shell, the theme rules, and the component classes.
 
 ---
 

@@ -48,21 +48,18 @@ Every output HTML file uses this base structure:
 </html>
 ```
 
-### Rainbow Type System
+### Theme — Djaunt Hoard
 
-The stylesheet maps each doc type to a bold `--primary` color via `data-type` on `<body>`. Every component (H1 gradient, H3, phase numbers, card accents, table headers, code tint, etc.) automatically inherits this color — no extra CSS needed per doc.
+The stylesheet follows the Djaunt brand (`github.com/tory37/djaunt-branding`, `BRANDING.md`). It vendors the brand `tokens.css` and loads Archivo, IBM Plex Sans, and IBM Plex Mono.
 
-| Type | Color | Hex |
-|---|---|---|
-| `feature` | Electric blue | `#3b9eff` |
-| `bug` | Hot red | `#ff4d4d` |
-| `research` | Vivid purple | `#b060ff` |
-| `review` | Neon green | `#22d167` |
-| `techdebt` | Vivid amber | `#f5a623` |
+- Every doc uses the default `hoard` (gold) theme. No per-type colors.
+- Use `--dj-*` role tokens for any inline styling (`--dj-accent`, `--dj-text-muted`, `--dj-surface`, `--dj-border`). Never hardcode a hex.
+- Keep `data-type` on `<body>`. It no longer changes color.
+- No emoji, no gradients, no left-accent-stripe cards. Radii stay 2/4/8px.
 
 ### Type Badges
 
-Use `badge-feature`, `badge-bug`, `badge-research`, `badge-review`, or `badge-techdebt` on `.badge` elements in `.doc-meta`.
+Use `badge-feature`, `badge-bug`, `badge-research`, `badge-review`, or `badge-techdebt` on `.badge` elements in `.doc-meta`. All render in the gold accent; the label carries the type.
 
 ### Severity / Status Badges
 
@@ -85,4 +82,5 @@ Use `badge-critical`, `badge-warning`, `badge-suggestion`, `badge-complete`, `ba
 | `.section` + `.accent/.success/.warning/.danger` | Left-bordered content block |
 | `.files-list` + `.file-chip` | Inline file path chips |
 | `.bibliography` | Numbered sources list |
-| `table` | Standard dark-styled data table |
+| `.callout` + `.info/.success/.warning/.danger` | Semantic note box |
+| `table` | Data table with mono header row |

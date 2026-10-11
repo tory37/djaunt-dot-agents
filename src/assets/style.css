@@ -1,49 +1,381 @@
-/* djaunt-dot-agents — Agent Output Dark Theme
+/* djaunt-dot-agents — Agent Output Theme (Djaunt brand, hoard)
    Canonical source: src/assets/style.css
    Deployed to: ~/.agents/assets/style.css via scripts/sync.sh
-   Per-project: copied to .agents/output/assets/style.css on first HTML write */
+   Per-project: copied to .agents/output/assets/style.css on first HTML write
+   Brand rules: github.com/tory37/djaunt-branding — BRANDING.md */
 
-/* ─── Tokens ──────────────────────────────────────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap");
+
+/* ═══ VENDORED TOKENS ════════════════════════════════════════════════════════
+   Verbatim copy of djaunt-branding brand/tokens/tokens.css @ f1ae85e.
+   Do not edit values here — re-copy the file from the branding repo. */
+
+/* Djaunt design tokens — v1
+   Source of truth. Do not hand-edit values in downstream projects; import this file.
+   Dark-first. Every theme below is a dark theme; there is one light mode (.dj-light).
+*/
+
 :root {
-  /* Near-black backgrounds */
-  --bg:         #000000;
-  --surface:    #09090f;
-  --surface2:   #0f0f1a;
-  --border:     #1a1a2e;
-  --text:       #eeeeff;
-  --text-muted: #6868a0;
-  --code-bg:    #06060e;
+  /* ---- Brand core ---- */
+  --dj-gold-300: #F6D77E;
+  --dj-gold-400: #F0C24B;
+  --dj-gold-500: #D4A017;
+  --dj-gold-600: #A87A12;
+  --dj-gold-700: #6E4A0E;
+  --dj-bone-100: #FBF8F1;
+  --dj-bone-200: #EDE6D6;
+  --dj-bone-300: #C8C0AE;
+  --dj-bone-400: #8E887A;
+  --dj-bone-500: #615C52;
+  --dj-ink-400: #3A342A;
+  --dj-ink-500: #2A251C;
+  --dj-ink-600: #1C1913;
+  --dj-ink-700: #14120F;
+  --dj-ink-800: #0D0C0A;
+  --dj-ink-900: #0A0908;
 
-  /* Rainbow type palette */
-  --color-feature:  #3b9eff;  /* electric blue  */
-  --color-bug:      #ff4d4d;  /* hot red        */
-  --color-research: #b060ff;  /* vivid purple   */
-  --color-review:   #22d167;  /* neon green     */
-  --color-techdebt: #f5a623;  /* vivid amber    */
-  --color-coverage: #00d4ff;  /* bright cyan    */
+  /* ---- Typography ---- */
+  --dj-font-display: 'Archivo', 'Helvetica Neue', Helvetica, sans-serif;
+  --dj-font-body: 'IBM Plex Sans', 'Helvetica Neue', Helvetica, sans-serif;
+  --dj-font-mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
 
-  /* Semantic status colors */
-  --success: #22d167;
-  --warning: #f5a623;
-  --danger:  #ff4d4d;
-  --info:    #3b9eff;
+  --dj-text-xs: 0.75rem;
+  --dj-text-sm: 0.875rem;
+  --dj-text-base: 1rem;
+  --dj-text-lg: 1.125rem;
+  --dj-text-xl: 1.375rem;
+  --dj-text-2xl: 1.75rem;
+  --dj-text-3xl: 2.25rem;
+  --dj-text-4xl: 3rem;
+  --dj-text-5xl: 4rem;
 
-  /* Default primary (fallback when data-type is not set) */
-  --primary: #3b9eff;
+  --dj-tracking-display: -0.02em;  /* display caps run tight */
+  --dj-tracking-label: 0.14em;     /* mono eyebrows run wide */
+  --dj-leading-tight: 1.08;
+  --dj-leading-body: 1.6;
 
-  --radius:    6px;
-  --radius-lg: 12px;
+  /* ---- Space (4px base) ---- */
+  --dj-space-1: 4px;  --dj-space-2: 8px;  --dj-space-3: 12px;
+  --dj-space-4: 16px; --dj-space-5: 24px; --dj-space-6: 32px;
+  --dj-space-7: 48px; --dj-space-8: 64px; --dj-space-9: 96px;
+
+  /* ---- Radius — scales are shallow; Djaunt is angular, not pill-shaped ---- */
+  --dj-radius-sm: 2px;
+  --dj-radius-md: 4px;
+  --dj-radius-lg: 8px;
+  --dj-radius-full: 999px; /* avatars and status dots only */
+
+  /* ---- Borders & elevation ---- */
+  --dj-border-width: 1px;
+  --dj-shadow-sm: 0 1px 2px rgb(0 0 0 / 0.5);
+  --dj-shadow-md: 0 4px 16px rgb(0 0 0 / 0.55);
+  --dj-shadow-lg: 0 16px 48px rgb(0 0 0 / 0.6);
+
+  /* ---- Motion ---- */
+  --dj-ease: cubic-bezier(0.2, 0, 0.2, 1);
+  --dj-dur-fast: 120ms;
+  --dj-dur-base: 200ms;
+  --dj-dur-slow: 400ms;
+
+  /* ---- Semantic (theme-independent) ---- */
+  --dj-success: #5FBF7A;
+  --dj-warning: #F0C24B;
+  --dj-danger: #E0492E;
+  --dj-info: #7FD8F0;
+
+  /* ---- Derived accent scale ----
+     --dj-accent-hi / --dj-accent / --dj-accent-deep (below, per theme) are
+     the 400/500/700 steps of a 5-step ramp; these two fill the 300 and 600
+     gaps from those same per-theme anchors, so anything needing a full ramp
+     has one for every theme without hand-picking two new hex values each. */
+  --dj-accent-300: color-mix(in srgb, var(--dj-accent-hi) 70%, white 30%);
+  --dj-accent-600: color-mix(in srgb, var(--dj-accent) 55%, var(--dj-accent-deep) 45%);
 }
 
-/* ─── Type → Primary mapping ──────────────────────────────────────────────── */
-/* Set <body data-type="feature"> (or bug/research/review/techdebt/coverage)  */
-/* and --primary cascades through every component automatically.              */
-[data-type="feature"]  { --primary: var(--color-feature);  }
-[data-type="bug"]      { --primary: var(--color-bug);       }
-[data-type="research"] { --primary: var(--color-research);  }
-[data-type="review"]   { --primary: var(--color-review);    }
-[data-type="techdebt"] { --primary: var(--color-techdebt);  }
-[data-type="coverage"] { --primary: var(--color-coverage);  }
+/* ============================================================
+   THEMES — apply on <html> or any container: data-dj-theme="fire"
+   Default (no attribute) is Hoard.
+   ============================================================ */
+
+:root, [data-dj-theme="hoard"] {
+  --dj-accent: #D4A017;
+  --dj-accent-hi: #F0C24B;
+  --dj-accent-deep: #6E4A0E;
+  /* Categorical accents -- for coding several simultaneous meaningful
+     states/categories on one surface (status lanes, a gauge's zones), never
+     a second mood. See BRANDING.md §2 "Categorical / multi-accent
+     surfaces". Muted relative to --dj-accent on purpose: they support, they
+     don't compete with the theme's own mood. */
+  --dj-accent-2: #3BB07C;
+  --dj-accent-3: #816ACD;
+  --dj-accent-4: #C65373;
+  --dj-bg: #0D0C0A;
+  --dj-surface: #14120F;
+  --dj-surface-raised: #1C1913;
+  --dj-border: #2A251C;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #0D0C0A;
+  --dj-glow: 0 0 24px #D4A01733;
+}
+[data-dj-theme="fire"] {
+  --dj-accent: #FF6B2C;
+  --dj-accent-hi: #FF9560;
+  --dj-accent-deep: #7A2408;
+  --dj-accent-2: #54D7A7;
+  --dj-accent-3: #5A74D8;
+  --dj-accent-4: #D754B0;
+  --dj-bg: #100A07;
+  --dj-surface: #1A100B;
+  --dj-surface-raised: #241610;
+  --dj-border: #352115;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #100A07;
+  --dj-glow: 0 0 24px #FF6B2C33;
+}
+[data-dj-theme="blood"] {
+  --dj-accent: #E8475C;
+  --dj-accent-hi: #F58090;
+  --dj-accent-deep: #6E1424;
+  --dj-accent-2: #5FCFB0;
+  --dj-accent-3: #E0B85F;
+  --dj-accent-4: #7A8FE0;
+  --dj-bg: #0F0709;
+  --dj-surface: #190C0F;
+  --dj-surface-raised: #231216;
+  --dj-border: #341B20;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #0F0709;
+  --dj-glow: 0 0 24px #E8475C33;
+}
+[data-dj-theme="earth"] {
+  --dj-accent: #B98358;
+  --dj-accent-hi: #D8A87F;
+  --dj-accent-deep: #5A3A22;
+  --dj-accent-2: #7FB58A;
+  --dj-accent-3: #8A8FC9;
+  --dj-accent-4: #C9737F;
+  --dj-bg: #0E0A07;
+  --dj-surface: #17110C;
+  --dj-surface-raised: #211812;
+  --dj-border: #33261B;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #0E0A07;
+  --dj-glow: 0 0 24px #B9835833;
+}
+[data-dj-theme="venom"] {
+  --dj-accent: #A8E01F;
+  --dj-accent-hi: #C9F05E;
+  --dj-accent-deep: #47660A;
+  --dj-accent-2: #557EC1;
+  --dj-accent-3: #AD5AC3;
+  --dj-accent-4: #ADBB44;
+  --dj-bg: #080F04;
+  --dj-surface: #0F170A;
+  --dj-surface-raised: #15200E;
+  --dj-border: #1F2E14;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #080F04;
+  --dj-glow: 0 0 24px #A8E01F33;
+}
+[data-dj-theme="frost"] {
+  --dj-accent: #6BA4FF;
+  --dj-accent-hi: #A6C8FF;
+  --dj-accent-deep: #173F80;
+  --dj-accent-2: #F0B46B;
+  --dj-accent-3: #B58CE8;
+  --dj-accent-4: #6BD6B5;
+  --dj-bg: #060B14;
+  --dj-surface: #0B1420;
+  --dj-surface-raised: #111E2E;
+  --dj-border: #1B2C44;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #060B14;
+  --dj-glow: 0 0 24px #6BA4FF33;
+}
+[data-dj-theme="storm"] {
+  --dj-accent: #9B8CFF;
+  --dj-accent-hi: #C3B8FF;
+  --dj-accent-deep: #3B2C86;
+  --dj-accent-2: #E0E9A2;
+  --dj-accent-3: #BCE9A2;
+  --dj-accent-4: #A2BCE9;
+  --dj-bg: #0A0912;
+  --dj-surface: #12101F;
+  --dj-surface-raised: #1A1729;
+  --dj-border: #262138;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #0A0912;
+  --dj-glow: 0 0 24px #9B8CFF33;
+}
+[data-dj-theme="bloom"] {
+  --dj-accent: #FF6FB0;
+  --dj-accent-hi: #FFA6CF;
+  --dj-accent-deep: #7A1C4C;
+  --dj-accent-2: #6FE0B8;
+  --dj-accent-3: #B3A2FF;
+  --dj-accent-4: #F0D27A;
+  --dj-bg: #10070C;
+  --dj-surface: #1A0D14;
+  --dj-surface-raised: #24141D;
+  --dj-border: #36202C;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #10070C;
+  --dj-glow: 0 0 24px #FF6FB033;
+}
+[data-dj-theme="stone"] {
+  --dj-accent: #8E9196;
+  --dj-accent-hi: #B8BBC0;
+  --dj-accent-deep: #36393D;
+  --dj-accent-2: #8FB0C9;
+  --dj-accent-3: #B08FC9;
+  --dj-accent-4: #C9B08F;
+  --dj-bg: #0C0D0E;
+  --dj-surface: #131415;
+  --dj-surface-raised: #1A1C1D;
+  --dj-border: #27292B;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #0C0D0E;
+  --dj-glow: 0 0 24px #8E919633;
+}
+[data-dj-theme="void"] {
+  --dj-accent: #CFCFCF;
+  --dj-accent-hi: #EDEDED;
+  --dj-accent-deep: #2E2E2E;
+  --dj-accent-2: #9BB8C9;
+  --dj-accent-3: #B39BC9;
+  --dj-accent-4: #C9B99B;
+  --dj-bg: #000000;
+  --dj-surface: #080808;
+  --dj-surface-raised: #101010;
+  --dj-border: #1E1E1E;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #000000;
+  --dj-glow: 0 0 24px #CFCFCF33;
+}
+[data-dj-theme="radiant"] {
+  --dj-accent: #F4F4F2;
+  --dj-accent-hi: #FFFFFF;
+  --dj-accent-deep: #6B6B68;
+  --dj-accent-2: #A8E6CF;
+  --dj-accent-3: #C3B4EE;
+  --dj-accent-4: #F0B4C8;
+  --dj-bg: #0F0F10;
+  --dj-surface: #171718;
+  --dj-surface-raised: #202021;
+  --dj-border: #2E2E30;
+  --dj-text: var(--dj-bone-200);
+  --dj-text-muted: var(--dj-bone-400);
+  --dj-on-accent: #0F0F10;
+  --dj-glow: 0 0 24px #F4F4F233;
+}
+
+/* ============================================================
+   LIGHT MODE — a single parchment variant. Dark is primary;
+   use light only when the host context demands it (print, email,
+   docs embedded in a light app).
+   ============================================================ */
+.dj-light, [data-dj-mode="light"] {
+  --dj-bg: #F7F3E9;
+  --dj-surface: #FFFDF7;
+  --dj-surface-raised: #FFFFFF;
+  --dj-border: #DED5C0;
+  --dj-text: #1A1712;
+  --dj-text-muted: #6B6355;
+  --dj-accent: var(--dj-gold-600);
+  --dj-accent-hi: var(--dj-gold-500);
+  --dj-accent-deep: var(--dj-gold-700);
+  --dj-on-accent: #FFFDF7;
+  --dj-glow: none;
+}
+
+/* ============================================================
+   TERMINAL / CLI — 16-color ANSI scheme
+   Every slot below is derived from existing per-theme role tokens (never a
+   fresh hand-picked hex), so a Djaunt terminal genuinely follows whichever
+   element is active. Semantic slots (red/green/blue) stay pinned to the
+   fixed danger/success/info tokens for tool-output consistency (git status,
+   diagnostics) across themes; yellow/magenta/cyan carry the theme's own
+   accent + categorical accents, continuing Hoard's own convention (its
+   accent already sits in the yellow slot) out to every element.
+   ============================================================ */
+:root {
+  --dj-term-bg: var(--dj-bg);
+  --dj-term-fg: var(--dj-text);
+  --dj-term-cursor: var(--dj-accent-hi);
+  --dj-term-selection: var(--dj-border);
+
+  --dj-ansi-black: var(--dj-surface);
+  --dj-ansi-red: color-mix(in srgb, var(--dj-danger) 80%, black);
+  --dj-ansi-green: color-mix(in srgb, var(--dj-success) 80%, black);
+  --dj-ansi-yellow: var(--dj-accent);
+  --dj-ansi-blue: color-mix(in srgb, var(--dj-info) 75%, black);
+  --dj-ansi-magenta: var(--dj-accent-3);
+  --dj-ansi-cyan: var(--dj-accent-2);
+  --dj-ansi-white: var(--dj-bone-300);
+
+  --dj-ansi-bright-black: var(--dj-border);
+  --dj-ansi-bright-red: var(--dj-danger);
+  --dj-ansi-bright-green: var(--dj-success);
+  --dj-ansi-bright-yellow: var(--dj-accent-hi);
+  --dj-ansi-bright-blue: var(--dj-info);
+  --dj-ansi-bright-magenta: var(--dj-accent-4);
+  --dj-ansi-bright-cyan: color-mix(in srgb, var(--dj-accent-2) 70%, white 30%);
+  --dj-ansi-bright-white: var(--dj-bone-100);
+}
+
+/* ============================================================
+   CODE SYNTAX — "Djaunt Hoard"
+   Same derivation approach as the ANSI scheme above: every slot maps to an
+   existing per-theme role token, so a Djaunt syntax theme follows whichever
+   element is active instead of staying gold-only.
+   ============================================================ */
+:root {
+  --dj-code-bg: var(--dj-bg);
+  --dj-code-fg: var(--dj-text);
+  --dj-code-comment: var(--dj-bone-500);
+  --dj-code-keyword: var(--dj-accent);
+  --dj-code-string: var(--dj-accent-2);
+  --dj-code-number: var(--dj-accent-hi);
+  --dj-code-function: var(--dj-accent-300);
+  --dj-code-type: var(--dj-accent-3);
+  --dj-code-variable: var(--dj-text);
+  --dj-code-operator: var(--dj-bone-300);
+  --dj-code-punctuation: var(--dj-text-muted);
+  --dj-code-invalid: var(--dj-danger);
+  --dj-code-line-highlight: var(--dj-surface);
+  --dj-code-selection: var(--dj-border);
+}
+
+/* ═══ END VENDORED TOKENS ════════════════════════════════════════════════════ */
+
+/* ─── Legacy aliases ──────────────────────────────────────────────────────── */
+/* Older reports reference these names inline; they now resolve to Djaunt roles. */
+:root {
+  --bg:         var(--dj-bg);
+  --surface:    var(--dj-surface);
+  --surface2:   var(--dj-surface-raised);
+  --border:     var(--dj-border);
+  --text:       var(--dj-text);
+  --text-muted: var(--dj-text-muted);
+  --code-bg:    var(--dj-surface);
+  --primary:    var(--dj-accent);
+  --success:    var(--dj-success);
+  --warning:    var(--dj-warning);
+  --danger:     var(--dj-danger);
+  --info:       var(--dj-info);
+  --radius:     var(--dj-radius-md);
+  --radius-lg:  var(--dj-radius-lg);
+}
 
 /* ─── Reset & Base ────────────────────────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -51,12 +383,20 @@
 html { font-size: 16px; }
 
 body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  background: var(--dj-bg);
+  color: var(--dj-text);
+  font-family: var(--dj-font-body);
   font-size: 0.9375rem;
-  line-height: 1.65;
-  padding: 2rem 1rem 4rem;
+  line-height: var(--dj-leading-body);
+  padding: var(--dj-space-6) var(--dj-space-4) var(--dj-space-8);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection { background: var(--dj-accent-deep); color: var(--dj-text); }
+
+:focus-visible {
+  outline: var(--dj-border-width) solid var(--dj-accent);
+  outline-offset: 2px;
 }
 
 @keyframes fadeUp {
@@ -64,489 +404,499 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
 /* ─── Layout ──────────────────────────────────────────────────────────────── */
 .container {
   max-width: 860px;
   margin: 0 auto;
-  animation: fadeUp 0.3s ease-out;
+  animation: fadeUp var(--dj-dur-slow) var(--dj-ease);
 }
 
 /* ─── Document Header ─────────────────────────────────────────────────────── */
 .doc-header {
-  padding-bottom: 1.5rem;
-  margin-bottom: 2.5rem;
-  position: relative;
+  padding-bottom: var(--dj-space-5);
+  margin-bottom: var(--dj-space-7);
+  border-bottom: var(--dj-border-width) solid var(--dj-border);
 }
 
-/* gradient rule that fades right, colored by doc type */
-.doc-header::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, var(--primary) 0%, transparent 65%);
-}
-
+/* The mono eyebrow above the display heading — the signature Djaunt pattern. */
 .doc-meta {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  margin-bottom: 0.875rem;
+  gap: var(--dj-space-3);
+  margin-bottom: var(--dj-space-4);
   flex-wrap: wrap;
 }
 
 .doc-date {
-  color: var(--text-muted);
-  font-size: 0.8125rem;
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  letter-spacing: var(--dj-tracking-label);
+  text-transform: uppercase;
+  color: var(--dj-text-muted);
 }
 
 .doc-header h1 {
-  font-size: 1.875rem;
+  font-family: var(--dj-font-display);
+  font-size: clamp(1.75rem, 4vw, var(--dj-text-3xl));
   font-weight: 700;
-  line-height: 1.25;
-  margin-bottom: 0.4rem;
-  background: linear-gradient(130deg, var(--text) 30%, var(--primary) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  letter-spacing: var(--dj-tracking-display);
+  line-height: var(--dj-leading-tight);
+  color: var(--dj-text);
+  margin-bottom: var(--dj-space-2);
 }
 
 .doc-header .subtitle {
-  color: var(--text-muted);
-  font-size: 0.9375rem;
+  color: var(--dj-text-muted);
+  font-size: var(--dj-text-base);
+  max-width: 72ch;
 }
 
 /* ─── Typography ──────────────────────────────────────────────────────────── */
+h1, h2, h3 {
+  font-family: var(--dj-font-display);
+  letter-spacing: var(--dj-tracking-display);
+}
+
 h2 {
-  font-size: 1.1875rem;
+  font-size: var(--dj-text-xl);
   font-weight: 700;
-  color: var(--text);
-  margin: 2.25rem 0 0.875rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--border);
-  box-shadow: 0 1px 0 0 color-mix(in srgb, var(--primary) 20%, transparent);
+  color: var(--dj-text);
+  margin: var(--dj-space-7) 0 var(--dj-space-4);
+  padding-bottom: var(--dj-space-2);
+  border-bottom: var(--dj-border-width) solid var(--dj-border);
 }
 
 h3 {
-  font-size: 1rem;
+  font-size: var(--dj-text-lg);
   font-weight: 600;
-  color: var(--primary);
-  margin: 1.25rem 0 0.5rem;
+  color: var(--dj-text);
+  margin: var(--dj-space-5) 0 var(--dj-space-2);
 }
 
 h4 {
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--text-muted);
-  margin: 1rem 0 0.375rem;
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  font-weight: 500;
+  color: var(--dj-accent);
+  margin: var(--dj-space-4) 0 var(--dj-space-2);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: var(--dj-tracking-label);
 }
 
-p { margin: 0.625rem 0; }
+p { margin: var(--dj-space-3) 0; max-width: 72ch; }
 
 a {
-  color: var(--primary);
+  color: var(--dj-accent);
   text-decoration: none;
-  transition: opacity 0.15s;
+  transition: color var(--dj-dur-fast) var(--dj-ease);
 }
-a:hover { opacity: 0.75; text-decoration: underline; }
+a:hover { color: var(--dj-accent-hi); text-decoration: underline; text-underline-offset: 3px; }
 
-strong { font-weight: 700; color: var(--text); }
-em { color: var(--text-muted); font-style: italic; }
+strong { font-weight: 600; color: var(--dj-text); }
+em { color: var(--dj-text-muted); font-style: italic; }
 
 /* ─── Badges ──────────────────────────────────────────────────────────────── */
+/* Same shape as djaunt-branding components/badge. Color comes from --badge-color. */
 .badge {
+  --badge-color: var(--dj-text-muted);
   display: inline-flex;
   align-items: center;
-  padding: 0.2em 0.7em;
-  border-radius: 2em;
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-family: var(--dj-font-mono);
+  font-size: 11px;
+  font-weight: 500;
   text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  padding: 2px var(--dj-space-2);
+  border-radius: var(--dj-radius-sm);
+  border: var(--dj-border-width) solid color-mix(in srgb, var(--badge-color) 40%, transparent);
+  background: color-mix(in srgb, var(--badge-color) 14%, transparent);
+  color: var(--badge-color);
 }
 
-/* Type badges — each uses its own fixed color so they read correctly in any doc */
-.badge-feature  { background: color-mix(in srgb, var(--color-feature)  14%, transparent); color: var(--color-feature);  border: 1px solid color-mix(in srgb, var(--color-feature)  35%, transparent); }
-.badge-bug      { background: color-mix(in srgb, var(--color-bug)       14%, transparent); color: var(--color-bug);      border: 1px solid color-mix(in srgb, var(--color-bug)       35%, transparent); }
-.badge-research { background: color-mix(in srgb, var(--color-research)  14%, transparent); color: var(--color-research); border: 1px solid color-mix(in srgb, var(--color-research)  35%, transparent); }
-.badge-review   { background: color-mix(in srgb, var(--color-review)    14%, transparent); color: var(--color-review);   border: 1px solid color-mix(in srgb, var(--color-review)    35%, transparent); }
-.badge-techdebt { background: color-mix(in srgb, var(--color-techdebt)  14%, transparent); color: var(--color-techdebt); border: 1px solid color-mix(in srgb, var(--color-techdebt)  35%, transparent); }
-.badge-coverage { background: color-mix(in srgb, var(--color-coverage)  14%, transparent); color: var(--color-coverage); border: 1px solid color-mix(in srgb, var(--color-coverage)  35%, transparent); }
+/* Doc-type badges all wear the hoard accent — the label text carries the type. */
+.badge-feature,
+.badge-bug,
+.badge-research,
+.badge-review,
+.badge-techdebt,
+.badge-coverage    { --badge-color: var(--dj-accent); }
 
-/* Severity / status badges */
-.badge-critical    { background: color-mix(in srgb, var(--danger)  18%, transparent); color: #ff7070; border: 1px solid color-mix(in srgb, var(--danger)  40%, transparent); }
-.badge-warning     { background: color-mix(in srgb, var(--warning) 18%, transparent); color: #f5b84a; border: 1px solid color-mix(in srgb, var(--warning) 40%, transparent); }
-.badge-suggestion  { background: color-mix(in srgb, var(--success) 18%, transparent); color: #3de07a; border: 1px solid color-mix(in srgb, var(--success) 40%, transparent); }
-.badge-complete    { background: color-mix(in srgb, var(--success) 14%, transparent); color: var(--success); border: 1px solid color-mix(in srgb, var(--success) 35%, transparent); }
-.badge-pending     { background: color-mix(in srgb, #6868a0 14%, transparent); color: var(--text-muted); border: 1px solid color-mix(in srgb, #6868a0 35%, transparent); }
-.badge-in-progress { background: color-mix(in srgb, var(--color-feature) 14%, transparent); color: var(--color-feature); border: 1px solid color-mix(in srgb, var(--color-feature) 35%, transparent); }
+/* Severity / status badges use the fixed semantic colors. */
+.badge-critical    { --badge-color: var(--dj-danger); }
+.badge-warning     { --badge-color: var(--dj-warning); }
+.badge-suggestion  { --badge-color: var(--dj-info); }
+.badge-complete    { --badge-color: var(--dj-success); }
+.badge-pending     { --badge-color: var(--dj-text-muted); }
+.badge-in-progress { --badge-color: var(--dj-accent); }
 
 /* ─── Section ─────────────────────────────────────────────────────────────── */
 .section {
-  border-left: 3px solid var(--border);
-  padding-left: 1rem;
-  margin: 1.25rem 0;
+  border-left: 2px solid var(--dj-border);
+  padding-left: var(--dj-space-4);
+  margin: var(--dj-space-5) 0;
 }
-.section.accent  { border-left-color: var(--primary); }
-.section.success { border-left-color: var(--success); }
-.section.warning { border-left-color: var(--warning); }
-.section.danger  { border-left-color: var(--danger); }
+.section.accent  { border-left-color: var(--dj-accent); }
+.section.success { border-left-color: var(--dj-success); }
+.section.warning { border-left-color: var(--dj-warning); }
+.section.danger  { border-left-color: var(--dj-danger); }
 
 /* ─── Phase Cards (feature/techdebt plans) ────────────────────────────────── */
 .phase-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 3px solid var(--primary);
-  border-radius: var(--radius-lg);
-  padding: 1.25rem 1.5rem;
-  margin: 1.25rem 0;
-  transition: box-shadow 0.2s;
+  background: var(--dj-surface);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-radius: var(--dj-radius-md);
+  padding: var(--dj-space-5);
+  margin: var(--dj-space-5) 0;
+  transition: border-color var(--dj-dur-base) var(--dj-ease);
 }
-.phase-card:hover {
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--primary) 30%, transparent),
-              0 4px 24px color-mix(in srgb, var(--primary) 8%, transparent);
-}
-.phase-card + .phase-card { margin-top: 0.875rem; }
+.phase-card:hover { border-color: var(--dj-accent-deep); }
+.phase-card + .phase-card { margin-top: var(--dj-space-4); }
 
 .phase-header {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
-  margin-bottom: 0.875rem;
+  gap: var(--dj-space-3);
+  margin-bottom: var(--dj-space-4);
 }
 
 .phase-number {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 1.875rem;
-  height: 1.875rem;
-  background: color-mix(in srgb, var(--primary) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
-  border-radius: 50%;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  color: var(--primary);
+  width: 32px;
+  height: 32px;
+  border: var(--dj-border-width) solid var(--dj-accent);
+  border-radius: var(--dj-radius-sm);
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-sm);
+  font-weight: 500;
+  color: var(--dj-accent);
   flex-shrink: 0;
 }
 
 .phase-title {
-  font-size: 1.0625rem;
+  font-family: var(--dj-font-display);
+  font-size: var(--dj-text-lg);
   font-weight: 600;
-  color: var(--text);
+  letter-spacing: var(--dj-tracking-display);
+  color: var(--dj-text);
 }
 
 .phase-steps {
-  padding-left: 1.25rem;
-  margin: 0.5rem 0;
+  padding-left: var(--dj-space-5);
+  margin: var(--dj-space-2) 0;
 }
-.phase-steps li {
-  margin: 0.35rem 0;
-  color: var(--text);
-}
+.phase-steps li { margin: var(--dj-space-1) 0; }
 
 .test-criteria {
-  background: color-mix(in srgb, var(--success) 6%, var(--surface2));
-  border: 1px solid color-mix(in srgb, var(--success) 25%, transparent);
-  border-radius: var(--radius);
-  padding: 0.75rem 1rem;
-  margin-top: 0.875rem;
-  font-size: 0.875rem;
-  color: var(--text-muted);
+  background: var(--dj-surface-raised);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-radius: var(--dj-radius-sm);
+  padding: var(--dj-space-3) var(--dj-space-4);
+  margin-top: var(--dj-space-4);
+  font-size: var(--dj-text-sm);
+  color: var(--dj-text-muted);
 }
 .test-criteria::before {
-  content: "✓ Test criteria";
+  content: "Test criteria";
   display: block;
-  font-weight: 700;
-  color: var(--success);
-  margin-bottom: 0.375rem;
-  font-size: 0.7rem;
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  letter-spacing: var(--dj-tracking-label);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--dj-success);
+  margin-bottom: var(--dj-space-2);
 }
 
 /* ─── Finding Cards (reviews, coverage, bug plans) ────────────────────────── */
+/* Severity tints the whole hairline border — no left-accent stripe (off-brand). */
 .finding-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--border);
-  border-radius: var(--radius);
-  padding: 1rem 1.25rem;
-  margin: 0.875rem 0;
-  transition: box-shadow 0.2s;
+  --finding-color: var(--dj-border);
+  background: var(--dj-surface);
+  border: var(--dj-border-width) solid var(--finding-color);
+  border-radius: var(--dj-radius-md);
+  padding: var(--dj-space-4) var(--dj-space-5);
+  margin: var(--dj-space-4) 0;
 }
-.finding-card.critical   { border-left-color: var(--danger);  background: color-mix(in srgb, var(--danger)  5%, var(--surface)); }
-.finding-card.warning    { border-left-color: var(--warning); background: color-mix(in srgb, var(--warning) 5%, var(--surface)); }
-.finding-card.suggestion { border-left-color: var(--success); background: color-mix(in srgb, var(--success) 5%, var(--surface)); }
-.finding-card.positive   { border-left-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, var(--surface)); }
-.finding-card:hover { box-shadow: 0 2px 16px rgba(0,0,0,0.5); }
+.finding-card.critical   { --finding-color: color-mix(in srgb, var(--dj-danger)  45%, var(--dj-border)); }
+.finding-card.warning    { --finding-color: color-mix(in srgb, var(--dj-warning) 45%, var(--dj-border)); }
+.finding-card.suggestion { --finding-color: color-mix(in srgb, var(--dj-info)    45%, var(--dj-border)); }
+.finding-card.positive   { --finding-color: color-mix(in srgb, var(--dj-success) 45%, var(--dj-border)); }
 
 .finding-header {
   display: flex;
-  align-items: flex-start;
-  gap: 0.625rem;
-  margin-bottom: 0.5rem;
+  align-items: baseline;
+  gap: var(--dj-space-3);
+  margin-bottom: var(--dj-space-2);
 }
 .finding-title {
   font-weight: 600;
-  color: var(--text);
-  font-size: 0.9375rem;
+  color: var(--dj-text);
 }
 .finding-body {
-  color: var(--text-muted);
-  font-size: 0.875rem;
-  line-height: 1.6;
+  color: var(--dj-text-muted);
+  font-size: var(--dj-text-sm);
 }
 .finding-file {
   display: inline-block;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.1em 0.5em;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  background: var(--dj-surface-raised);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-radius: var(--dj-radius-sm);
+  padding: 1px var(--dj-space-2);
+  font-family: var(--dj-font-mono);
   font-size: 0.8125rem;
-  color: var(--text-muted);
-  margin-top: 0.5rem;
+  color: var(--dj-text-muted);
+  margin-top: var(--dj-space-2);
 }
 
 /* ─── Checklists ──────────────────────────────────────────────────────────── */
 .checklist {
   list-style: none;
   padding: 0;
-  margin: 0.5rem 0;
+  margin: var(--dj-space-2) 0;
 }
 .checklist li {
   display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.3rem 0;
-  color: var(--text);
-  font-size: 0.9375rem;
+  align-items: baseline;
+  gap: var(--dj-space-3);
+  padding: var(--dj-space-1) 0;
 }
 .checklist li::before {
-  content: "☐";
-  color: var(--text-muted);
+  content: "";
   flex-shrink: 0;
-  font-size: 1rem;
-  line-height: 1.4;
+  width: 12px;
+  height: 12px;
+  border: var(--dj-border-width) solid var(--dj-text-muted);
+  border-radius: var(--dj-radius-sm);
+  transform: translateY(1px);
 }
+.checklist li.checked { color: var(--dj-text-muted); }
 .checklist li.checked::before {
-  content: "☑";
-  color: var(--success);
+  border-color: var(--dj-success);
+  background: var(--dj-success);
+  box-shadow: inset 0 0 0 2px var(--dj-bg);
 }
-.checklist li.priority-high { color: var(--danger); }
-.checklist li.priority-med  { color: var(--warning); }
+.checklist li.priority-high::before { border-color: var(--dj-danger); }
+.checklist li.priority-med::before  { border-color: var(--dj-warning); }
 
 /* ─── Test Steps (doer test plans) ───────────────────────────────────────── */
+/* Connected vertical timeline, after djaunt-branding components/steps. */
 .test-steps {
   counter-reset: step;
   list-style: none;
   padding: 0;
+  margin: var(--dj-space-5) 0;
 }
 .test-step {
   counter-increment: step;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.875rem 1rem 0.875rem 3.25rem;
-  margin: 0.625rem 0;
   position: relative;
-  transition: border-color 0.15s;
+  margin-left: 15px;
+  padding: 0 0 var(--dj-space-6) var(--dj-space-6);
+  border-left: var(--dj-border-width) solid var(--dj-border);
 }
-.test-step:hover { border-color: color-mix(in srgb, var(--primary) 35%, transparent); }
+.test-step:last-child {
+  border-left-color: transparent;
+  padding-bottom: 0;
+}
 .test-step::before {
   content: counter(step);
   position: absolute;
-  left: 0.875rem;
-  top: 0.9375rem;
-  width: 1.625rem;
-  height: 1.625rem;
-  background: color-mix(in srgb, var(--primary) 15%, transparent);
-  border: 1px solid color-mix(in srgb, var(--primary) 40%, transparent);
-  border-radius: 50%;
+  left: -16px;
+  top: -3px;
+  width: 32px;
+  height: 32px;
+  background: var(--dj-bg);
+  border: var(--dj-border-width) solid var(--dj-accent);
+  border-radius: var(--dj-radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: var(--primary);
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-sm);
+  color: var(--dj-accent);
 }
 .test-step .checkpoint {
   display: block;
-  margin-top: 0.375rem;
-  font-size: 0.8125rem;
-  color: var(--success);
+  margin-top: var(--dj-space-2);
+  font-size: var(--dj-text-sm);
+  color: var(--dj-text-muted);
 }
 .test-step .checkpoint::before {
-  content: "→ Expected: ";
-  font-weight: 700;
+  content: "Expected ";
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  letter-spacing: var(--dj-tracking-label);
+  text-transform: uppercase;
+  color: var(--dj-success);
+  margin-right: var(--dj-space-1);
 }
 
 /* ─── Tables ──────────────────────────────────────────────────────────────── */
+/* After djaunt-branding components/data-table. */
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 1rem 0;
-  font-size: 0.875rem;
+  margin: var(--dj-space-4) 0;
+  font-size: var(--dj-text-sm);
 }
-th {
-  background: var(--surface2);
-  color: var(--primary);
-  font-weight: 700;
+th, td {
+  padding: var(--dj-space-2) var(--dj-space-4);
   text-align: left;
-  padding: 0.625rem 0.875rem;
-  border-bottom: 2px solid color-mix(in srgb, var(--primary) 40%, transparent);
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-td {
-  padding: 0.5rem 0.875rem;
-  border-bottom: 1px solid var(--border);
-  color: var(--text);
   vertical-align: top;
 }
+th {
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  font-weight: 500;
+  letter-spacing: var(--dj-tracking-label);
+  text-transform: uppercase;
+  color: var(--dj-text-muted);
+  background: var(--dj-surface);
+  border-bottom: var(--dj-border-width) solid var(--dj-border);
+}
+td {
+  border-bottom: var(--dj-border-width) solid var(--dj-border);
+  color: var(--dj-text);
+}
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: color-mix(in srgb, var(--primary) 3%, transparent); }
+tbody tr:hover td { background: var(--dj-surface); }
 
 /* ─── Code ────────────────────────────────────────────────────────────────── */
 code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family: var(--dj-font-mono);
   font-size: 0.875em;
-  background: var(--code-bg);
-  color: color-mix(in srgb, var(--primary) 70%, var(--text));
-  padding: 0.15em 0.45em;
-  border-radius: 4px;
-  border: 1px solid color-mix(in srgb, var(--primary) 20%, var(--border));
+  background: var(--dj-surface-raised);
+  color: var(--dj-accent-hi);
+  padding: 1px 0.4em;
+  border-radius: var(--dj-radius-sm);
+  border: var(--dj-border-width) solid var(--dj-border);
 }
 pre {
-  background: var(--code-bg);
-  border: 1px solid var(--border);
-  border-top: 2px solid color-mix(in srgb, var(--primary) 50%, transparent);
-  border-radius: var(--radius);
-  padding: 1rem 1.25rem;
+  background: var(--dj-surface);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-radius: var(--dj-radius-md);
+  padding: var(--dj-space-4) var(--dj-space-5);
   overflow-x: auto;
-  margin: 0.875rem 0;
+  margin: var(--dj-space-4) 0;
 }
 pre code {
   background: none;
   border: none;
   padding: 0;
-  font-size: 0.875rem;
-  line-height: 1.6;
-  color: var(--text);
+  font-size: var(--dj-text-sm);
+  line-height: var(--dj-leading-body);
+  color: var(--dj-code-fg);
 }
 
 /* ─── Blockquote / Callout ────────────────────────────────────────────────── */
 blockquote {
-  border-left: 4px solid var(--primary);
-  background: color-mix(in srgb, var(--primary) 6%, var(--surface));
-  padding: 0.875rem 1.125rem;
-  border-radius: 0 var(--radius) var(--radius) 0;
-  margin: 1rem 0;
-  color: var(--text-muted);
+  border-left: 2px solid var(--dj-accent);
+  padding: var(--dj-space-1) 0 var(--dj-space-1) var(--dj-space-4);
+  margin: var(--dj-space-4) 0;
+  color: var(--dj-text-muted);
 }
 
+/* After djaunt-branding components/callout. */
 .callout {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.875rem 1rem;
-  margin: 1rem 0;
-  font-size: 0.875rem;
+  background: var(--dj-surface);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-left: 3px solid var(--dj-border);
+  border-radius: var(--dj-radius-md);
+  padding: var(--dj-space-4) var(--dj-space-5);
+  margin: var(--dj-space-4) 0;
+  font-size: var(--dj-text-sm);
 }
-.callout.info    { border-left: 4px solid var(--info);    background: color-mix(in srgb, var(--info)    6%, var(--surface)); }
-.callout.success { border-left: 4px solid var(--success); background: color-mix(in srgb, var(--success) 6%, var(--surface)); }
-.callout.warning { border-left: 4px solid var(--warning); background: color-mix(in srgb, var(--warning) 6%, var(--surface)); }
-.callout.danger  { border-left: 4px solid var(--danger);  background: color-mix(in srgb, var(--danger)  6%, var(--surface)); }
+.callout.info    { border-left-color: var(--dj-info); }
+.callout.success { border-left-color: var(--dj-success); }
+.callout.warning { border-left-color: var(--dj-warning); }
+.callout.danger  { border-left-color: var(--dj-danger); }
 
 /* ─── Lists ───────────────────────────────────────────────────────────────── */
-ul, ol { padding-left: 1.5rem; margin: 0.5rem 0; }
-li { margin: 0.25rem 0; color: var(--text); }
-li ul, li ol { margin: 0.25rem 0; }
+ul, ol { padding-left: var(--dj-space-5); margin: var(--dj-space-2) 0; }
+li { margin: var(--dj-space-1) 0; color: var(--dj-text); }
+li::marker { color: var(--dj-text-muted); }
+li ul, li ol { margin: var(--dj-space-1) 0; }
 
 /* ─── Meta Blocks ─────────────────────────────────────────────────────────── */
 .meta-block {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 1rem 1.25rem;
-  margin: 1rem 0;
+  background: var(--dj-surface);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-radius: var(--dj-radius-md);
+  padding: var(--dj-space-4) var(--dj-space-5);
+  margin: var(--dj-space-4) 0;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 0.875rem;
+  gap: var(--dj-space-4);
 }
-.meta-item { display: flex; flex-direction: column; gap: 0.2rem; }
+.meta-item { display: flex; flex-direction: column; gap: var(--dj-space-1); }
 .meta-label {
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: var(--text-muted);
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  letter-spacing: var(--dj-tracking-label);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  color: var(--dj-text-muted);
 }
 .meta-value {
-  font-size: 0.9375rem;
-  color: var(--text);
+  color: var(--dj-text);
   font-weight: 500;
 }
 
 /* ─── Bibliography ────────────────────────────────────────────────────────── */
 .bibliography {
-  margin: 0.5rem 0;
+  margin: var(--dj-space-2) 0;
   padding-left: 0;
   list-style: none;
   counter-reset: source;
 }
 .bibliography li {
   counter-increment: source;
-  padding: 0.375rem 0 0.375rem 2.25rem;
-  border-bottom: 1px solid var(--border);
-  font-size: 0.875rem;
+  padding: var(--dj-space-2) 0 var(--dj-space-2) var(--dj-space-7);
+  border-bottom: var(--dj-border-width) solid var(--dj-border);
+  font-size: var(--dj-text-sm);
   position: relative;
 }
 .bibliography li::before {
   content: "[" counter(source) "]";
   position: absolute;
   left: 0;
-  color: var(--primary);
-  font-size: 0.75rem;
-  font-weight: 700;
-  line-height: 1.7;
+  font-family: var(--dj-font-mono);
+  font-size: var(--dj-text-xs);
+  color: var(--dj-accent);
+  line-height: 1.9;
 }
 .bibliography li:last-child { border-bottom: none; }
 
 /* ─── File Chips ──────────────────────────────────────────────────────────── */
-.files-list { display: flex; flex-wrap: wrap; gap: 0.375rem; margin: 0.5rem 0; }
+.files-list { display: flex; flex-wrap: wrap; gap: var(--dj-space-2); margin: var(--dj-space-2) 0; }
 .file-chip {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 0.2em 0.6em;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  background: var(--dj-surface);
+  border: var(--dj-border-width) solid var(--dj-border);
+  border-radius: var(--dj-radius-sm);
+  padding: 2px var(--dj-space-2);
+  font-family: var(--dj-font-mono);
   font-size: 0.8125rem;
-  color: var(--text-muted);
-  transition: border-color 0.15s, color 0.15s;
+  color: var(--dj-text-muted);
+  transition: border-color var(--dj-dur-fast) var(--dj-ease), color var(--dj-dur-fast) var(--dj-ease);
 }
 .file-chip:hover {
-  border-color: color-mix(in srgb, var(--primary) 40%, transparent);
-  color: var(--primary);
+  border-color: var(--dj-accent-deep);
+  color: var(--dj-accent);
 }
 
 /* ─── HR ──────────────────────────────────────────────────────────────────── */
 hr {
   border: none;
-  height: 1px;
-  background: linear-gradient(90deg, var(--primary) 0%, transparent 70%);
-  opacity: 0.4;
-  margin: 2rem 0;
+  border-top: var(--dj-border-width) solid var(--dj-border);
+  margin: var(--dj-space-6) 0;
 }
 
 /* ─── Scrollbar (Chrome/Edge) ─────────────────────────────────────────────── */
 ::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: var(--bg); }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+::-webkit-scrollbar-track { background: var(--dj-bg); }
+::-webkit-scrollbar-thumb { background: var(--dj-border); border-radius: var(--dj-radius-sm); }
+::-webkit-scrollbar-thumb:hover { background: var(--dj-text-muted); }
