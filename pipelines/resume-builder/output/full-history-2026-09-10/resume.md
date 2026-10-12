@@ -1,7 +1,7 @@
 # Tory Hebert
 Senior Frontend Engineer · Lafayette, LA · (337) 380-0038 · tory37@gmail.com · toryh.dev · github.com/tory37 · linkedin.com/in/toryhebert
 
-Senior frontend engineer with 10 years building production React/TypeScript applications, including 4+ years on the core client of a K-5 reading and assessment platform serving 5.5M+ students. Goes full-stack when the work needs it (Node.js, Python, PostgreSQL, AWS Lambda/AppSync/DynamoDB). Works almost entirely through a self-designed agentic workflow — setting direction, architecture, and review while agents implement — and uses it to build the tools that remove friction for the team: a component workbench in 4 days, a partner-facing authoring platform in 3, and 11 browser extensions in 15.
+Senior frontend engineer with 10 years building production React/TypeScript applications, including 4+ years on the core client of a K-8 reading and assessment platform serving 5.5M+ students. Goes full-stack when the work needs it (Node.js, Python, PostgreSQL, AWS Lambda/AppSync/DynamoDB). Works almost entirely through a self-designed agentic workflow — setting direction, architecture, and review while agents implement — and uses it to build the tools that remove friction for the team: a component workbench in 4 days, a partner-facing authoring platform in 3, and 11 browser extensions in 15.
 
 ## Skills
 
@@ -19,7 +19,7 @@ Senior frontend engineer with 10 years building production React/TypeScript appl
 ### Senior Software Engineer — Amira Learning
 *Lafayette, LA (remote) · 2022 – Present*
 
-- Owned Amira's core K-5 reading and assessment client (React/TypeScript) for 3+ years, serving 5.5M+ students across 4,000+ districts. Migrated its real-time assessment engine to a server-orchestrated architecture that now runs every English-language assessment.
+- Owned Amira's core K-8 reading and assessment client (React/TypeScript) for 3+ years, serving 5.5M+ students across 4,000+ districts. Migrated its real-time assessment engine to a server-orchestrated architecture that now runs every English-language assessment.
 - Shipped an LLM-powered conversational comprehension feature end-to-end (inference pipeline, timeout safeguards, teacher-facing transcript report), a WebGL animated tutor avatar, and a 6-brand white-label platform for partners including NWEA and HMH.
 - Cut every assessment UI check from a 3+ minute assignment run to instant by building a component workbench that renders real screens with live item-bank data and production text-to-speech. Used it that week to ship 5 layout fixes, each verified across up to 16 cases and 4 viewport sizes.
 - Built a partner-facing assessment authoring platform solo in ~3 days with an agentic workflow (Next.js, PostgreSQL): one type registry drives 12 item types through editing, CSV import, LLM prompt generation, and live preview in the real student app. Now extending it to open PRs for engineer approval.
