@@ -109,6 +109,7 @@ When the user makes a request that is outside the scope of the current feature o
 - **Core Flow:** gather info → write plan (phases) → implement phase → verify → confirm with user → commit → repeat.
 - Small, clear tasks (typo, rename, one-liner): skip the workflow and act directly.
 - **Manual test plans** of any kind (doer plan, QA steps, "how do I test this") always go through `/djt-test-plan`. Never hand-roll them inline.
+- **The doer test plan is the QA test plan.** One plan, on the ticket's Doer Test Plan field. QA runs it as written. Never write a separate QA plan or offer to.
 - **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside the feature/bug/techdebt workflows too, per phase that touches UI.
 
 ---
