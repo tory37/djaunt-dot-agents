@@ -81,5 +81,7 @@ Once the report is written to disk, output ONLY the following summary to the use
 
 - **Mandatory Citations**: Any claim lacking a citation must be removed or marked explicitly as an "Unverified Hypothesis."
 - **No Terminal Bloat**: Do NOT print the report content to the console.
+- **Problem First**: Before writing the report, read `~/.agents/assets/problem-statement.md`.
+- **Budget**: State a search and fetch budget before starting. Max 2 subagents at once. See **Budgets** in AGENTS.md.
 - **High-Density Text**: Prioritize facts and mechanics over flowery prose.
 - **Styled HTML**: The report file must be valid HTML using the dark-theme design system from AGENTS.md. Use `<section>` tags for each numbered section, `<h2>` for section headings, `<table>` for the working stack, and `.bibliography` for sources.

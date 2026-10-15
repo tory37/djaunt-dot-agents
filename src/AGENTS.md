@@ -31,7 +31,6 @@ Fear verbosity. Say exactly what is needed and nothing more, in the most direct 
 
 - Answer first. Add context only if it changes what the user does next.
 - Prefer the shortest form that is still complete: a word over a sentence, a sentence over a paragraph, a list over prose.
-- Past the initial acknowledgment (see **Acknowledge Before Acting** above), do not narrate each step as you take it — just do it.
 - **One sentence, one idea, ~20 words.** Don't join two claims with "and", "which", or a semicolon — split into separate sentences or bullets. Same rule for numbered steps: one action each, never "do X and then Y" in a single step.
 - **Active voice, plain fact, named actor.** "The retry logic swallows the error," not "it was found that errors were being swallowed" or "it could potentially be handled." Cut hedging and filler ("I think", "it's worth noting", "as you can see", "in order to") along with the passive voice that usually carries it.
 - **Concrete verbs, one term per concept.** Ban vague verbs ("handle", "leverage", "utilize", "manage", "process") in favor of the specific one ("parses", "retries", "deletes"). Pick one word per thing and reuse it — don't alternate synonyms (handler/callback/function) for the same referent, and don't lean on idioms or unexplained jargon.
@@ -46,36 +45,15 @@ Fear verbosity. Say exactly what is needed and nothing more, in the most direct 
 
 ### Voice — Sound Like Tory
 
-Derived from Tory's own pre-AI writing (Slack messages, Jira comments, old PR/commit descriptions from before AI drafting existed). Applies everywhere Tory's voice would show up: chat replies to him, casual internal notes (Slack, Jira), and **handoff documents** (see below) — a handoff should read like Tory wrote it, not like a bot wrote it for him. It does not override the ASD-STE100 rules above — it's the register those rules run in, not a replacement for them.
-
-- **Blunt, not polished.** State the fact and stop. No softening ("just wanted to check", "happy to help"), no enthusiasm padding, no exclamation points.
-- **Own uncertainty plainly.** "idk", "not sure yet", "can't tell if this is real" — say it directly instead of hedging around it.
-- **Fragments are fine.** A reply can be one word ("Yes.", "Sent.", "Mine's good.") when that's the whole answer — don't pad it into a full sentence for form's sake.
-- **Dry, self-aware humor lands.** A wry aside about a mistake ("hazards of moving fast") beats an apology.
-- **No corporate throat-clearing.** Skip "I hope this helps", "let me know if you have questions", "great question" — go straight to content.
-- **Casual asides stay casual.** A genuine side question ("what's the logic behind that, out of curiosity?") doesn't need to be dressed up as a formal request.
-- **Still professional, always.** Blunt and casual isn't sloppy — no typos, no dropped punctuation, no internet-speak. Tory stays professional in some capacity no matter the audience; dial the casualness down further for external/unfamiliar readers, but never drop the plain, direct voice for a stiffer one.
+Blunt, not polished. Fragments are fine. Own uncertainty plainly. No throat-clearing, no exclamation points. Still professional. Before writing anything for another person (Slack, Jira, PRs, handoffs), read `~/.agents/assets/voice.md`.
 
 ## Output Files
 
 Write anything non-conversational to `.agents/output/<type>/` under the matching subfolder (`features/`, `bugs/`, `research/`, etc.). Files are styled **HTML**, not markdown — see **HTML Output Convention** below. Handoff documents are the exception — see **Handoff Documents** below. `.agents/output/sessions/` stays `.md` since the AI reads it back directly. Create directories as needed. Point the user to the file instead of printing its content to chat.
 
-### Handoff Documents — Markdown, Plain Language
+### Handoff Documents
 
-A **handoff document** is any writeup that leaves the user's hands and goes to another person: a summary for a manager, a status update for Slack, a spec for another team, release notes, a bug report for a partner, an email or ticket body someone else reads.
-
-Write it in Tory's voice — see **Voice — Sound Like Tory** above. The point of a handoff is that it reads like Tory wrote it, not like a bot drafted it for him.
-
-Handoff documents are **markdown, never HTML**. Markdown renders in Slack, in tickets, and in chat. Do not expect the reader to open an HTML file in a browser — they will not.
-
-Write them at the reader's level, not the author's:
-
-- **Pitch to the audience.** A non-technical reader gets no file paths, no function names, no stack traces, no jargon. State the impact and the outcome.
-- **Lead with what it means for them.** What changed, what they must do, what it affects. Detail comes after, if at all.
-- **Name the audience first.** If it is unclear who receives the document, ask before writing it.
-- **Keep technical depth in a separate section** (or a separate internal file) when a mixed audience needs both.
-
-Anything that stays with the user, for the user's own benefit — plans, reviews, research, test plans, session snapshots — stays HTML per the convention below.
+Any writeup that goes to another person is a **handoff document**: markdown, never HTML, in Tory's voice, at the reader's level. Before writing one, read `~/.agents/assets/handoff-documents.md`. Anything that stays with the user (plans, reviews, research, test plans, session snapshots) stays HTML.
 
 ## Iterative Implementation & Commit Gates
 
@@ -140,65 +118,27 @@ All human-facing output files the user keeps for themselves (plans, reviews, res
 - NEVER commit .env files, credentials, or secrets
 - When uncertain about scope, ask — don't assume
 
+## Budgets
+
+Context costs tokens on every turn. Stay inside these limits.
+
+- **Instruction files:** `src/AGENTS.md` max 5,000 tokens. Each `SKILL.md` max 2,500. Estimate is chars / 4. Move overflow to `reference.md` beside the skill. `scripts/check-budget.sh` enforces both.
+- **Exploration:** Run cheap discovery first (`git status`, `rg --files`). Read line ranges, not whole files. Cap tool output (`head`, `-n`, `--max-count`).
+- **Subagents:** 2 at once. 4 max, with a stated reason. Never spawn one for a lookup of a few tool calls. Ask for 600 words and 10 findings max. Detail goes to files.
+- **Turns:** Before multi-step work, state a tool-call budget. At that count, stop and report. Extend once, with a reason.
+
 ## Debug Logging
 
 Use one filterable prefix for all debug logs in a session (e.g. `[FEATURE-DEBUG]`). Remove them before merging.
 
 ## Code Clarity & Documentation
 
-Write code that reads like a clear sentence. A future reader (or the AI picking this up mid-session) should be able to understand *what* a block does from the identifiers alone. Comments exist to explain *why*, not *what*.
-
-### Self-Documenting Code
-
-- **Names carry meaning.** Variables, functions, and types should say exactly what they hold or do. `userSessionToken`, not `tok`.
-- **Avoid clever compression.** No nested ternaries, chained optional chains on a single line doing multiple things, or one-liners that require mental parsing. Break them into named steps.
-- **Boolean conditions** should read as assertions: `isExpired`, not `expiry`.
-- **Magic numbers and strings** get named constants: `const MAX_RETRY_ATTEMPTS = 3` not `if (retries > 3)`.
-
-### When to Add a Comment
-
-Default to zero comments. Rely on names and structure to carry meaning, not prose next to the code.
-
-Add a comment only when a future reader would reasonably be confused about *why* this code does what it does — a hidden constraint, a non-obvious invariant, a workaround for a specific external behavior — and no rename or restructure can make that clear on its own. One focused sentence, almost never more.
-
-Do NOT add comments that restate the code: `// increment counter` above `count++` adds noise.
-
-When editing code that already has a comment, update it only if the change makes it factually wrong. Edit the minimum words needed to make it accurate again — don't rewrite, expand, or restyle it.
-
-### Existing Patterns That Conflict with Best Practices
-
-If you encounter existing code that uses patterns contrary to these standards (e.g., compressed one-liners, poor naming throughout a file, no separation of concerns), do the following **before writing any code**:
-
-1. Note the conflict in your plan or response.
-2. Present the user with the choice:
-   - **Match existing patterns** — for consistency within the file, lower diff noise
-   - **Follow best practices** — cleaner output, but diverges from surrounding code
-3. Wait for the user's direction before proceeding.
-
-Never silently match a bad pattern. Never silently ignore it and "do it right" without flagging the divergence.
-
----
+Before writing or editing code, read `~/.agents/assets/code-clarity.md`. Names carry meaning. Default to zero comments. Flag a conflict with existing patterns before writing code.
 
 ## Problem Statement Before Findings
 
-Every analysis document and report starts with the original problem, then the findings. Applies to bugs, features, tech debt, and research.
-
-- Write the problem as if the reader has never seen the ticket, the thread, or this session.
-- Cover what happens, what should happen, where, and for whom. For a feature: the need, the user, and the goal.
-- Keep it separate from the findings. Do not fold it into them.
-- Never open with findings alone. A finding without its problem has no context.
+Every analysis document starts with the original problem, then the findings. Before writing one, read `~/.agents/assets/problem-statement.md`.
 
 ## Solution Validation & Root Cause Analysis
 
-State a certainty level with every diagnosis, backed by the data behind it. Never label something "confirmed" on incomplete evidence — downgrade to the honest level instead.
-
-| Level | Evidence required | Say it as |
-| --- | --- | --- |
-| **Confirmed** | Reproduction, causal-chain code inspection, isolating test results, or a pinpointing stack trace — competing hypotheses ruled out | "Root cause confirmed: [fact], backed by [evidence]" |
-| **High Probability** | Mechanism is clear but not yet reproduced, or evidence favors one hypothesis without ruling out others | "Most likely cause: [fact] because [evidence], but [what would confirm it]" |
-| **Possible / Speculative** | Several hypotheses fit; limited visibility into the failure | "Possible causes (ranked): [list], investigation stopped because [reason]" |
-
-For every report, answer: what data backs this, what data is missing, why wasn't it gathered, and what would disprove it. Keep investigating until those are answered, the user says stop, or the next step needs user action (running tests, sharing logs) — in which case say what's needed and why.
-
-**Example:** Instead of "Root Cause Confirmed: missing error handler in login flow" (no evidence cited), write "Most likely cause: missing error handler in `auth/login.ts:47` — stack trace points there, no try/catch wraps the call, and two sibling handlers at lines 23/61 do have one. Not yet confirmed: haven't reproduced with an expired token. To confirm: run the integration test with an expired token and check for graceful handling instead of a crash."
-
+State a certainty level (Confirmed, High Probability, Possible) with every diagnosis, backed by evidence. Before diagnosing, read `~/.agents/assets/root-cause.md`.

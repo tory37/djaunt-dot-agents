@@ -15,6 +15,14 @@ Start the test-driven bug investigation workflow.
 /djt-bug @path/to/issue.md      # start from a written issue or repro-steps file
 ```
 
+## Budget
+
+State a tool-call budget for the investigation before starting it. See **Budgets** in AGENTS.md. Max 2 subagents at once.
+
+Before the problem statement, read `~/.agents/assets/problem-statement.md`.
+
+Before writing code, read `~/.agents/assets/code-clarity.md`.
+
 ## Steps
 
 Work through the following steps in order. Do not proceed past a gate without user confirmation.
@@ -34,7 +42,7 @@ If repro steps, expected vs. actual behavior, or scope are unclear, ask all ques
 **Before any investigation work, report back in chat.** Keep it short — this is a check on understanding, not a document. Cover, in this order:
 
 1. **The problem as you understand it.** Restate it in your own words: what happens, what should happen, where, and for whom. Never assume the user's framing is correct — say so if the code suggests something different.
-2. **Theories, if any.** Ranked. Each with the certainty level and the evidence behind it (see **Solution Validation & Root Cause Analysis** in AGENTS.md). Say "no theory yet" when that's the truth — a guessed theory is worse than none.
+2. **Theories, if any.** Ranked. Each with the certainty level and the evidence behind it (see `~/.agents/assets/root-cause.md`). Say "no theory yet" when that's the truth — a guessed theory is worse than none.
 3. **How you would start investigating.** The first few concrete moves: which files, which logs, which repro, which test.
 
 **STOP. Wait for the user's approval.** If the user corrects the understanding, restate it and wait again. Do not investigate on an unapproved problem statement.
@@ -56,7 +64,7 @@ Run the test yourself and confirm it fails for the right reason. Report the actu
 
 1. **The issue, restated.** One or two sentences — the same problem from Step 3, corrected if the investigation changed it.
 2. **Whether that framing held up.** Say plainly if the real bug turned out to be different from what was first reported.
-3. **The diagnosis.** Root cause with a stated certainty level and the evidence behind it. Use the Confirmed / High Probability / Possible ladder from AGENTS.md — do not label a cause "confirmed" without a repro, an isolating test, or a pinpointing trace.
+3. **The diagnosis.** Root cause with a stated certainty level and the evidence behind it. Use the Confirmed / High Probability / Possible ladder from `~/.agents/assets/root-cause.md` — do not label a cause "confirmed" without a repro, an isolating test, or a pinpointing trace.
 4. **The proposed solution.** The minimal change, named by file and function.
 5. **Exactly how the solution fixes the issue.** Walk the causal chain: the bad behavior happens because X; the change makes X impossible/correct; therefore the behavior is right. If that chain has a gap, the diagnosis is not done — go back to Step 4.
 6. **Side effects and risk.** What else touches this code path.

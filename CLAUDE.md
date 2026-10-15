@@ -26,6 +26,10 @@ README.md          — Human-facing docs
 bash scripts/sync.sh
 ```
 
+## Budgets
+
+`src/AGENTS.md` max 5,000 tokens. Each `SKILL.md` max 2,500. Overflow goes in `reference.md` beside the skill. `bash scripts/check-budget.sh` checks; `sync.sh` runs it and aborts on failure.
+
 ## Output
 
 Files produced while working on this repo (plans, analysis, session snapshots) go in `.agents/output/` with the appropriate subfolder:

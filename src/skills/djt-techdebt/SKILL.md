@@ -15,6 +15,12 @@ Start the engineering workflow for addressing technical debt or refactoring.
 /djt-techdebt @path/to/spec.md     # start from a written spec/issue file
 ```
 
+## Budget
+
+State a tool-call budget for each phase before starting it. See **Budgets** in AGENTS.md. Max 2 subagents at once.
+
+Before writing code, read `~/.agents/assets/code-clarity.md`.
+
 ## Steps
 
 Work through the following steps in order. Do not skip ahead without user confirmation at each gate.

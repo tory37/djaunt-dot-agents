@@ -63,6 +63,11 @@ link_dir() {
 }
 
 # ──────────────────────────────────────────────
+# Budget gate — refuse to deploy oversized instruction files
+# ──────────────────────────────────────────────
+bash "$REPO_ROOT/scripts/check-budget.sh" || { warn "Budget check failed — sync aborted"; exit 1; }
+
+# ──────────────────────────────────────────────
 # 0. Initialize counters
 # ──────────────────────────────────────────────
 COUNT_DOTAGENTS=0
@@ -84,8 +89,10 @@ ok "Copied src/AGENTS.md → ~/.agents/AGENTS.md"
 mkdir -p "$AGENTS_DIR/assets"
 cp "$REPO_ROOT/src/assets/style.css" "$AGENTS_DIR/assets/style.css"
 ok "Copied src/assets/style.css → ~/.agents/assets/style.css"
-cp "$REPO_ROOT/src/assets/html-output.md" "$AGENTS_DIR/assets/html-output.md"
-ok "Copied src/assets/html-output.md → ~/.agents/assets/html-output.md"
+for asset_file in "$REPO_ROOT"/src/assets/*.md; do
+    cp "$asset_file" "$AGENTS_DIR/assets/$(basename "$asset_file")"
+    ok "Copied src/assets/$(basename "$asset_file") → ~/.agents/assets/"
+done
 
 link_dir "$REPO_ROOT/src/skills" "$AGENTS_DIR/skills"
 ok "Linked $REPO_ROOT/src/skills → ~/.agents/skills"
@@ -187,6 +194,10 @@ if $CURSOR_FOUND; then
     while IFS= read -r -d '' skill_file; do
         name="$(frontmatter_field "$skill_file" name)"
         skill_body "$skill_file" > "$CURSOR_COMMANDS/${name}.md"
+        if [ -f "$(dirname "$skill_file")/reference.md" ]; then
+            printf '\n\n' >> "$CURSOR_COMMANDS/${name}.md"
+            cat "$(dirname "$skill_file")/reference.md" >> "$CURSOR_COMMANDS/${name}.md"
+        fi
         ok "  Wrote command: /${name} → $CURSOR_COMMANDS/${name}.md"
     done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
 
@@ -230,6 +241,10 @@ if [ -d "$HOME/.gemini" ]; then
                 printf '> **Note:** %s\n\n' "$notes" >> "$GEMINI_MD"
             fi
             skill_body "$skill_file" >> "$GEMINI_MD"
+            if [ -f "$skill_dir/reference.md" ]; then
+                printf '\n\n' >> "$GEMINI_MD"
+                cat "$skill_dir/reference.md" >> "$GEMINI_MD"
+            fi
             printf '\n---\n\n' >> "$GEMINI_MD"
 
             ok "  Inlined skill: $name"
