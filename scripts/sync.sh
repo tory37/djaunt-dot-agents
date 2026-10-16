@@ -326,6 +326,122 @@ sync_djt_hub() {
 }
 sync_djt_hub
 
+# ──────────────────────────────────────────────
+# 7. Djaunt ecosystem (overseer, branding themes, memguard)
+#    Each repo is cloned under $DJAUNT_SRC_DIR, fast-forwarded to origin,
+#    and installed only when something changed. Never aborts sync.
+# ──────────────────────────────────────────────
+DJAUNT_SRC_DIR="${DJAUNT_SRC_DIR:-$HOME/src}"
+DJAUNT_STAMP_DIR="$HOME/.local/share/djaunt-dot-agents"
+
+# ensure_djaunt_repo <name> — clone if missing, else fast-forward. Sets DJAUNT_REPO_DIR.
+ensure_djaunt_repo() {
+    local name="$1"
+    DJAUNT_REPO_DIR="$DJAUNT_SRC_DIR/$name"
+    if [ ! -d "$DJAUNT_REPO_DIR/.git" ]; then
+        command -v gh >/dev/null 2>&1 && gh repo clone "tory37/$name" "$DJAUNT_REPO_DIR" -- --quiet \
+            || { warn "Could not clone $name to $DJAUNT_REPO_DIR — skipping"; return 1; }
+        ok "Cloned $name → $DJAUNT_REPO_DIR"
+    elif [ -n "$(git -C "$DJAUNT_REPO_DIR" status --porcelain)" ]; then
+        warn "$name has local changes — using it as is"
+    elif git -C "$DJAUNT_REPO_DIR" pull --ff-only --quiet; then
+        ok "$name at $(git -C "$DJAUNT_REPO_DIR" rev-parse --short HEAD)"
+    else
+        warn "$name could not fast-forward — using it as is"
+    fi
+}
+
+# stamp_matches <name> <value> / write_stamp <name> <value> — skip work when nothing changed
+stamp_matches() { [ "$(cat "$DJAUNT_STAMP_DIR/$1" 2>/dev/null)" = "$2" ]; }
+write_stamp()   { mkdir -p "$DJAUNT_STAMP_DIR"; printf '%s\n' "$2" > "$DJAUNT_STAMP_DIR/$1"; }
+
+# editor_clis — print each installed VS Code-compatible CLI
+editor_clis() {
+    local cli
+    for cli in code cursor; do command -v "$cli" 2>/dev/null; done
+}
+
+sync_djaunt_overseer() {
+    log "Setting up djaunt-overseer …"
+    ensure_djaunt_repo djaunt-overseer || return 0
+    command -v gh >/dev/null 2>&1 || { warn "gh not found — skipping overseer release check"; return 0; }
+
+    local latest cli installed tmp_dir
+    latest="$(gh release view -R tory37/djaunt-overseer --json tagName -q .tagName 2>/dev/null | sed 's/^v//')"
+    [ -n "$latest" ] || { warn "Could not read latest overseer release — skipping"; return 0; }
+
+    tmp_dir="$(mktemp -d)"
+    for cli in $(editor_clis); do
+        installed="$("$cli" --list-extensions --show-versions 2>/dev/null | sed -n 's/^djaunt\.djaunt-overseer@//p')"
+        if [ "$installed" = "$latest" ]; then
+            ok "overseer $latest already installed in $(basename "$cli")"
+            continue
+        fi
+        if [ ! -f "$tmp_dir/djaunt-overseer-$latest.vsix" ]; then
+            gh release download "v$latest" -R tory37/djaunt-overseer -p '*.vsix' -D "$tmp_dir" --clobber \
+                || { warn "Could not download overseer v$latest"; break; }
+        fi
+        if "$cli" --install-extension "$tmp_dir/djaunt-overseer-$latest.vsix" --force >/dev/null; then
+            ok "overseer ${installed:-none} → $latest in $(basename "$cli")"
+        else
+            warn "overseer install failed in $(basename "$cli")"
+        fi
+    done
+    rm -rf "$tmp_dir"
+    [ -n "$(editor_clis)" ] || warn "No code or cursor CLI on PATH — overseer not installed"
+}
+
+sync_djaunt_branding() {
+    log "Setting up djaunt-branding …"
+    ensure_djaunt_repo djaunt-branding || return 0
+    if $IS_WINDOWS; then
+        warn "VS Code theme symlink not supported on Windows — skipping"
+    elif bash "$DJAUNT_REPO_DIR/vscode-theme/tools/sync-local.sh" >/dev/null; then
+        ok "VS Code themes linked (reload editor windows to pick up changes)"
+    else
+        warn "Could not link VS Code themes"
+    fi
+
+    local revision
+    revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD)"
+    if [ ! -x "$DJAUNT_REPO_DIR/terminal-theme/tools/sync-local.sh" ]; then
+        warn "djaunt-branding has no terminal-theme installer — skipping"
+    elif stamp_matches branding-terminal-rev "$revision"; then
+        ok "iTerm themes up to date (${revision:0:7})"
+    elif bash "$DJAUNT_REPO_DIR/terminal-theme/tools/sync-local.sh" >/dev/null; then
+        write_stamp branding-terminal-rev "$revision"
+        ok "iTerm themes imported (pick one in iTerm2 > Profiles > Colors > Color Presets)"
+    else
+        warn "Could not import iTerm themes"
+    fi
+}
+
+sync_djaunt_memguard() {
+    log "Setting up djaunt-memguard …"
+    if [ "$(uname -s)" != "Darwin" ]; then
+        warn "djaunt-memguard is macOS only — skipping"
+        return 0
+    fi
+    ensure_djaunt_repo djaunt-memguard || return 0
+
+    local revision
+    revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD)"
+    if stamp_matches memguard-rev "$revision" && launchctl list 2>/dev/null | grep -q memguard; then
+        ok "memguard up to date (${revision:0:7})"
+    elif ! command -v swiftc >/dev/null 2>&1; then
+        warn "swiftc not found — run xcode-select --install, then re-run sync"
+    elif "$DJAUNT_REPO_DIR/mac/bin/djt-memguard" install >/dev/null; then
+        write_stamp memguard-rev "$revision"
+        ok "memguard installed (${revision:0:7}); passwordless purge is opt-in: djt-memguard install-sudoers"
+    else
+        warn "memguard install failed — run $DJAUNT_REPO_DIR/mac/bin/djt-memguard install"
+    fi
+}
+
+sync_djaunt_overseer
+sync_djaunt_branding
+sync_djaunt_memguard
+
 echo ""
 log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills"
 echo ""
