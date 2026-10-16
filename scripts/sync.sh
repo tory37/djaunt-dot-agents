@@ -424,9 +424,10 @@ sync_djaunt_memguard() {
     fi
     ensure_djaunt_repo djaunt-memguard || return 0
 
-    local revision
+    local revision loaded_agents
     revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD)"
-    if stamp_matches memguard-rev "$revision" && launchctl list 2>/dev/null | grep -q memguard; then
+    loaded_agents="$(launchctl list 2>/dev/null || true)"
+    if stamp_matches memguard-rev "$revision" && [[ "$loaded_agents" == *com.djaunt.memguard* ]]; then
         ok "memguard up to date (${revision:0:7})"
     elif ! command -v swiftc >/dev/null 2>&1; then
         warn "swiftc not found — run xcode-select --install, then re-run sync"
