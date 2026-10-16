@@ -62,3 +62,7 @@ Senior frontend engineer with 10 years building production React/TypeScript appl
 ## Education
 
 **Bachelor of Science, Computer Science** — University of Louisiana at Lafayette, 2012 – 2016
+
+## Work Preference
+
+Remote only. Not open to on-site or hybrid roles. Lafayette, LA is listed for reference only.
