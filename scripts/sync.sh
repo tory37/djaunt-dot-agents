@@ -277,12 +277,45 @@ else
 fi
 
 # ──────────────────────────────────────────────
+# Shared helpers for sections 6 and 7 (djaunt repos)
+# ──────────────────────────────────────────────
+DJAUNT_SRC_DIR="${DJAUNT_SRC_DIR:-$HOME/src}"
+DJAUNT_STAMP_DIR="$HOME/.local/share/djaunt-dot-agents"
+
+# ensure_djaunt_repo <name> [dir] — clone if missing, else fast-forward. Sets DJAUNT_REPO_DIR.
+ensure_djaunt_repo() {
+    local name="$1"
+    DJAUNT_REPO_DIR="${2:-$DJAUNT_SRC_DIR/$name}"
+    if [ ! -d "$DJAUNT_REPO_DIR/.git" ]; then
+        command -v gh >/dev/null 2>&1 && gh repo clone "tory37/$name" "$DJAUNT_REPO_DIR" -- --quiet \
+            || { warn "Could not clone $name to $DJAUNT_REPO_DIR — skipping"; return 1; }
+        ok "Cloned $name → $DJAUNT_REPO_DIR"
+    elif [ -n "$(git -C "$DJAUNT_REPO_DIR" status --porcelain)" ]; then
+        warn "$name has local changes — using it as is"
+    elif git -C "$DJAUNT_REPO_DIR" pull --ff-only --quiet; then
+        ok "$name at $(git -C "$DJAUNT_REPO_DIR" rev-parse --short HEAD)"
+    else
+        warn "$name could not fast-forward — using it as is"
+    fi
+}
+
+# stamp_matches <name> <value> / write_stamp <name> <value> — skip work when nothing changed
+stamp_matches() { [ "$(cat "$DJAUNT_STAMP_DIR/$1" 2>/dev/null)" = "$2" ]; }
+write_stamp()   { mkdir -p "$DJAUNT_STAMP_DIR"; printf '%s\n' "$2" > "$DJAUNT_STAMP_DIR/$1"; }
+
+# editor_clis — print each installed VS Code-compatible CLI
+editor_clis() {
+    local cli
+    for cli in code cursor; do command -v "$cli" 2>/dev/null; done
+}
+
+# ──────────────────────────────────────────────
 # 6. djt-hub (live browser hubs for agents)
 #    Builds from $DJT_HUB_REPO and keeps the launchd daemon running.
 #    Rebuilds only when the repo's HEAD changed or the daemon is down,
 #    so cron syncs don't restart it. Never aborts sync.
 # ──────────────────────────────────────────────
-DJT_HUB_REPO="${DJT_HUB_REPO:-$HOME/src/djaunt-agent-hubs}"
+DJT_HUB_REPO="${DJT_HUB_REPO:-$DJAUNT_SRC_DIR/djaunt-agent-hubs}"
 DJT_HUB_BIN="$HOME/.local/bin/djt-hub"
 DJT_HUB_STAMP="$HOME/.local/share/djt-hub/installed-rev"
 
@@ -292,14 +325,7 @@ sync_djt_hub() {
         warn "djt-hub is not supported on Windows — skipping"
         return
     fi
-    if [ ! -d "$DJT_HUB_REPO/.git" ]; then
-        if command -v gh >/dev/null 2>&1 && gh repo clone tory37/djaunt-agent-hubs "$DJT_HUB_REPO" -- --quiet; then
-            ok "Cloned djaunt-agent-hubs → $DJT_HUB_REPO"
-        else
-            warn "Could not clone djaunt-agent-hubs to $DJT_HUB_REPO — skipping (set DJT_HUB_REPO or clone it)"
-            return
-        fi
-    fi
+    ensure_djaunt_repo djaunt-agent-hubs "$DJT_HUB_REPO" || return 0
 
     local revision
     revision="$(git -C "$DJT_HUB_REPO" rev-parse HEAD 2>/dev/null || echo unknown)"
@@ -331,36 +357,6 @@ sync_djt_hub
 #    Each repo is cloned under $DJAUNT_SRC_DIR, fast-forwarded to origin,
 #    and installed only when something changed. Never aborts sync.
 # ──────────────────────────────────────────────
-DJAUNT_SRC_DIR="${DJAUNT_SRC_DIR:-$HOME/src}"
-DJAUNT_STAMP_DIR="$HOME/.local/share/djaunt-dot-agents"
-
-# ensure_djaunt_repo <name> — clone if missing, else fast-forward. Sets DJAUNT_REPO_DIR.
-ensure_djaunt_repo() {
-    local name="$1"
-    DJAUNT_REPO_DIR="$DJAUNT_SRC_DIR/$name"
-    if [ ! -d "$DJAUNT_REPO_DIR/.git" ]; then
-        command -v gh >/dev/null 2>&1 && gh repo clone "tory37/$name" "$DJAUNT_REPO_DIR" -- --quiet \
-            || { warn "Could not clone $name to $DJAUNT_REPO_DIR — skipping"; return 1; }
-        ok "Cloned $name → $DJAUNT_REPO_DIR"
-    elif [ -n "$(git -C "$DJAUNT_REPO_DIR" status --porcelain)" ]; then
-        warn "$name has local changes — using it as is"
-    elif git -C "$DJAUNT_REPO_DIR" pull --ff-only --quiet; then
-        ok "$name at $(git -C "$DJAUNT_REPO_DIR" rev-parse --short HEAD)"
-    else
-        warn "$name could not fast-forward — using it as is"
-    fi
-}
-
-# stamp_matches <name> <value> / write_stamp <name> <value> — skip work when nothing changed
-stamp_matches() { [ "$(cat "$DJAUNT_STAMP_DIR/$1" 2>/dev/null)" = "$2" ]; }
-write_stamp()   { mkdir -p "$DJAUNT_STAMP_DIR"; printf '%s\n' "$2" > "$DJAUNT_STAMP_DIR/$1"; }
-
-# editor_clis — print each installed VS Code-compatible CLI
-editor_clis() {
-    local cli
-    for cli in code cursor; do command -v "$cli" 2>/dev/null; done
-}
-
 sync_djaunt_overseer() {
     log "Setting up djaunt-overseer …"
     ensure_djaunt_repo djaunt-overseer || return 0
