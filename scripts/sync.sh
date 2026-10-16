@@ -276,6 +276,56 @@ else
     warn "~/.gemini not found — skipping Gemini CLI setup"
 fi
 
+# ──────────────────────────────────────────────
+# 6. djt-hub (live browser hubs for agents)
+#    Builds from $DJT_HUB_REPO and keeps the launchd daemon running.
+#    Rebuilds only when the repo's HEAD changed or the daemon is down,
+#    so cron syncs don't restart it. Never aborts sync.
+# ──────────────────────────────────────────────
+DJT_HUB_REPO="${DJT_HUB_REPO:-$HOME/src/djaunt-agent-hubs}"
+DJT_HUB_BIN="$HOME/.local/bin/djt-hub"
+DJT_HUB_STAMP="$HOME/.local/share/djt-hub/installed-rev"
+
+sync_djt_hub() {
+    log "Setting up djt-hub …"
+    if $IS_WINDOWS; then
+        warn "djt-hub is not supported on Windows — skipping"
+        return
+    fi
+    if [ ! -d "$DJT_HUB_REPO/.git" ]; then
+        if command -v gh >/dev/null 2>&1 && gh repo clone tory37/djaunt-agent-hubs "$DJT_HUB_REPO" -- --quiet; then
+            ok "Cloned djaunt-agent-hubs → $DJT_HUB_REPO"
+        else
+            warn "Could not clone djaunt-agent-hubs to $DJT_HUB_REPO — skipping (set DJT_HUB_REPO or clone it)"
+            return
+        fi
+    fi
+
+    local revision
+    revision="$(git -C "$DJT_HUB_REPO" rev-parse HEAD 2>/dev/null || echo unknown)"
+    if [ -x "$DJT_HUB_BIN" ] && [ "$(cat "$DJT_HUB_STAMP" 2>/dev/null)" = "$revision" ] \
+        && { [ "$(uname -s)" != "Darwin" ] || "$DJT_HUB_BIN" status >/dev/null 2>&1; }; then
+        ok "djt-hub up to date (${revision:0:7})"
+    elif ! command -v go >/dev/null 2>&1; then
+        warn "go not found — skipping djt-hub build (see setup/tools.md)"
+    elif bash "$DJT_HUB_REPO/install.sh"; then
+        mkdir -p "$(dirname "$DJT_HUB_STAMP")"
+        printf '%s\n' "$revision" > "$DJT_HUB_STAMP"
+        ok "djt-hub built and running (${revision:0:7})"
+    else
+        warn "djt-hub install failed — see output above"
+    fi
+
+    if [ -x "$DJT_HUB_BIN" ] && "$DJT_HUB_BIN" docs > "$AGENTS_DIR/assets/djt-hub.md"; then
+        ok "Wrote djt-hub docs → ~/.agents/assets/djt-hub.md"
+    elif cp "$DJT_HUB_REPO/docs/agent-guide.md" "$AGENTS_DIR/assets/djt-hub.md" 2>/dev/null; then
+        ok "Copied djt-hub agent guide → ~/.agents/assets/djt-hub.md"
+    else
+        warn "No djt-hub agent guide found — ~/.agents/assets/djt-hub.md not written"
+    fi
+}
+sync_djt_hub
+
 echo ""
 log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills"
 echo ""

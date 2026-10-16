@@ -104,6 +104,10 @@ When the user makes a request that is outside the scope of the current feature o
 - **The doer test plan is the QA test plan.** One plan, on the ticket's Doer Test Plan field. QA runs it as written. Never write a separate QA plan or offer to.
 - **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside the feature/bug/techdebt workflows too, per phase that touches UI.
 
+## Live Hubs — djt-hub
+
+A local daemon (`djt-hub`, `127.0.0.1:7717`) hosts live browser pages for multi-step processes the user must watch or approve: releases, migrations, backfills, long runs. It has runbook steps with approval gates, charts, logs, and forms. Clicks come back as events (`djt-hub wait`, `events --follow`), and supervised services keep a page live after the session ends. Before the first use in a session, read `~/.agents/assets/djt-hub.md`.
+
 ---
 
 ## HTML Output Convention
