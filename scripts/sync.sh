@@ -152,6 +152,26 @@ if [ -d "$HOME/.claude" ]; then
 
     link_dir "$AGENTS_DIR/skills" "$HOME/.claude/skills"
     ok "Linked ~/.agents/skills → ~/.claude/skills"
+
+    # Merge owned top-level keys from src/claude-settings.json into settings.json.
+    # Owned keys are replaced whole. Every other key is left alone.
+    CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+    if ! command -v jq >/dev/null 2>&1; then
+        warn "jq not found — skipping ~/.claude/settings.json merge (see setup/tools.md)"
+    elif [ -e "$CLAUDE_SETTINGS" ] && ! jq empty "$CLAUDE_SETTINGS" 2>/dev/null; then
+        warn "$CLAUDE_SETTINGS is not valid JSON — skipping merge"
+    else
+        [ -e "$CLAUDE_SETTINGS" ] || echo '{}' > "$CLAUDE_SETTINGS"
+        merged="$(mktemp)"
+        jq --slurpfile owned "$REPO_ROOT/src/claude-settings.json" '. + $owned[0]' "$CLAUDE_SETTINGS" > "$merged"
+        if cmp -s <(jq -S . "$merged") <(jq -S . "$CLAUDE_SETTINGS"); then
+            ok "~/.claude/settings.json already up to date"
+            rm -f "$merged"
+        else
+            mv "$merged" "$CLAUDE_SETTINGS"
+            ok "Merged src/claude-settings.json → ~/.claude/settings.json ($(jq -r 'keys | join(", ")' "$REPO_ROOT/src/claude-settings.json"))"
+        fi
+    fi
 else
     warn "~/.claude not found — skipping Claude Code setup (install Claude Code to enable)"
 fi

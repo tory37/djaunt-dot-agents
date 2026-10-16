@@ -8,6 +8,7 @@ This is the portable AI agent config repo. It is **not** a product project — i
 src/
   AGENTS.md        — Global AI instructions (deployed → ~/.agents/AGENTS.md → ~/.claude/CLAUDE.md)
   skills/          — Shared skills (deployed → ~/.claude/skills/, ~/.cursor/commands/, ~/.gemini/GEMINI.md)
+  claude-settings.json — Owned keys (e.g. spinnerVerbs) merged into ~/.claude/settings.json by sync; other keys untouched
 scripts/
   sync.sh          — Deploys src/ to the active toolchain on this machine
 setup/
