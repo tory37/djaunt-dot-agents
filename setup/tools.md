@@ -17,7 +17,7 @@
 - **gh** — GitHub CLI | <https://github.com/cli/cli>
 - **direnv** — per-directory env vars | <https://github.com/direnv/direnv>
 - **code** — VS Code editor | <https://code.visualstudio.com>
-- **go** — Go toolchain; `sync.sh` builds `djt-hub` with it | <https://go.dev>
+- **bun** — JavaScript runtime; `sync.sh` installs and runs `djt-hub` with it | <https://bun.sh>
 
 ## AI Tooling
 

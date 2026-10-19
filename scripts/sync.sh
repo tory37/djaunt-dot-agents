@@ -311,8 +311,8 @@ editor_clis() {
 
 # ──────────────────────────────────────────────
 # 6. djt-hub (live browser hubs for agents)
-#    Builds from $DJT_HUB_REPO and keeps the launchd daemon running.
-#    Rebuilds only when the repo's HEAD changed or the daemon is down,
+#    Installs from $DJT_HUB_REPO and keeps the launchd daemon running.
+#    Reinstalls only when the repo's HEAD changed or the daemon is down,
 #    so cron syncs don't restart it. Never aborts sync.
 # ──────────────────────────────────────────────
 DJT_HUB_REPO="${DJT_HUB_REPO:-$DJAUNT_SRC_DIR/djaunt-agent-hubs}"
@@ -332,12 +332,12 @@ sync_djt_hub() {
     if [ -x "$DJT_HUB_BIN" ] && [ "$(cat "$DJT_HUB_STAMP" 2>/dev/null)" = "$revision" ] \
         && { [ "$(uname -s)" != "Darwin" ] || "$DJT_HUB_BIN" status >/dev/null 2>&1; }; then
         ok "djt-hub up to date (${revision:0:7})"
-    elif ! command -v go >/dev/null 2>&1; then
-        warn "go not found — skipping djt-hub build (see setup/tools.md)"
+    elif ! command -v bun >/dev/null 2>&1; then
+        warn "bun not found — skipping djt-hub install (see setup/tools.md)"
     elif bash "$DJT_HUB_REPO/install.sh"; then
         mkdir -p "$(dirname "$DJT_HUB_STAMP")"
         printf '%s\n' "$revision" > "$DJT_HUB_STAMP"
-        ok "djt-hub built and running (${revision:0:7})"
+        ok "djt-hub installed and running (${revision:0:7})"
     else
         warn "djt-hub install failed — see output above"
     fi
