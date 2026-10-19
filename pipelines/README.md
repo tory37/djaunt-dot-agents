@@ -32,11 +32,10 @@ pipelines/<name>/
 
 There's no slash command. Point the agent at the entry doc directly, e.g.:
 
-> Run the pipeline in `pipelines/resume-builder/PIPELINE.md`
+> Run the pipeline in `pipelines/<name>/PIPELINE.md`
 
 The agent reads `PIPELINE.md` and executes it stage by stage.
 
 ## Available pipelines
 
-- **`resume-builder/`** — pulls your GitHub repo/commit/PR history and
-  synthesizes one consolidated, copy-paste-ready resume section.
+None yet.

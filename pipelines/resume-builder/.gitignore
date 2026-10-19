@@ -1,4 +1,0 @@
-output/**
-!output/.gitkeep
-!output/*/
-!output/*/resume.md
