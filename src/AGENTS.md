@@ -106,7 +106,7 @@ When the user makes a request that is outside the scope of the current feature o
 
 ## Live Hubs — djt-hub
 
-A local daemon (`djt-hub`, `127.0.0.1:7717`) hosts live browser pages for multi-step processes the user must watch or approve: releases, migrations, backfills, long runs. The agent writes the page as one React file (`view.tsx`, hot-reloaded), using a kit of steps with approval gates, charts, tables, logs, and forms. The agent attaches with `djt-hub listen` (or `wait`), and each click arrives as a JSON line. With no agent attached, the page is read-only. Before the first use in a session, read `~/.agents/assets/djt-hub.md`.
+`djt-hub` serves live browser pages for multi-step processes the user must watch or approve: releases, migrations, backfills, long runs. Nothing runs in the background: `djt-hub up <hub>` starts a local server for that one process, prints the URL, and streams each click as a JSON line, so run it under a background monitor. The page goes down when `up` stops. The agent writes the page as one React file (`view.tsx`, hot-reloaded), using a kit of steps with approval gates, charts, tables, logs, and forms. Before the first use in a session, read `~/.agents/assets/djt-hub.md`.
 
 ---
 
