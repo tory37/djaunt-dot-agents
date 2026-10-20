@@ -153,6 +153,9 @@ if [ -d "$HOME/.claude" ]; then
     link_dir "$AGENTS_DIR/skills" "$HOME/.claude/skills"
     ok "Linked ~/.agents/skills → ~/.claude/skills"
 
+    install -m 755 "$REPO_ROOT/src/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+    ok "Installed src/statusline-command.sh → ~/.claude/statusline-command.sh"
+
     # Merge owned top-level keys from src/claude-settings.json into settings.json.
     # Owned keys are replaced whole. Every other key is left alone.
     CLAUDE_SETTINGS="$HOME/.claude/settings.json"
