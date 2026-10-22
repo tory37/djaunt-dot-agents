@@ -79,13 +79,6 @@ Any writeup that goes to another person is a **handoff document**: markdown, nev
 4. **Clean Diffs:** Each phase gets its own focused commit, keeping the version history readable.
 5. **If Tests Can't Run:** If the right toolchain isn't available or tests genuinely can't be executed in this environment, say so explicitly and explain why — don't silently skip verification or claim it passed.
 
-### Ticket Sync (Kanban / Trello)
-
-If the project uses `djt-kanban` (`.agents/.kanban/` folder present) or `djt-trello` (Trello skill in use), keep the active ticket in sync with implementation phases:
-
-- After writing a plan, add the phases to the ticket — the markdown card in `.agents/.kanban/3_doing/` for Kanban, or an "Implementation Phases" checklist on the card for Trello.
-- Tick off each phase there once its commit lands.
-
 ## Handling Interjectory Requests
 
 When the user makes a request that is outside the scope of the current feature or story (an "interjectory request"):
@@ -97,12 +90,12 @@ When the user makes a request that is outside the scope of the current feature o
 
 ## Workflow
 
-- `/djt-feature`, `/djt-bug`, `/djt-techdebt`, `/djt-research` start their workflows. Each takes an optional context file: `/djt-feature @path/to/spec.md`.
+- `/djt-work [feature|bug|refactor]` starts the build workflow. It takes an optional context file: `/djt-work bug @path/to/issue.md`.
 - **Core Flow:** gather info → write plan (phases) → implement phase → verify → confirm with user → commit → repeat.
 - Small, clear tasks (typo, rename, one-liner): skip the workflow and act directly.
 - **Manual test plans** of any kind (doer plan, QA steps, "how do I test this") always go through `/djt-test-plan`. Never hand-roll them inline.
 - **The doer test plan is the QA test plan.** One plan, on the ticket's Doer Test Plan field. QA runs it as written. Never write a separate QA plan or offer to.
-- **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside the feature/bug/techdebt workflows too, per phase that touches UI.
+- **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside `/djt-work` too, per phase that touches UI.
 
 ## Live Hubs — djt-hub
 

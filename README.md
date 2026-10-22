@@ -21,18 +21,9 @@ GEMINI.md          — Context for Gemini CLI when working in this repo
 src/
   AGENTS.md        — The shared system prompt / global instructions (deployed to all tools)
   skills/          — Shared skills (slash commands for Claude, inlined into Gemini)
-    djt-bug/
+    djt-work/
       SKILL.md     — Claude Code loads this
       gemini.meta  — Gemini-specific trigger/notes (invisible to Claude)
-    djt-feature/
-      SKILL.md
-      gemini.meta
-    djt-resume/
-      SKILL.md
-      gemini.meta
-    djt-suspend/
-      SKILL.md
-      gemini.meta
 scripts/
   sync.sh          — The install/refresh script
 ```
