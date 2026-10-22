@@ -106,10 +106,10 @@ You are the orchestrator. Plan, delegate, verify, and talk to the user.
 
 | Job | Fallback agent | Model |
 |---|---|---|
-| Install, test suite, build | `general-purpose` | `sonnet` |
+| Install, test suite, build | `general-purpose` | `haiku` |
 | Explore: find code, bulk code reads | `Explore` | `sonnet` |
 | Logs | `general-purpose` | `sonnet` |
-| Deploy status | `general-purpose` | `sonnet` |
+| Deploy status | `general-purpose` | `haiku` |
 | Data queries | `general-purpose` | `sonnet` |
 | Review | `general-purpose` | inherit |
 | Investigate, debug | `general-purpose` | inherit |
@@ -132,7 +132,7 @@ You are the orchestrator. Plan, delegate, verify, and talk to the user.
 1. Spawn the specialist, or else the row's fallback agent.
 2. For a specialist, check its file. A `model:` line always wins: pass none.
 3. Otherwise, pass the row's model as `model`. For `inherit`, pass none.
-4. Brief it with the goal, the files, the constraints, and the report you want: command run, result, counts.
+4. Brief it with the goal, the files, the constraints, and the report you want: command run, result, counts. For `haiku` jobs, give the exact command. Ask for the counts line and the failure lines verbatim. Tell it to report only, not fix.
 
 **Verify** from the report's evidence. Rerun only when the evidence is missing.
 
