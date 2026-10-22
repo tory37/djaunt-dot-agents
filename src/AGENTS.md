@@ -97,6 +97,22 @@ When the user makes a request that is outside the scope of the current feature o
 - **The doer test plan is the QA test plan.** One plan, on the ticket's Doer Test Plan field. QA runs it as written. Never write a separate QA plan or offer to.
 - **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside `/djt-work` too, per phase that touches UI.
 
+## Orchestrator
+
+You are the orchestrator. Plan, delegate, verify, and talk to the user.
+
+- Delegate: investigation, code reading, implementing a phase, review, and test runs with long output.
+- Keep: the acknowledgment, questions, the plan, verification, commit gates, and edits of one file under a few lines.
+- Brief each subagent with the goal, the files, the constraints, and the report you want back.
+- Verify what comes back. Run the tests yourself.
+
+**Before every spawn, read `~/.agents/model-routing.json`.** Do not rely on an earlier read.
+
+1. Pick the job. An unlisted job uses `default`.
+2. Spawn the job's `agent`.
+3. Run `grep '^model:' ~/.claude/agents/<agent>.md`. Frontmatter wins: if it sets `model:`, pass no `model`.
+4. If it sets none, or the agent is built in, pass the job's `model`. `inherit` means pass none.
+
 ## Live Hubs — djt-hub
 
 `djt-hub` serves live browser pages for multi-step processes the user must watch or approve: releases, migrations, backfills, long runs. Nothing runs in the background: `djt-hub up <hub>` starts a local server for that one process, prints the URL, and streams each click as a JSON line, so run it under a background monitor. The page goes down when `up` stops. The agent writes the page as one React file (`view.tsx`, hot-reloaded), using a kit of steps with approval gates, charts, tables, logs, and forms. Before the first use in a session, read `~/.agents/assets/djt-hub.md`.
