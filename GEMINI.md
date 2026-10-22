@@ -7,11 +7,10 @@ This is the portable AI agent config repo. It is **not** a product project — i
 ```
 src/
   AGENTS.md        — Global AI instructions (deployed to ~/.agents/AGENTS.md and each tool's config)
-  skills/          — Shared skills (deployed to Claude Code, Cursor CLI, Gemini CLI)
+  skills/          — Shared skills (deployed to Claude Code, Gemini CLI)
 scripts/
   sync.sh          — Deploys src/ to the active toolchain on this machine
-setup/
-  tools.md         — Bootstrap guide for CLI tools on a new machine
+tools/             — One file per outside dependency (companion repos, CLI tools). sync.sh reads these to install.
 README.md          — Human-facing docs
 ```
 

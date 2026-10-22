@@ -7,19 +7,18 @@ This is the portable AI agent config repo. It is **not** a product project — i
 ```
 src/
   AGENTS.md        — Global AI instructions (deployed → ~/.agents/AGENTS.md → ~/.claude/CLAUDE.md)
-  skills/          — Shared skills (deployed → ~/.claude/skills/, ~/.cursor/commands/, ~/.gemini/GEMINI.md)
+  skills/          — Shared skills (deployed → ~/.claude/skills/, ~/.gemini/GEMINI.md)
   claude-settings.json — Owned keys (e.g. spinnerVerbs) merged into ~/.claude/settings.json by sync; other keys untouched
 scripts/
   sync.sh          — Deploys src/ to the active toolchain on this machine
-setup/
-  tools.md         — Bootstrap guide for CLI tools on a new machine
+tools/             — One file per outside dependency (companion repos, CLI tools). sync.sh reads these to install.
 README.md          — Human-facing docs
 ```
 
 ## How to make changes
 
 - **Edit global AI instructions:** `src/AGENTS.md` — re-run sync after saving
-- **Edit a skill:** `src/skills/<name>/SKILL.md` — live for Claude Code immediately; re-run sync for Gemini/Cursor
+- **Edit a skill:** `src/skills/<name>/SKILL.md` — live for Claude Code immediately; re-run sync for Gemini
 - **Add a skill:** create `src/skills/<name>/SKILL.md` + `gemini.meta` — re-run sync
 
 ```bash
@@ -45,6 +44,6 @@ Files produced while working on this repo (plans, analysis, session snapshots) g
 
 ## Rules
 
-- Never manually edit deployed files in `~/.claude/`, `~/.gemini/`, `~/.cursor/` — always edit `src/` and sync
+- Never manually edit deployed files in `~/.claude/`, `~/.gemini/` — always edit `src/` and sync
 - Never commit machine-specific extensions (those live in `~/.agents/extensions/` only)
 - Skills in `src/skills/` are loaded by all supported agents — keep them agent-agnostic

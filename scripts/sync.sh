@@ -160,7 +160,7 @@ if [ -d "$HOME/.claude" ]; then
     # Owned keys are replaced whole. Every other key is left alone.
     CLAUDE_SETTINGS="$HOME/.claude/settings.json"
     if ! command -v jq >/dev/null 2>&1; then
-        warn "jq not found — skipping ~/.claude/settings.json merge (see setup/tools.md)"
+        warn "jq not found — skipping ~/.claude/settings.json merge (see tools/README.md)"
     elif [ -e "$CLAUDE_SETTINGS" ] && ! jq empty "$CLAUDE_SETTINGS" 2>/dev/null; then
         warn "$CLAUDE_SETTINGS is not valid JSON — skipping merge"
     else
@@ -180,57 +180,7 @@ else
 fi
 
 # ──────────────────────────────────────────────
-# 4. Wire up ~/.cursor (Cursor)
-#    Commands are assembled (not linked): each skill body is
-#    written to ~/.cursor/commands/<name>.md (frontmatter stripped).
-# ──────────────────────────────────────────────
-CURSOR_FOUND=false
-if command -v cursor &>/dev/null; then
-    CURSOR_FOUND=true
-elif [ -d "$HOME/.cursor" ]; then
-    # On Windows, cursor may not be in PATH but the config dir still exists
-    CURSOR_FOUND=true
-fi
-
-if $CURSOR_FOUND; then
-    log "Cursor detected — assembling ~/.cursor/commands/ …"
-
-    CURSOR_COMMANDS="$HOME/.cursor/commands"
-    mkdir -p "$CURSOR_COMMANDS"
-
-    frontmatter_field() {
-        local file="$1" field="$2"
-        awk -v field="$field" '
-            /^---$/ { count++; next }
-            count == 1 && $0 ~ "^" field ":" {
-                sub("^" field ": *", ""); gsub(/^"|"$/, ""); print; exit
-            }
-            count >= 2 { exit }
-        ' "$file"
-    }
-
-    skill_body() {
-        local file="$1"
-        awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
-    }
-
-    while IFS= read -r -d '' skill_file; do
-        name="$(frontmatter_field "$skill_file" name)"
-        skill_body "$skill_file" > "$CURSOR_COMMANDS/${name}.md"
-        if [ -f "$(dirname "$skill_file")/reference.md" ]; then
-            printf '\n\n' >> "$CURSOR_COMMANDS/${name}.md"
-            cat "$(dirname "$skill_file")/reference.md" >> "$CURSOR_COMMANDS/${name}.md"
-        fi
-        ok "  Wrote command: /${name} → $CURSOR_COMMANDS/${name}.md"
-    done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
-
-    ok "Cursor commands assembled (~/.cursor/commands/)"
-else
-    warn "Cursor not found — skipping (install Cursor to enable)"
-fi
-
-# ──────────────────────────────────────────────
-# 5. Wire up ~/.gemini (Gemini CLI)
+# 4. Wire up ~/.gemini (Gemini CLI)
 #    Assembles a single GEMINI.md by inlining all skills.
 # ──────────────────────────────────────────────
 if [ -d "$HOME/.gemini" ]; then
@@ -280,18 +230,36 @@ else
 fi
 
 # ──────────────────────────────────────────────
-# Shared helpers for sections 6 and 7 (djaunt repos)
+# 5. Companion tools (tools/*.md)
+#    Each file in tools/ describes one repo outside this one: frontmatter
+#    for sync, docs for humans. Format: tools/README.md. Each repo is cloned
+#    under $DJAUNT_SRC_DIR, fast-forwarded to origin, and installed only
+#    when something changed. Never aborts sync.
 # ──────────────────────────────────────────────
 DJAUNT_SRC_DIR="${DJAUNT_SRC_DIR:-$HOME/src}"
 DJAUNT_STAMP_DIR="$HOME/.local/share/djaunt-dot-agents"
 
-# ensure_djaunt_repo <name> [dir] — clone if missing, else fast-forward. Sets DJAUNT_REPO_DIR.
+# tool_fields <file> <key> [max] — print each value of <key> in the frontmatter block
+tool_fields() {
+    awk -v key="$2" -v max="${3:-0}" '
+        /^---[[:space:]]*$/ { fences++; if (fences == 2) exit; next }
+        fences == 1 && index($0, key ":") == 1 {
+            value = substr($0, length(key) + 2)
+            sub(/^[[:space:]]+/, "", value)
+            print value
+            if (max > 0 && ++printed >= max) exit
+        }
+    ' "$1"
+}
+tool_field() { tool_fields "$1" "$2" 1; }
+
+# ensure_djaunt_repo <owner/name> [dir] — clone if missing, else fast-forward. Sets DJAUNT_REPO_DIR.
 ensure_djaunt_repo() {
-    local name="$1"
+    local repo="$1" name="${1#*/}"
     DJAUNT_REPO_DIR="${2:-$DJAUNT_SRC_DIR/$name}"
     if [ ! -d "$DJAUNT_REPO_DIR/.git" ]; then
-        command -v gh >/dev/null 2>&1 && gh repo clone "tory37/$name" "$DJAUNT_REPO_DIR" -- --quiet \
-            || { warn "Could not clone $name to $DJAUNT_REPO_DIR — skipping"; return 1; }
+        command -v gh >/dev/null 2>&1 && gh repo clone "$repo" "$DJAUNT_REPO_DIR" -- --quiet \
+            || { warn "Could not clone $repo to $DJAUNT_REPO_DIR — skipping"; return 1; }
         ok "Cloned $name → $DJAUNT_REPO_DIR"
     elif [ -n "$(git -C "$DJAUNT_REPO_DIR" status --porcelain)" ]; then
         warn "$name has local changes — using it as is"
@@ -306,140 +274,134 @@ ensure_djaunt_repo() {
 stamp_matches() { [ "$(cat "$DJAUNT_STAMP_DIR/$1" 2>/dev/null)" = "$2" ]; }
 write_stamp()   { mkdir -p "$DJAUNT_STAMP_DIR"; printf '%s\n' "$2" > "$DJAUNT_STAMP_DIR/$1"; }
 
-# editor_clis — print each installed VS Code-compatible CLI
+# editor_clis — print the VS Code CLI (PATH first, then the app bundle on macOS)
 editor_clis() {
-    local cli
-    for cli in code cursor; do command -v "$cli" 2>/dev/null; done
+    local bundled="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
+    command -v code 2>/dev/null || { [ -x "$bundled" ] && echo "$bundled"; } || true
 }
 
-# ──────────────────────────────────────────────
-# 6. djt-hub (live browser hubs for agents)
-#    Installs from $DJT_HUB_REPO. Nothing runs in the background: each
-#    process starts its own server with `djt-hub up`. Reinstalls only when
-#    the repo's HEAD changed. Never aborts sync.
-# ──────────────────────────────────────────────
-DJT_HUB_REPO="${DJT_HUB_REPO:-$DJAUNT_SRC_DIR/djaunt-agent-hubs}"
-DJT_HUB_BIN="$HOME/.local/bin/djt-hub"
-DJT_HUB_STAMP="$HOME/.local/share/djt-hub/installed-rev"
+# run_in_repo <command> — run a tool file's shell command inside the cloned repo
+run_in_repo() { (cd "$DJAUNT_REPO_DIR" && bash -c "$1"); }
 
-sync_djt_hub() {
-    log "Setting up djt-hub …"
-    if $IS_WINDOWS; then
-        warn "djt-hub is not supported on Windows — skipping"
-        return
-    fi
-    ensure_djaunt_repo djaunt-agent-hubs "$DJT_HUB_REPO" || return 0
-
-    local revision
-    revision="$(git -C "$DJT_HUB_REPO" rev-parse HEAD 2>/dev/null || echo unknown)"
-    if [ -x "$DJT_HUB_BIN" ] && [ "$(cat "$DJT_HUB_STAMP" 2>/dev/null)" = "$revision" ]; then
-        ok "djt-hub up to date (${revision:0:7})"
-    elif ! command -v bun >/dev/null 2>&1; then
-        warn "bun not found — skipping djt-hub install (see setup/tools.md)"
-    elif bash "$DJT_HUB_REPO/install.sh"; then
-        mkdir -p "$(dirname "$DJT_HUB_STAMP")"
-        printf '%s\n' "$revision" > "$DJT_HUB_STAMP"
-        ok "djt-hub installed (${revision:0:7})"
-    else
-        warn "djt-hub install failed — see output above"
-    fi
-
-    if [ -x "$DJT_HUB_BIN" ] && "$DJT_HUB_BIN" docs > "$AGENTS_DIR/assets/djt-hub.md"; then
-        ok "Wrote djt-hub docs → ~/.agents/assets/djt-hub.md"
-    elif cp "$DJT_HUB_REPO/docs/agent-guide.md" "$AGENTS_DIR/assets/djt-hub.md" 2>/dev/null; then
-        ok "Copied djt-hub agent guide → ~/.agents/assets/djt-hub.md"
-    else
-        warn "No djt-hub agent guide found — ~/.agents/assets/djt-hub.md not written"
-    fi
-}
-sync_djt_hub
-
-# ──────────────────────────────────────────────
-# 7. Djaunt ecosystem (overseer, branding themes, memguard)
-#    Each repo is cloned under $DJAUNT_SRC_DIR, fast-forwarded to origin,
-#    and installed only when something changed. Never aborts sync.
-# ──────────────────────────────────────────────
-sync_djaunt_overseer() {
-    log "Setting up djaunt-overseer …"
-    ensure_djaunt_repo djaunt-overseer || return 0
-    command -v gh >/dev/null 2>&1 || { warn "gh not found — skipping overseer release check"; return 0; }
-
-    local latest cli installed tmp_dir
-    latest="$(gh release view -R tory37/djaunt-overseer --json tagName -q .tagName 2>/dev/null | sed 's/^v//')"
-    [ -n "$latest" ] || { warn "Could not read latest overseer release — skipping"; return 0; }
-
-    tmp_dir="$(mktemp -d)"
-    for cli in $(editor_clis); do
-        installed="$("$cli" --list-extensions --show-versions 2>/dev/null | sed -n 's/^djaunt\.djaunt-overseer@//p')"
-        if [ "$installed" = "$latest" ]; then
-            ok "overseer $latest already installed in $(basename "$cli")"
-            continue
-        fi
-        if [ ! -f "$tmp_dir/djaunt-overseer-$latest.vsix" ]; then
-            gh release download "v$latest" -R tory37/djaunt-overseer -p '*.vsix' -D "$tmp_dir" --clobber \
-                || { warn "Could not download overseer v$latest"; break; }
-        fi
-        if "$cli" --install-extension "$tmp_dir/djaunt-overseer-$latest.vsix" --force >/dev/null; then
-            ok "overseer ${installed:-none} → $latest in $(basename "$cli")"
-        else
-            warn "overseer install failed in $(basename "$cli")"
-        fi
-    done
-    rm -rf "$tmp_dir"
-    [ -n "$(editor_clis)" ] || warn "No code or cursor CLI on PATH — overseer not installed"
-}
-
-sync_djaunt_branding() {
-    log "Setting up djaunt-branding …"
-    ensure_djaunt_repo djaunt-branding || return 0
-    if $IS_WINDOWS; then
-        warn "VS Code theme symlink not supported on Windows — skipping"
-    elif bash "$DJAUNT_REPO_DIR/vscode-theme/tools/sync-local.sh" >/dev/null; then
-        ok "VS Code themes linked (reload editor windows to pick up changes)"
-    else
-        warn "Could not link VS Code themes"
-    fi
-
-    local revision
-    revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD)"
-    if [ ! -x "$DJAUNT_REPO_DIR/terminal-theme/tools/sync-local.sh" ]; then
-        warn "djaunt-branding has no terminal-theme installer — skipping"
-    elif stamp_matches branding-terminal-rev "$revision"; then
-        ok "iTerm themes up to date (${revision:0:7})"
-    elif bash "$DJAUNT_REPO_DIR/terminal-theme/tools/sync-local.sh" >/dev/null; then
-        write_stamp branding-terminal-rev "$revision"
-        ok "iTerm themes imported (pick one in iTerm2 > Profiles > Colors > Color Presets)"
-    else
-        warn "Could not import iTerm themes"
-    fi
-}
-
-sync_djaunt_memguard() {
-    log "Setting up djaunt-memguard …"
-    if [ "$(uname -s)" != "Darwin" ]; then
-        warn "djaunt-memguard is macOS only — skipping"
+# sync_command_tool <file> <name> — kind: command
+sync_command_tool() {
+    local file="$1" name="$2" revision check requirement installs cmd output note
+    revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD 2>/dev/null || echo unknown)"
+    check="$(tool_field "$file" check)"
+    if stamp_matches "$name-rev" "$revision" && { [ -z "$check" ] || run_in_repo "$check" >/dev/null 2>&1; }; then
+        ok "$name up to date (${revision:0:7})"
         return 0
     fi
-    ensure_djaunt_repo djaunt-memguard || return 0
 
-    local revision loaded_agents
-    revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD)"
-    loaded_agents="$(launchctl list 2>/dev/null || true)"
-    if stamp_matches memguard-rev "$revision" && [[ "$loaded_agents" == *com.djaunt.memguard* ]]; then
-        ok "memguard up to date (${revision:0:7})"
-    elif ! command -v swiftc >/dev/null 2>&1; then
-        warn "swiftc not found — run xcode-select --install, then re-run sync"
-    elif "$DJAUNT_REPO_DIR/mac/bin/djt-memguard" install >/dev/null; then
-        write_stamp memguard-rev "$revision"
-        ok "memguard installed (${revision:0:7}); passwordless purge is opt-in: djt-memguard install-sudoers"
+    requirement="$(tool_field "$file" requires)"
+    if [ -n "$requirement" ] && ! command -v "$requirement" >/dev/null 2>&1; then
+        warn "$requirement not found — skipping $name install ($(tool_field "$file" requires-hint))"
+        return 0
+    fi
+
+    installs="$(tool_fields "$file" install)"
+    [ -n "$installs" ] || { warn "$name has no install line — skipping"; return 0; }
+    while IFS= read -r cmd; do
+        [ -n "$cmd" ] || continue
+        if ! output="$(run_in_repo "$cmd" 2>&1)"; then
+            warn "$name install failed: $cmd"
+            printf '%s\n' "$output" >&2
+            return 0
+        fi
+    done <<< "$installs"
+
+    write_stamp "$name-rev" "$revision"
+    ok "$name installed (${revision:0:7})"
+    note="$(tool_field "$file" note)"
+    [ -z "$note" ] || ok "$note"
+}
+
+# sync_vsix_tool <file> <name> <owner/name> — kind: vsix (latest GitHub release into each editor CLI)
+sync_vsix_tool() {
+    local file="$1" name="$2" repo="$3" extension asset latest cli installed tmp_dir vsix_file=""
+    extension="$(tool_field "$file" vsix-extension)"
+    asset="$(tool_field "$file" vsix-asset)"
+    [ -n "$extension" ] && [ -n "$asset" ] || { warn "$name needs vsix-extension and vsix-asset — skipping"; return 0; }
+    command -v gh >/dev/null 2>&1 || { warn "gh not found — skipping $name release check"; return 0; }
+
+    latest="$(gh release view -R "$repo" --json tagName -q .tagName 2>/dev/null | sed 's/^v//' || true)"
+    [ -n "$latest" ] || { warn "Could not read latest $name release — skipping"; return 0; }
+
+    tmp_dir="$(mktemp -d)"
+    while IFS= read -r cli; do
+        [ -n "$cli" ] || continue
+        installed="$("$cli" --list-extensions --show-versions 2>/dev/null | awk -F@ -v ext="$extension" '$1 == ext { print $2 }')"
+        if [ "$installed" = "$latest" ]; then
+            ok "$name $latest already installed in $(basename "$cli")"
+            continue
+        fi
+        if [ -z "$vsix_file" ]; then
+            gh release download "v$latest" -R "$repo" -p "$asset" -D "$tmp_dir" --clobber \
+                || { warn "Could not download $name v$latest"; break; }
+            vsix_file="$(find "$tmp_dir" -maxdepth 1 -type f | head -n 1)"
+        fi
+        if "$cli" --install-extension "$vsix_file" --force >/dev/null; then
+            ok "$name ${installed:-none} → $latest in $(basename "$cli")"
+        else
+            warn "$name install failed in $(basename "$cli")"
+        fi
+    done < <(editor_clis)
+    rm -rf "$tmp_dir"
+    [ -n "$(editor_clis)" ] || warn "No VS Code CLI found — $name not installed"
+}
+
+# sync_agent_doc <file> <name> — write the tool's agent guide into ~/.agents/
+sync_agent_doc() {
+    local file="$1" name="$2" dest cmd fallback output
+    dest="$(tool_field "$file" agent-doc-dest)"
+    [ -n "$dest" ] || return 0
+    cmd="$(tool_field "$file" agent-doc-cmd)"
+    fallback="$(tool_field "$file" agent-doc-fallback)"
+    if [ -n "$cmd" ] && output="$(run_in_repo "$cmd" 2>/dev/null)"; then
+        printf '%s\n' "$output" > "$AGENTS_DIR/$dest"
+        ok "Wrote $name agent guide → ~/.agents/$dest"
+    elif [ -n "$fallback" ] && cp "$DJAUNT_REPO_DIR/$fallback" "$AGENTS_DIR/$dest" 2>/dev/null; then
+        ok "Copied $name agent guide → ~/.agents/$dest"
     else
-        warn "memguard install failed — run $DJAUNT_REPO_DIR/mac/bin/djt-memguard install"
+        warn "No $name agent guide found — ~/.agents/$dest not written"
     fi
 }
 
-sync_djaunt_overseer
-sync_djaunt_branding
-sync_djaunt_memguard
+# sync_tool <file> — read one tools/*.md file and install what it describes
+sync_tool() {
+    local file="$1" name repo platforms kind dir_env dir="" platform
+    name="$(tool_field "$file" name)"
+    repo="$(tool_field "$file" repo)"
+    platforms="$(tool_field "$file" platforms)"
+    kind="$(tool_field "$file" kind)"
+    dir_env="$(tool_field "$file" dir-env)"
+    if [ -z "$name" ] || [ -z "$repo" ] || [ -z "$platforms" ] || [ -z "$kind" ]; then
+        warn "$(basename "$file") is missing name, repo, platforms, or kind — skipping"
+        return 0
+    fi
+
+    log "Setting up $name …"
+    platform="$(uname -s | tr '[:upper:]' '[:lower:]')"
+    case " $platforms " in
+        *" $platform "*) ;;
+        *) warn "$name supports $platforms only — skipping"; return 0 ;;
+    esac
+
+    [ -z "$dir_env" ] || dir="${!dir_env:-}"
+    ensure_djaunt_repo "$repo" "$dir" || return 0
+    case "$kind" in
+        command) sync_command_tool "$file" "$name" ;;
+        vsix)    sync_vsix_tool "$file" "$name" "$repo" ;;
+        *)       warn "$name has unknown kind '$kind' — skipping" ;;
+    esac
+    sync_agent_doc "$file" "$name"
+}
+
+for tool_file in "$REPO_ROOT"/tools/*.md; do
+    if [ -f "$tool_file" ] && [ "$(basename "$tool_file")" != "README.md" ]; then
+        sync_tool "$tool_file"
+    fi
+done
 
 echo ""
 log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills"
@@ -458,5 +420,5 @@ if $IS_WINDOWS; then
 fi
 echo "  Re-run sync.sh after pulling or making changes to this repo"
 echo ""
-echo "  Bootstrap tools:     $REPO_ROOT/setup/tools.md"
+echo "  Companion tools:     $REPO_ROOT/tools/README.md"
 echo "    (share with an agent to install your preferred CLI tools)"

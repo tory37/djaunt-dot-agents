@@ -26,6 +26,7 @@ src/
       gemini.meta  — Gemini-specific trigger/notes (invisible to Claude)
 scripts/
   sync.sh          — The install/refresh script
+tools/             — One file per outside dependency. sync.sh reads these to install them.
 ```
 
 ## How it works
