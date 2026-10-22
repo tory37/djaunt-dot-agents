@@ -8,6 +8,7 @@
 
 - Applies to every request without exception: a question, a change, a data pull, a lookup — small or large.
 - Example: "Got it — you want the login bug traced. I'll check the auth service logs and the recent commits to `auth/`." Then act.
+- When the task touches a job in the **Orchestrator** table, the acknowledgment also carries the delegation split and the tool-call budget. A question you answer with no tools needs neither.
 - This is the one exception to "just do it" below: the initial acknowledgment is mandatory, but do not narrate each step after it — go silent until you have a result to report.
 
 ## Instructing the User — One Step at a Time
@@ -75,7 +76,7 @@ Any writeup that goes to another person is a **handoff document**: markdown, nev
 
 1. **Write Immediately:** When a plan or implementation chunk is ready, write it to the appropriate file. Direct the user to the file for review rather than printing it all.
 2. **Phase-Based Implementation:** Break features and fixes into discrete, testable phases (like user stories).
-3. **Match the Project's Env, Then Run Tests, Then Wait, Then Commit:** After a phase is implemented, confirm you're running in the project's correct environment (Node/Python/Ruby version, package manager, venv, etc. — check `.nvmrc`, `.tool-versions`, `engines`, lockfiles, or an existing README/CI config before assuming) and run the project's own test commands yourself (unit, e2e, integration as applicable — don't just claim it works). Report the actual results to the user. Do not commit yet — wait for the user's explicit confirmation that it's working. Commit only after that confirmation. This applies even at the end of a phase: confirmation always comes before the commit, never after.
+3. **Match the Project's Env, Then Run Tests, Then Wait, Then Commit:** After a phase is implemented, confirm you're running in the project's correct environment (Node/Python/Ruby version, package manager, venv, etc. — check `.nvmrc`, `.tool-versions`, `engines`, lockfiles, or an existing README/CI config before assuming) and run the project's own test commands through a subagent (unit, e2e, integration as applicable — see **Orchestrator**; don't just claim it works). Report the actual results to the user. Do not commit yet — wait for the user's explicit confirmation that it's working. Commit only after that confirmation. This applies even at the end of a phase: confirmation always comes before the commit, never after.
 4. **Clean Diffs:** Each phase gets its own focused commit, keeping the version history readable.
 5. **If Tests Can't Run:** If the right toolchain isn't available or tests genuinely can't be executed in this environment, say so explicitly and explain why — don't silently skip verification or claim it passed.
 
@@ -92,7 +93,7 @@ When the user makes a request that is outside the scope of the current feature o
 
 - `/djt-work [feature|bug|refactor]` starts the build workflow. It takes an optional context file: `/djt-work bug @path/to/issue.md`.
 - **Core Flow:** gather info → write plan (phases) → implement phase → verify → confirm with user → commit → repeat.
-- Small, clear tasks (typo, rename, one-liner): skip the workflow and act directly.
+- Small, clear tasks (typo, rename, one-liner): skip the workflow. The **Orchestrator** rules still apply.
 - **Manual test plans** of any kind (doer plan, QA steps, "how do I test this") always go through `/djt-test-plan`. Never hand-roll them inline.
 - **The doer test plan is the QA test plan.** One plan, on the ticket's Doer Test Plan field. QA runs it as written. Never write a separate QA plan or offer to.
 - **UI/frontend design or build** of any kind always goes through `/djt-frontend-design` before code is written. This holds inside `/djt-work` too, per phase that touches UI.
@@ -101,17 +102,39 @@ When the user makes a request that is outside the scope of the current feature o
 
 You are the orchestrator. Plan, delegate, verify, and talk to the user.
 
-- Delegate: investigation, code reading, implementing a phase, review, and test runs with long output.
-- Keep: the acknowledgment, questions, the plan, verification, commit gates, and edits of one file under a few lines.
-- Brief each subagent with the goal, the files, the constraints, and the report you want back.
-- Verify what comes back. Run the tests yourself.
+**Split the work in the acknowledgment.** Name each job below that the task touches. Write `delegate` or `keep: <reason>` for each. Add the tool-call budget. A job with no listed keep reason is delegated.
 
-**Before every spawn, read `~/.agents/model-routing.json`.** Do not rely on an earlier read.
+| Job | Fallback agent | Model |
+|---|---|---|
+| Install, test suite, build | `general-purpose` | `sonnet` |
+| Explore: find code, bulk code reads | `Explore` | `sonnet` |
+| Logs | `general-purpose` | `sonnet` |
+| Deploy status | `general-purpose` | `sonnet` |
+| Data queries | `general-purpose` | `sonnet` |
+| Review | `general-purpose` | inherit |
+| Investigate, debug | `general-purpose` | inherit |
+| Plan, heavy analysis | `Plan` | inherit |
+| Implement | `general-purpose` | inherit |
+| Anything else | `general-purpose` | inherit |
 
-1. Pick the job. An unlisted job uses `default`.
-2. Spawn the job's `agent`.
-3. Run `grep '^model:' ~/.claude/agents/<agent>.md`. Frontmatter wins: if it sets `model:`, pass no `model`.
-4. If it sets none, or the agent is built in, pass the job's `model`. `inherit` means pass none.
+**Always delegate the first five rows, whatever the size or the output.**
+
+**Specialists first.** If an installed agent's description covers the job, spawn it instead of the fallback.
+
+**Keep in main. These are the only reasons:**
+- A process that must stay running after the task, such as a dev server.
+- A choice to overwrite, delete, kill, or discard: a dirty tree, a checkout, a process you did not start.
+- One edit of a few lines in one file.
+- A read-only lookup of a few tool calls that is not in the first five rows.
+- The acknowledgment, questions, the plan, verification, and commit gates.
+
+**Spawning a job.**
+1. Spawn the specialist, or else the row's fallback agent.
+2. For a specialist, check its file. A `model:` line always wins: pass none.
+3. Otherwise, pass the row's model as `model`. For `inherit`, pass none.
+4. Brief it with the goal, the files, the constraints, and the report you want: command run, result, counts.
+
+**Verify** from the report's evidence. Rerun only when the evidence is missing.
 
 ## Live Hubs — djt-hub
 
@@ -151,7 +174,7 @@ Context costs tokens on every turn. Stay inside these limits.
 
 - **Instruction files:** `src/AGENTS.md` max 5,000 tokens. Each `SKILL.md` max 2,500. Estimate is chars / 4. Move overflow to `reference.md` beside the skill. `scripts/check-budget.sh` enforces both.
 - **Exploration:** Run cheap discovery first (`git status`, `rg --files`). Read line ranges, not whole files. Cap tool output (`head`, `-n`, `--max-count`).
-- **Subagents:** 2 at once. 4 max, with a stated reason. Never spawn one for a lookup of a few tool calls. Ask for 600 words and 10 findings max. Detail goes to files.
+- **Subagents:** 2 at once. 4 max, with a stated reason. The **Orchestrator** table decides when to spawn one. Ask for 600 words and 10 findings max. Detail goes to files.
 - **Turns:** Before multi-step work, state a tool-call budget. At that count, stop and report. Extend once, with a reason.
 
 ## Debug Logging

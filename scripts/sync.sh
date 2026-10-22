@@ -94,14 +94,6 @@ for asset_file in "$REPO_ROOT"/src/assets/*.md; do
     ok "Copied src/assets/$(basename "$asset_file") → ~/.agents/assets/"
 done
 
-# Seed only. Overseer or the user edits this copy, so sync must never overwrite it.
-if [ -e "$AGENTS_DIR/model-routing.json" ]; then
-    ok "~/.agents/model-routing.json exists — left untouched"
-else
-    cp "$REPO_ROOT/src/model-routing.json" "$AGENTS_DIR/model-routing.json"
-    ok "Seeded src/model-routing.json → ~/.agents/model-routing.json"
-fi
-
 link_dir "$REPO_ROOT/src/skills" "$AGENTS_DIR/skills"
 ok "Linked $REPO_ROOT/src/skills → ~/.agents/skills"
 
