@@ -1,7 +1,7 @@
 # pipelines/
 
 Standalone, multi-stage workflows that don't belong in `src/skills/` (globally
-synced, agent-agnostic) or `tools/` (per-project opt-in installs). A pipeline
+synced, agent-agnostic). A pipeline
 here is personal automation that lives and runs from this repo directly.
 
 ## What makes something a pipeline instead of a skill or tool
@@ -11,9 +11,8 @@ here is personal automation that lives and runs from this repo directly.
 - The data volume is too large to hold in context at once — a pipeline
   writes intermediate state to disk in stages and only re-reads the small,
   digested output of each stage, not the raw pull.
-- It's not something every project needs synced in (`src/skills/`) or a
-  specific project opts into (`tools/`) — it's run directly against this
-  repo checkout, on demand.
+- It's not something every project needs synced in (`src/skills/`) — it's
+  run directly against this repo checkout, on demand.
 
 ## Layout convention
 

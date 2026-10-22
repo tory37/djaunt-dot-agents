@@ -99,7 +99,7 @@ Only after the doer confirms local validation. Post the same plan, converted to 
 Find the destination. The source of the request wins. Signals, strongest first:
 
 1. **A resource the user named** — a ticket URL, PR URL, card, or Slack thread.
-2. **A ticket** — the input is a ticket key, the current branch matches a ticket pattern (e.g. `PROJ-####`), or a `djt-kanban` card sits in `.agents/.kanban/3_doing/`.
+2. **A ticket** — the input is a ticket key, the current branch matches a ticket pattern (e.g. `PROJ-####`).
 3. **An open PR** for the current branch (`gh pr view`).
 4. **Where the request originated in this conversation** — a pasted ticket, thread, or link.
 
