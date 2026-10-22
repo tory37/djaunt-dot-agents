@@ -4,6 +4,8 @@
 
 ## Shell Utilities
 
+> On older macOS, Homebrew may lack bottles (prebuilt binaries) for Rust-based tools (`ripgrep`, `bat`, `fd`, `eza`) and compile Rust and LLVM from source. Install with `brew install --force-bottle <pkg>` so a missing bottle fails fast, then skip the tool or fetch its GitHub release binary.
+
 - **tree** — directory tree printer | <https://github.com/Old-Man-Programmer/tree>
 - **jq** — JSON processor | <https://github.com/jqlang/jq>
 - **fzf** — fuzzy finder | <https://github.com/junegunn/fzf>
@@ -18,6 +20,7 @@
 - **direnv** — per-directory env vars | <https://github.com/direnv/direnv>
 - **code** — VS Code editor | <https://code.visualstudio.com>
 - **bun** — JavaScript runtime; `sync.sh` installs and runs `djt-hub` with it | <https://bun.sh>
+  - Install with `brew install oven-sh/bun/bun` or the official script (`curl -fsSL https://bun.sh/install | bash`), **not** plain `brew install bun`. On macOS versions Homebrew no longer supports (Tier 3), homebrew-core has no bottles for bun's dependencies and compiles them from source, including LLVM, which takes hours.
 
 ## AI Tooling
 
