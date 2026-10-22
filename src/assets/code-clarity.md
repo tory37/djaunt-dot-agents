@@ -1,32 +1,39 @@
 # Code Clarity & Documentation
 
-Write code that reads like a clear sentence. A future reader (or the AI picking this up mid-session) should be able to understand *what* a block does from the identifiers alone. Comments exist to explain *why*, not *what*.
+Code must be understood by reading it. Names and structure carry the meaning. A comment is a last resort.
 
-## Self-Documenting Code
+## Names and Structure
 
-- **Names carry meaning.** Variables, functions, and types should say exactly what they hold or do. `userSessionToken`, not `tok`.
-- **Avoid clever compression.** No nested ternaries, chained optional chains on a single line doing multiple things, or one-liners that require mental parsing. Break them into named steps.
-- **Boolean conditions** should read as assertions: `isExpired`, not `expiry`.
-- **Magic numbers and strings** get named constants: `const MAX_RETRY_ATTEMPTS = 3` not `if (retries > 3)`.
+- **Names say what a thing holds or does.** `userSessionToken`, not `tok`. A count is `forcedDownlevelCount`, not `downlevel`.
+- **Booleans read as assertions.** `isExpired`, not `expiry`.
+- **Magic numbers and strings get named constants.** `MAX_RETRY_ATTEMPTS`, not `3`.
+- **No clever compression.** No nested ternaries or multi-purpose one-liners. Break them into named steps.
+- **One module, one concept.** If the filename is narrower than its contents, rename it.
 
-## When to Add a Comment
+## Comments
 
-Default to zero comments. Rely on names and structure to carry meaning, not prose next to the code.
+- **Default: none.** Match the comment density of the surrounding code. Bare neighbors mean a bare addition.
+- **Allowed: one sentence of *why*.** Only for a hidden constraint, a non-obvious invariant, or an external workaround that no name can carry.
+- **Never:** restating the code, multi-line docstrings, or provenance. Provenance (upstream file, breaking commit) goes in the commit or PR body.
+- **Editing an existing comment:** change it only if the edit made it false. Use the fewest words.
 
-Add a comment only when a future reader would reasonably be confused about *why* this code does what it does — a hidden constraint, a non-obvious invariant, a workaround for a specific external behavior — and no rename or restructure can make that clear on its own. One focused sentence, almost never more.
+## Pass Before Every Commit
 
-Do NOT add comments that restate the code: `// increment counter` above `count++` adds noise.
+For each comment the diff adds, ask what the reader loses without it.
 
-When editing code that already has a comment, update it only if the change makes it factually wrong. Edit the minimum words needed to make it accurate again — don't rewrite, expand, or restyle it.
+1. A name's meaning: rename until the name says it, then delete the comment.
+2. A *why* no name can carry: keep one sentence.
+3. Anything else: delete it.
 
-## Existing Patterns That Conflict with Best Practices
+Deleting without renaming leaves the name unexplained.
 
-If you encounter existing code that uses patterns contrary to these standards (e.g., compressed one-liners, poor naming throughout a file, no separation of concerns), do the following **before writing any code**:
+## Existing Patterns
 
-1. Note the conflict in your plan or response.
-2. Present the user with the choice:
-   - **Match existing patterns** — for consistency within the file, lower diff noise
-   - **Follow best practices** — cleaner output, but diverges from surrounding code
-3. Wait for the user's direction before proceeding.
+Match the surrounding code: naming, structure, idiom, comment density.
 
-Never silently match a bad pattern. Never silently ignore it and "do it right" without flagging the divergence.
+Diverge only when the surrounding code is obviously bad (compressed one-liners, misleading names). Then flag it before writing code and offer two options:
+
+- **Match existing patterns.** Consistent, smaller diff.
+- **Follow best practices.** Cleaner, diverges from the file.
+
+Wait for the user's choice. Never silently match a bad pattern. Never silently diverge.

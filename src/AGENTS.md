@@ -151,7 +151,7 @@ Use one filterable prefix for all debug logs in a session (e.g. `[FEATURE-DEBUG]
 
 ## Code Clarity & Documentation
 
-Before writing or editing code, read `~/.agents/assets/code-clarity.md`. Names carry meaning. Default to zero comments. Flag a conflict with existing patterns before writing code.
+Before writing or editing code, read `~/.agents/assets/code-clarity.md`. Names carry meaning. Comments are a last resort. Run its pass before every commit.
 
 ## Problem Statement Before Findings
 
