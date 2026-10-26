@@ -187,7 +187,7 @@ Before writing or editing code, read `~/.agents/assets/code-clarity.md`. Names c
 
 ## Problem Statement Before Findings
 
-Every analysis document starts with the original problem, then the findings. Before writing one, read `~/.agents/assets/problem-statement.md`.
+Every analysis document starts with the original problem, then the findings. Chat status updates on a triage follow the same order, interim ones too. Before writing one, read `~/.agents/assets/problem-statement.md`.
 
 ## Solution Validation & Root Cause Analysis
 
