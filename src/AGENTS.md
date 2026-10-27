@@ -13,18 +13,7 @@
 
 ## Instructing the User — One Step at a Time
 
-When the user must carry out a multi-step process by hand (commands to run, UI clicks, config edits), do not dump the full instructions at once.
-
-1. **Give a brief overview first.** List the steps in one line each — no detail, just the shape of the task.
-2. **Send only the first step**, in full detail (exact command, exact click path). Stop there.
-3. **Wait for the user's result** before sending the next step.
-4. **If a step fails or surprises the user, debug it in place.** Do not move to the next step until this one works.
-5. Repeat: one step, wait, confirm, next step.
-
-This lets each step get debugged as it happens, not after the whole list has run — and the user never has to ask for the steps again.
-
-- Applies to instructions the **user** executes by hand. It does not apply to the agent's own tool calls — those follow **Acknowledge Before Acting** above.
-- Does not apply to a single-step instruction — there is nothing to sequence.
+When the user must run a multi-step process by hand, give a one-line overview, then one step at a time, and wait for each result. Before writing one, read `~/.agents/assets/instructing-the-user.md`.
 
 ## Communication — Be Terse
 
@@ -82,12 +71,7 @@ Any writeup that goes to another person is a **handoff document**: markdown, nev
 
 ## Handling Interjectory Requests
 
-When the user makes a request that is outside the scope of the current feature or story (an "interjectory request"):
-
-1. **Identify Scope:** Explicitly ask yourself: "Is this part of the current feature, or is it an 'oh this would be nice' addition?"
-2. **Isolate Changes:** If it is out-of-scope, do NOT implement it on the current feature branch.
-3. **Branch Off Master:** Create a new branch specifically for this request, starting from `master` (or the project's default branch).
-4. **Switch Back:** Once the interjectory task is reviewed/completed, switch back to the original feature branch to continue the primary work.
+When the user asks for something outside the current feature or story, do not put it on the current branch. Branch off the default branch. Before acting on one, read `~/.agents/assets/interjectory-requests.md`.
 
 ## Workflow
 
@@ -152,13 +136,10 @@ All human-facing output files the user keeps for themselves (plans, reviews, res
 
 ## Git Conventions
 
-- Interact with git through the CLI
-- Branch names: `type/short-description` (e.g. `feat/oauth-login`, `fix/token-refresh`)
-- Commits: imperative mood, <72 chars subject, body explains *why* not *what*
-- PRs: link related issues, request review before merge
+Before any branch, commit, PR, or GitHub comment, read `~/.agents/assets/git-conventions.md`.
+
 - NEVER push (including force-push) unless the user explicitly tells you to push
 - NEVER force-push to the project's default protected branch
-- NEVER write a bare `#<number>` in a GitHub commit message, PR description, PR comment, or issue comment — GitHub auto-links it to an issue/PR, turning a plain number (a count, an ID, a version) into an unrelated hyperlink. Escape or reword it: back-ticks (`` `#42` ``), a zero-width space, or rephrasing ("issue count: 42") all prevent the auto-link.
 
 ## IMPORTANT Rules
 
