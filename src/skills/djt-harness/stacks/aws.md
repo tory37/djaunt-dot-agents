@@ -34,7 +34,7 @@ docs-mcp aws call aws___search_documentation '{"search_phrase":"Lambda reserved 
 
 ## Rule packs
 
-Base: `$DJAUNT_SRC_DIR/skills/plugins/sharp-edges/skills/sharp-edges/references/`. Read locally. CC-BY-SA: never copy the text.
+Base: `$DJAUNT_SRC_DIR/trailofbits-skills/plugins/sharp-edges/skills/sharp-edges/references/`. Read locally. CC-BY-SA: never copy the text.
 
 | Change | Load |
 |---|---|

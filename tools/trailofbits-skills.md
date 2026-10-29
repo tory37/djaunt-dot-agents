@@ -3,6 +3,7 @@ name: trailofbits-skills
 repo: trailofbits/skills
 platforms: darwin linux
 kind: clone
+clone-name: trailofbits-skills
 note: trailofbits/skills is CC-BY-SA. Read it locally. Never copy its text into djaunt-dot-agents.
 ---
 
@@ -16,7 +17,7 @@ CC-BY-SA. Read the files from the clone. Never copy or paraphrase their text int
 
 ## What sync does
 
-1. Clones `trailofbits/skills` to `~/src/skills`. Fast-forwards it if it exists.
+1. Clones `trailofbits/skills` to `~/src/trailofbits-skills`. The repo name `skills` is too generic for `~/src`. Fast-forwards it if it exists.
 2. Nothing else. No install step.
 
 The clone name is generic. Set `DJAUNT_SRC_DIR` to move all companion clones.

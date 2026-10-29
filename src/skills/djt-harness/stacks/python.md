@@ -31,7 +31,7 @@ No config at all: follow tier 1 docs and PEP 8 only. Do not install anything.
 
 ## Rule packs
 
-Base: `$DJAUNT_SRC_DIR/skills/plugins/`. Read locally. CC-BY-SA: never copy the text.
+Base: `$DJAUNT_SRC_DIR/trailofbits-skills/plugins/`. Read locally. CC-BY-SA: never copy the text.
 
 | Change | Load |
 |---|---|

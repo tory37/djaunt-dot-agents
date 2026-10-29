@@ -32,5 +32,5 @@ No config at all: follow tier 1 docs only. Do not install anything.
 | Change | Load |
 |---|---|
 | Hot loops, lookups, data transforms | `$DJAUNT_SRC_DIR/agent-skills/skills/react-best-practices/rules/js-*.md`. The rules apply outside React too. |
-| Coercion, regex, eval, JSON parsing, async pitfalls | `$DJAUNT_SRC_DIR/skills/plugins/sharp-edges/skills/sharp-edges/references/lang-javascript.md` |
-| Parsers, serializers, invariants worth a property test | `$DJAUNT_SRC_DIR/skills/plugins/property-based-testing/skills/property-based-testing/SKILL.md`. Adding fast-check needs Tory's OK. |
+| Coercion, regex, eval, JSON parsing, async pitfalls | `$DJAUNT_SRC_DIR/trailofbits-skills/plugins/sharp-edges/skills/sharp-edges/references/lang-javascript.md` |
+| Parsers, serializers, invariants worth a property test | `$DJAUNT_SRC_DIR/trailofbits-skills/plugins/property-based-testing/skills/property-based-testing/SKILL.md`. Adding fast-check needs Tory's OK. |

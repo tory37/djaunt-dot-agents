@@ -27,6 +27,7 @@ Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It uses
 | `platforms` | yes | Space-separated `uname -s` values, lowercase: `darwin`, `linux`. Sync skips the tool elsewhere, including Windows. |
 | `kind` | yes | `command` runs `install` lines. `vsix` installs the latest release as an editor extension. `clone` only clones and fast-forwards, for repos the agent reads, such as rule packs. |
 | `dir-env` | no | Env var that overrides the clone directory. |
+| `clone-name` | no | Directory name under `$DJAUNT_SRC_DIR`, when the repo name is too generic. `dir-env` still wins. |
 | `requires` | no | A command that must be on PATH to install. |
 | `requires-hint` | no | Shown when `requires` is missing. |
 | `check` | no | A shell command, run in the repo. Exit 0 means the tool is still installed. Without it, the stamp alone decides. |
