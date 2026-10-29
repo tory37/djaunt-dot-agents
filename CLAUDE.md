@@ -47,3 +47,4 @@ Files produced while working on this repo (plans, analysis, session snapshots) g
 - Never manually edit deployed files in `~/.claude/`, `~/.gemini/` — always edit `src/` and sync
 - Never commit machine-specific extensions (those live in `~/.agents/extensions/` only)
 - Skills in `src/skills/` are loaded by all supported agents — keep them agent-agnostic
+- `djt-work` and `djt-work-deep` share one flow. `djt-work-deep` adds only the teaching layer and points at `djt-work` steps by number. A change to the flow, gates, or step numbers in either skill must be made in both in the same commit. Then reread both and confirm every "djt-work step N" still names the right step.

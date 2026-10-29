@@ -20,6 +20,7 @@ One workflow for features, bugs, and refactors. Phases, tests, user gate, commit
 
 - State a tool-call budget per phase before starting it. Max 2 subagents at once. See **Budgets** in AGENTS.md.
 - Before writing code, read `~/.agents/assets/code-clarity.md`.
+- Harness: `~/.agents/skills/djt-harness/`. Read `citations.md` before the plan. Load a stack file only at the step that names it.
 - Bug: before the problem statement, read `~/.agents/assets/problem-statement.md`. Before any diagnosis, read `~/.agents/assets/root-cause.md`.
 
 ## Type differences
@@ -40,6 +41,8 @@ Do not skip a gate without user confirmation.
 ### 1. Explore
 
 Read the spec or issue file first. Then read the affected code and existing patterns. For a refactor, name the debt, its impact, and the target state. For a bug, take a light pass only. Do not investigate deeply yet.
+
+Detect the stacks from the manifests: `react`, `js-ts`, `python`, `html-css`, `aws`. Read the **Detect** and **Lint discovery** sections of each matching `djt-harness/stacks/<stack>.md`. Record the repo's lint, type, and format commands. Never add a linter the repo lacks.
 
 ### 2. Clarify
 
@@ -77,6 +80,7 @@ Write the plan to disk now. Use the HTML shell from **HTML Output Convention** i
 - One `.phase-card` per phase: `.phase-number`, `.phase-title`, `.phase-steps`, `.test-criteria`.
 - Phases are small and testable. Root cause goes in a `.finding-card.critical`. Risks go in a `.callout.warning`.
 - Add brief rationale for key decisions.
+- Each design choice gets one line: the choice, then its source, per `citations.md`. Flag a choice with no source as **unproven**. Build it only after the user approves.
 
 Wait for explicit approval of the phases.
 
@@ -90,11 +94,12 @@ Wait for explicit approval of the phases.
 
 ### 7. Implement, phase by phase
 
-1. Implement the phase.
-2. Run the project's tests. Report the real results. Ask the user to run the Doer Test Plan steps.
-3. **STOP.** Wait for confirmation.
-4. Commit. Use the phase description for the message.
-5. Next phase.
+1. Load the stack file's rule-pack rows that match this phase. Read only those files.
+2. Implement the phase.
+3. Run the lint commands from step 1, then the project's tests. Report the real results. Ask the user to run the Doer Test Plan steps.
+4. **STOP.** Wait for confirmation.
+5. Commit. Use the phase description for the message.
+6. Next phase.
 
 ### 8. PR
 

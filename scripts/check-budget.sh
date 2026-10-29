@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # check-budget.sh — Enforce token budgets on always-loaded instruction files.
 # Exit 1 if any file is over budget. Warn at 80%.
-# Override limits: AGENTS_MAX_TOKENS=5000 SKILL_MAX_TOKENS=2500 bash scripts/check-budget.sh
+# Override limits: AGENTS_MAX_TOKENS=5000 SKILL_MAX_TOKENS=2500 HARNESS_MAX_TOKENS=800 bash scripts/check-budget.sh
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AGENTS_MAX_TOKENS=${AGENTS_MAX_TOKENS:-5000}
 SKILL_MAX_TOKENS=${SKILL_MAX_TOKENS:-2500}
+HARNESS_MAX_TOKENS=${HARNESS_MAX_TOKENS:-800}
 CHARS_PER_TOKEN=${CHARS_PER_TOKEN:-4}
 WARN_PERCENT=80
 
@@ -40,6 +41,13 @@ check_file "$REPO_ROOT/src/AGENTS.md" "$AGENTS_MAX_TOKENS"
 for skill_file in "$REPO_ROOT"/src/skills/*/SKILL.md; do
     [ -f "$skill_file" ] && check_file "$skill_file" "$SKILL_MAX_TOKENS"
 done
+
+HARNESS_DIR="$REPO_ROOT/src/skills/djt-harness"
+if [ -d "$HARNESS_DIR" ]; then
+    while IFS= read -r harness_file; do
+        check_file "$harness_file" "$HARNESS_MAX_TOKENS"
+    done < <(find "$HARNESS_DIR" -type f -name '*.md' | sort)
+fi
 
 if $IS_OVER_BUDGET; then
     echo ""

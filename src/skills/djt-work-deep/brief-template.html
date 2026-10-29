@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{NN}} {{Concept}} — brief</title>
+  <!-- Brief lives at .agents/output/<type>/<name>/briefs/NN-<slug>.html, three levels below .agents/output/. -->
+  <link rel="stylesheet" href="../../../assets/style.css">
+</head>
+<body data-type="{{type}}">
+  <div class="container">
+    <header class="doc-header">
+      <div class="doc-meta">
+        <span class="badge badge-{{type}}">{{TYPE}}</span>
+        <span class="badge badge-pending">BRIEF {{NN}}</span>
+        <span class="doc-date">{{YYYY-MM-DD}}</span>
+      </div>
+      <h1>{{Concept}}</h1>
+    </header>
+    <main>
+      <div class="meta-block">
+        <div class="meta-item"><span class="meta-label">Work</span><span class="meta-value">{{Work name}}</span></div>
+        <div class="meta-item"><span class="meta-label">Phase</span><span class="meta-value">{{NN of total}}</span></div>
+        <div class="meta-item"><span class="meta-label">Concept</span><span class="meta-value">{{One concept, a few words}}</span></div>
+        <div class="meta-item"><span class="meta-label">Stack</span><span class="meta-value">{{Stack files loaded}}</span></div>
+      </div>
+
+      <h2>Problem</h2>
+      <div class="section accent">
+        <p>{{What this phase solves, in plain words. Two to four sentences. No solution.}}</p>
+      </div>
+
+      <h2>Background</h2>
+      <!-- One h3 per concept. Language feature, then framework internals, then this codebase. -->
+      <h3>{{Concept 1}}</h3>
+      <p>{{Teach the idea. Define each term before use.}}</p>
+      <p>{{Show it in this repo.}}</p>
+      <div class="files-list"><span class="file-chip">{{path:line}}</span></div>
+
+      <h2>Solution</h2>
+      <h3>What changes</h3>
+      <ul>
+        <li><code>{{path}}</code> — {{change, by function}}</li>
+      </ul>
+      <h3>Why this way</h3>
+      <ul>
+        <li>{{Reason, tied to a Background concept}}</li>
+      </ul>
+      <h3>Alternatives rejected</h3>
+      <ul>
+        <li>{{Alternative}} — {{reason rejected}}</li>
+      </ul>
+
+      <h2>Evidence</h2>
+      <!-- One row per claim in Background and Solution. A claim with no row is not built. -->
+      <table>
+        <thead>
+          <tr><th>Claim</th><th>Source</th><th>Tier</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{Claim}}</td>
+            <td><a href="{{url#anchor}}">{{url#anchor}}</a> — "{{quote, 25 words max}}"</td>
+            <td>{{1 docs | 2 repo | 3 rule pack (beside 1 or 2) | unproven (approved)}}</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>

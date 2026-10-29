@@ -10,20 +10,24 @@ Everything this setup depends on that lives outside this repo. One file per comp
 | [`djaunt-overseer.md`](djaunt-overseer.md) | `tory37/djaunt-overseer` | Session tabs for Claude CLI in VS Code | macOS, Linux |
 | [`djaunt-branding.md`](djaunt-branding.md) | `tory37/djaunt-branding` | Brand assets and editor and terminal themes | macOS, Linux |
 | [`djaunt-memguard.md`](djaunt-memguard.md) | `tory37/djaunt-memguard` | Memory pressure guard | macOS |
+| [`vercel-agent-skills.md`](vercel-agent-skills.md) | `vercel-labs/agent-skills` | React and web UI rule packs, read by agents | macOS, Linux |
+| [`web-interface-guidelines.md`](web-interface-guidelines.md) | `vercel-labs/web-interface-guidelines` | Web interface rules, read by agents | macOS, Linux |
+| [`trailofbits-skills.md`](trailofbits-skills.md) | `trailofbits/skills` | Testing and secure-code rule packs, read by agents (CC-BY-SA) | macOS, Linux |
 
 ## How sync reads a tool file
 
 Each file starts with a `---` frontmatter block of `key: value` lines. Sync reads that block. Everything after it is documentation for humans.
 
-Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It fast-forwards the clone if it exists, and uses it as is if it has local changes. It never aborts the whole sync: a failing tool logs a warning and sync moves on.
+Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It uses `gh` when installed, else plain `git clone` over https, which works for public repos. It fast-forwards the clone if it exists, and uses it as is if it has local changes. It never aborts the whole sync: a failing tool logs a warning and sync moves on.
 
 | Key | Required | Meaning |
 |---|---|---|
 | `name` | yes | Tool name. Also the stamp name. |
 | `repo` | yes | GitHub `owner/name`. |
 | `platforms` | yes | Space-separated `uname -s` values, lowercase: `darwin`, `linux`. Sync skips the tool elsewhere, including Windows. |
-| `kind` | yes | `command` runs `install` lines. `vsix` installs the latest release as an editor extension. |
+| `kind` | yes | `command` runs `install` lines. `vsix` installs the latest release as an editor extension. `clone` only clones and fast-forwards, for repos the agent reads, such as rule packs. |
 | `dir-env` | no | Env var that overrides the clone directory. |
+| `clone-name` | no | Directory name under `$DJAUNT_SRC_DIR`, when the repo name is too generic. `dir-env` still wins. |
 | `requires` | no | A command that must be on PATH to install. |
 | `requires-hint` | no | Shown when `requires` is missing. |
 | `check` | no | A shell command, run in the repo. Exit 0 means the tool is still installed. Without it, the stamp alone decides. |

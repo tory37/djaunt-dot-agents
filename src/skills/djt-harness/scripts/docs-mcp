@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+# docs-mcp — Query a remote MCP docs server over streamable HTTP without registering it.
+# Usage: docs-mcp <aws|mdn|https-url> tools
+#        docs-mcp <aws|mdn|https-url> call <tool> '<json-args>'
+
+set -euo pipefail
+
+PROTOCOL_VERSION="2025-06-18"
+REQUEST_TIMEOUT_SECONDS=${DOCS_MCP_TIMEOUT:-60}
+
+SERVER_URL=""
+SESSION_ID=""
+NEGOTIATED_VERSION="$PROTOCOL_VERSION"
+RESPONSE_BODY=""
+REQUEST_RESULT=""
+WORK_DIR="$(mktemp -d)"
+trap 'rm -rf "$WORK_DIR"' EXIT
+
+fail() {
+    echo "docs-mcp: $*" >&2
+    exit 1
+}
+
+print_usage() {
+    sed -n '3,4p' "${BASH_SOURCE[0]}" | sed 's/^# //' >&2
+    exit 2
+}
+
+resolve_server_url() {
+    case "$1" in
+        aws) echo "https://knowledge-mcp.global.api.aws" ;;
+        mdn) echo "https://mcp.mdn.mozilla.net" ;;
+        https://*) echo "$1" ;;
+        *) fail "unknown server '$1' (use aws, mdn, or an https URL)" ;;
+    esac
+}
+
+# Posts one JSON-RPC message. Sets RESPONSE_BODY (SSE unwrapped) and SESSION_ID.
+# Runs in the current shell, never in $(...), so SESSION_ID persists and fail exits the script.
+post_message() {
+    local payload="$1"
+    local headers_file="$WORK_DIR/headers" body_file="$WORK_DIR/body"
+    local http_status content_type
+    local -a curl_args=(
+        -sS -m "$REQUEST_TIMEOUT_SECONDS" -X POST "$SERVER_URL"
+        -H "Content-Type: application/json"
+        -H "Accept: application/json, text/event-stream"
+        -D "$headers_file" -o "$body_file" -w '%{http_code}'
+        --data-binary "$payload"
+    )
+    [ -n "$SESSION_ID" ] && curl_args+=(-H "Mcp-Session-Id: $SESSION_ID")
+    [ "$(jq -r '.method' <<<"$payload")" != "initialize" ] && curl_args+=(-H "MCP-Protocol-Version: $NEGOTIATED_VERSION")
+
+    http_status=$(curl "${curl_args[@]}") || fail "request to $SERVER_URL failed"
+    if [ "${http_status:0:1}" != "2" ]; then
+        fail "HTTP $http_status from $SERVER_URL: $(head -c 300 "$body_file")"
+    fi
+
+    local session_header
+    session_header=$(grep -i '^mcp-session-id:' "$headers_file" | tail -1 | cut -d: -f2- | tr -d ' \r' || true)
+    [ -n "$session_header" ] && SESSION_ID="$session_header"
+
+    content_type=$(grep -i '^content-type:' "$headers_file" | tail -1 | tr -d '\r' || true)
+    if [[ "$content_type" == *text/event-stream* ]]; then
+        RESPONSE_BODY=$(sed -n 's/^data: \{0,1\}//p' "$body_file" \
+            | jq -c 'select(.id != null and (has("result") or has("error")))' | tail -1)
+    else
+        RESPONSE_BODY=$(cat "$body_file")
+    fi
+}
+
+# Sends a request and sets REQUEST_RESULT. Exits on a JSON-RPC error.
+request() {
+    local method="$1" params="$2" request_id="$3"
+    local payload
+    payload=$(jq -nc --arg method "$method" --argjson params "$params" --argjson id "$request_id" \
+        '{jsonrpc: "2.0", id: $id, method: $method, params: $params}')
+    post_message "$payload"
+    [ -n "$RESPONSE_BODY" ] || fail "empty response to $method"
+    jq -e . >/dev/null 2>&1 <<<"$RESPONSE_BODY" || fail "non-JSON response to $method: $(head -c 300 <<<"$RESPONSE_BODY")"
+    if jq -e 'has("error")' >/dev/null <<<"$RESPONSE_BODY"; then
+        fail "$method error: $(jq -r '.error | "\(.code) \(.message)"' <<<"$RESPONSE_BODY")"
+    fi
+    REQUEST_RESULT=$(jq -c '.result' <<<"$RESPONSE_BODY")
+}
+
+open_session() {
+    local init_params
+    init_params=$(jq -nc --arg version "$PROTOCOL_VERSION" \
+        '{protocolVersion: $version, capabilities: {}, clientInfo: {name: "docs-mcp", version: "0.1.0"}}')
+    request initialize "$init_params" 1
+    NEGOTIATED_VERSION=$(jq -r '.protocolVersion // empty' <<<"$REQUEST_RESULT")
+    NEGOTIATED_VERSION=${NEGOTIATED_VERSION:-$PROTOCOL_VERSION}
+    post_message '{"jsonrpc":"2.0","method":"notifications/initialized"}'
+}
+
+list_tools() {
+    request tools/list '{}' 2
+    jq -r '.tools[] |
+        "\(.name) — \((.description // "") | split("\n") | map(select(test("\\S"))) | first // "" | .[0:160])\n    args: \((.inputSchema.properties // {}) | keys | join(", "))"' <<<"$REQUEST_RESULT"
+}
+
+call_tool() {
+    local tool_name="$1" tool_args="$2" call_params
+    jq -e 'type == "object"' >/dev/null 2>&1 <<<"$tool_args" || fail "args must be a JSON object: $tool_args"
+    call_params=$(jq -nc --arg name "$tool_name" --argjson args "$tool_args" '{name: $name, arguments: $args}')
+    request tools/call "$call_params" 3
+    jq -r '.content[]? | select(.type == "text") | .text' <<<"$REQUEST_RESULT"
+    if jq -e '.isError == true' >/dev/null <<<"$REQUEST_RESULT"; then
+        fail "tool '$tool_name' returned an error"
+    fi
+}
+
+[ $# -ge 2 ] || print_usage
+SERVER_URL=$(resolve_server_url "$1")
+command_name="$2"
+
+case "$command_name" in
+    tools)
+        open_session
+        list_tools
+        ;;
+    call)
+        [ $# -ge 3 ] || print_usage
+        open_session
+        call_tool "$3" "${4:-{\}}"
+        ;;
+    *) print_usage ;;
+esac
