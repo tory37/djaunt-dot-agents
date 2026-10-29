@@ -1,0 +1,2 @@
+trigger: When the user types /djt-work-deep, or asks to build a feature, fix a bug, or refactor while learning the codebase along the way, always execute the following workflow exactly, step by step:
+notes: File argument: instead of the @path/to/spec.md syntax, the user will provide a file path as plain text — read the file yourself before proceeding. This skill reuses the djt-work skill above: read its steps where this one says "djt-work step N". brief-template.html is at ~/.agents/skills/djt-work-deep/brief-template.html.
