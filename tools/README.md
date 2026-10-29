@@ -10,6 +10,9 @@ Everything this setup depends on that lives outside this repo. One file per comp
 | [`djaunt-overseer.md`](djaunt-overseer.md) | `tory37/djaunt-overseer` | Session tabs for Claude CLI in VS Code | macOS, Linux |
 | [`djaunt-branding.md`](djaunt-branding.md) | `tory37/djaunt-branding` | Brand assets and editor and terminal themes | macOS, Linux |
 | [`djaunt-memguard.md`](djaunt-memguard.md) | `tory37/djaunt-memguard` | Memory pressure guard | macOS |
+| [`vercel-agent-skills.md`](vercel-agent-skills.md) | `vercel-labs/agent-skills` | React and web UI rule packs, read by agents | macOS, Linux |
+| [`web-interface-guidelines.md`](web-interface-guidelines.md) | `vercel-labs/web-interface-guidelines` | Web interface rules, read by agents | macOS, Linux |
+| [`trailofbits-skills.md`](trailofbits-skills.md) | `trailofbits/skills` | Testing and secure-code rule packs, read by agents (CC-BY-SA) | macOS, Linux |
 
 ## How sync reads a tool file
 
