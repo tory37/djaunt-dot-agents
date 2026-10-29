@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dot Agents</title>
-<meta name="description" content="Portable AI agent config — one system prompt and one set of skills, synced to Claude Code, Gemini CLI, and Cursor CLI on any machine.">
+<meta name="description" content="Portable AI agent config — one system prompt and one set of skills, synced to Claude Code and Gemini CLI on any machine.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="djaunt-dot-agents: portable AI agent config">
-<meta property="og:description" content="One system prompt and one set of skills, synced to Claude Code, Gemini CLI, and Cursor CLI on any machine.">
+<meta property="og:description" content="One system prompt and one set of skills, synced to Claude Code and Gemini CLI on any machine.">
 <meta property="og:url" content="https://tory37.github.io/djaunt-dot-agents/">
 <meta property="og:image" content="https://tory37.github.io/djaunt-dot-agents/og.png">
 <meta name="twitter:card" content="summary_large_image">
@@ -98,16 +98,30 @@
   .card p { margin: 0; color: var(--dj-text-muted); font-size: var(--dj-text-sm); }
   .card .path { color: var(--dj-accent); font-size: 12px; }
 
-  .skills-grid {
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
-    gap: var(--dj-space-4); margin-top: var(--dj-space-6);
+  .spec { margin-top: var(--dj-space-6); border-top: 1px solid var(--dj-border); }
+  .spec-row {
+    display: grid; grid-template-columns: 280px 1fr; gap: var(--dj-space-6);
+    padding: var(--dj-space-6) 0; border-bottom: 1px solid var(--dj-border);
   }
-  .skill {
-    background: var(--dj-surface); border: 1px solid var(--dj-border); border-radius: var(--dj-radius-md);
-    padding: var(--dj-space-5); display: flex; flex-direction: column; gap: 8px;
+  .spec-id { display: flex; flex-direction: column; gap: var(--dj-space-2); align-items: flex-start; }
+  .spec-id .cmd { font-family: var(--dj-font-mono); font-size: var(--dj-text-lg); font-weight: 500; color: var(--dj-accent); }
+  .spec-id .usage { font-family: var(--dj-font-mono); font-size: 12px; color: var(--dj-text-muted); overflow-wrap: anywhere; }
+  .spec-id .src { font-family: var(--dj-font-mono); font-size: 12px; margin-top: var(--dj-space-2); }
+  .spec-body { display: flex; flex-direction: column; gap: var(--dj-space-5); min-width: 0; }
+  .spec-block { display: flex; flex-direction: column; gap: 6px; }
+  .spec-block h3 {
+    font-family: var(--dj-font-mono); font-size: var(--dj-text-xs); font-weight: 500;
+    letter-spacing: var(--dj-tracking-label); text-transform: uppercase; color: var(--dj-text-muted);
   }
-  .skill .name { font-family: var(--dj-font-mono); font-size: 13px; color: var(--dj-accent); }
-  .skill p { margin: 0; font-size: var(--dj-text-sm); color: var(--dj-text-muted); }
+  .spec-block p, .spec-block ol, .spec-block ul { margin: 0; font-size: var(--dj-text-sm); }
+  .spec-block ol, .spec-block ul { padding-left: 1.25em; display: flex; flex-direction: column; gap: 4px; }
+  .spec-block.diff { border-left: 1px solid var(--dj-accent-deep); padding-left: var(--dj-space-4); }
+  .deps { margin-top: var(--dj-space-8); display: flex; flex-direction: column; gap: var(--dj-space-4); }
+  .deps h3 { font-size: var(--dj-text-lg); }
+  .deps p { margin: 0; max-width: 66ch; color: var(--dj-text-muted); font-size: var(--dj-text-sm); }
+  @media (max-width: 720px) {
+    .spec-row { grid-template-columns: 1fr; gap: var(--dj-space-4); }
+  }
 
   .steps { display: flex; flex-direction: column; gap: var(--dj-space-5); margin-top: var(--dj-space-6); }
   .step { display: flex; gap: var(--dj-space-5); align-items: flex-start; }
@@ -118,6 +132,7 @@
     display: flex; align-items: center; justify-content: center;
   }
   .step .body { display: flex; flex-direction: column; gap: 8px; padding-top: 4px; }
+  .step .body p { margin: 0; color: var(--dj-text-muted); font-size: var(--dj-text-sm); }
   .step .body h3 { font-size: var(--dj-text-base); font-family: var(--dj-font-body); font-weight: 500; }
   .step pre {
     margin: 0; background: var(--dj-code-bg); border: 1px solid var(--dj-border); border-radius: var(--dj-radius-md);
@@ -141,9 +156,9 @@
     <img class="logo" src="assets/brand/logo/djaunt-lockup-frost.svg" alt="Djaunt">
     <h1>djaunt-dot-agents</h1>
     <p class="lede">
-      One system prompt. One set of skills. Clone this repo on any machine, run one script,
-      and <strong>Claude Code</strong>, <strong>Gemini CLI</strong>, and <strong>Cursor CLI</strong>
-      are instantly configured — same standards, same slash commands, everywhere.
+      One system prompt. One set of skills. Clone this repo on any machine and run one script.
+      <strong>Claude Code</strong> and <strong>Gemini CLI</strong> then share the same standards
+      and the same slash commands.
     </p>
     <div class="actions">
       <a class="dj-button dj-button-primary" href="https://github.com/tory37/djaunt-dot-agents">View on GitHub</a>
@@ -155,7 +170,7 @@
     <div class="section-head">
       <div class="eyebrow">01 — Supported agents</div>
       <h2>Write once, sync everywhere</h2>
-      <p>The same global instructions and skill set reach every supported tool, deployed by a single script.</p>
+      <p>One script deploys the same global instructions and skills to each supported tool. It skips a tool that is not installed.</p>
     </div>
     <div class="dj-table-scroll">
       <table class="agents dj-table">
@@ -165,17 +180,12 @@
         <tbody>
           <tr>
             <td><a href="https://claude.ai/code">Claude Code</a></td>
-            <td class="wrap">Native skills — <code>~/.claude/skills/</code> symlinks straight back to this repo</td>
+            <td class="wrap">Native skills — <code>~/.claude/skills/</code> links straight back to this repo</td>
             <td><span class="dj-badge dj-badge-success">Supported</span></td>
           </tr>
           <tr>
             <td><a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a></td>
             <td class="wrap">Assembled — <code>sync.sh</code> inlines every skill into <code>~/.gemini/GEMINI.md</code></td>
-            <td><span class="dj-badge dj-badge-success">Supported</span></td>
-          </tr>
-          <tr>
-            <td><a href="https://cursor.com/docs/cli/overview">Cursor CLI</a></td>
-            <td class="wrap">Native commands — one file per skill in <code>~/.cursor/commands/</code></td>
             <td><span class="dj-badge dj-badge-success">Supported</span></td>
           </tr>
         </tbody>
@@ -186,30 +196,25 @@
   <section>
     <div class="section-head">
       <div class="eyebrow">02 — How it works</div>
-      <h2>One source of truth, three targets</h2>
-      <p><code>src/AGENTS.md</code> is the shared system prompt. <code>src/skills/</code> holds every slash command. <code>sync.sh</code> deploys both to whatever's installed on the machine.</p>
+      <h2>One source of truth, two targets</h2>
+      <p><code>src/AGENTS.md</code> is the shared system prompt. <code>src/skills/</code> holds every slash command. <code>sync.sh</code> deploys both to the tools installed on the machine. It also clones the companion repos listed in <code>tools/</code>.</p>
     </div>
     <div class="diagram">djaunt-dot-agents/
   src/AGENTS.md  ──(copy)────▶ <span class="accent">~/.agents/AGENTS.md</span> ──(symlink)──▶ <span class="accent">~/.claude/CLAUDE.md</span>
-  src/skills/    ──(symlink)─▶ <span class="accent">~/.agents/skills/</span>
+  src/skills/    ──(symlink)─▶ <span class="accent">~/.agents/skills/</span>   ──(symlink)──▶ <span class="accent">~/.claude/skills/</span>
                                     │
-                                    ├──(assembled)──▶ <span class="accent">~/.gemini/GEMINI.md</span>
-                                    │                 <span class="muted">(AGENTS.md + every skill inlined)</span>
-                                    │
-                                    └──(assembled)──▶ <span class="accent">~/.cursor/commands/&lt;name&gt;.md</span>
-                                                      <span class="muted">(one file per skill, body only)</span></div>
+                                    └──(assembled)──▶ <span class="accent">~/.gemini/GEMINI.md</span>
+                                                      <span class="muted">(AGENTS.md + every skill inlined)</span>
+  tools/*.md     ──(clone)───▶ <span class="accent">~/src/&lt;repo&gt;/</span>
+                               <span class="muted">(companion repos and rule packs)</span></div>
     <div class="cards">
       <div class="card">
         <h3>Claude Code</h3>
-        <p>Skills natively. <span class="path">~/.claude/skills/</span> is a symlink chain back to the repo — edits are live immediately, no re-sync needed.</p>
+        <p>Skills natively. <span class="path">~/.claude/skills/</span> is a symlink chain back to the repo. Skill edits are live at once. No re-sync needed.</p>
       </div>
       <div class="card">
         <h3>Gemini CLI</h3>
-        <p>No native skill system. <code>sync.sh</code> inlines <code>AGENTS.md</code> plus every skill's <code>gemini.meta</code> trigger into one <span class="path">GEMINI.md</span>.</p>
-      </div>
-      <div class="card">
-        <h3>Cursor CLI</h3>
-        <p>Native commands. <code>sync.sh</code> copies each skill body, frontmatter stripped, into <span class="path">~/.cursor/commands/*.md</span>.</p>
+        <p>No native skill system. <code>sync.sh</code> inlines <code>AGENTS.md</code>, plus each skill with its <code>gemini.meta</code> trigger, into one <span class="path">GEMINI.md</span>. Re-run sync after an edit.</p>
       </div>
     </div>
   </section>
@@ -217,14 +222,257 @@
   <section>
     <div class="section-head">
       <div class="eyebrow">03 — Skills</div>
-      <h2>Three slash commands, one workflow</h2>
-      <p>Each skill is a self-contained folder under <code>src/skills/</code> — a <code>SKILL.md</code> plus, for Gemini, a trigger note.</p>
+      <h2>Four slash commands, one shared harness</h2>
+      <p>Each skill is a folder under <code>src/skills/</code>: a <code>SKILL.md</code>, a <code>gemini.meta</code> trigger for Gemini, and sometimes a <code>reference.md</code> with the detail. The harness is a shared folder, not a command.</p>
     </div>
-    <div class="skills-grid">
-      <div class="skill"><span class="name">/djt-work</span><p>One workflow for features, bugs, and refactors.</p></div>
-      <div class="skill"><span class="name">/djt-test-plan</span><p>Doer test plan as an interactive artifact, then a QA plan posted to the ticket.</p></div>
-      <div class="skill"><span class="name">/djt-frontend-design</span><p>Anti-slop UI/UX design pass before any interface gets built.</p></div>
-      <div class="skill"><span class="name">session-start-hook</span><p>Sets up a repo so Claude Code on the web can run tests and linters.</p></div>
+
+    <div class="spec">
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Slash command</span>
+          <span class="cmd">/djt-work</span>
+          <code class="usage">/djt-work [feature|bug|refactor] [@spec.md]</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-work">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>One workflow for features, bugs, and refactors. It splits the work into small phases. Each phase gets tests, a lint run, your check, and its own commit.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Use it when</h3>
+            <p>You know the area and want the change built correctly, without a lesson.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Explore. Read the spec and the code. Detect the stacks. Record the repo's own lint commands.</li>
+              <li>Clarify. Ask every open question in one message.</li>
+              <li>Bug only: Gate A states the problem. Gate B states the root cause with a certainty level. Each gate stops for your approval.</li>
+              <li>Plan. Write the phases to disk. Each design choice cites an official source. Wait for approval.</li>
+              <li>Branch. Write the first failing test. Write the doer test plan.</li>
+              <li>Per phase: implement, lint, test, stop for your check, commit.</li>
+              <li>Open the PR.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>You get</h3>
+            <ul>
+              <li><code>plan.html</code> (or <code>fix-plan.html</code> for a bug)</li>
+              <li><code>doer-test-plan.html</code> per phase</li>
+              <li>A branch with one commit per phase, then a PR</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Slash command</span>
+          <span class="cmd">/djt-work-deep</span>
+          <code class="usage">/djt-work-deep [feature|bug|refactor] [@spec.md]</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-work-deep">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>The <code>/djt-work</code> flow plus a teaching layer. You learn the codebase, the architecture, the language, and best practice with each change.</p>
+          </div>
+          <div class="spec-block diff">
+            <h3>How it differs from /djt-work</h3>
+            <p>Same flow. Same gates. Same correctness bar: the repo's own lints, and an official source for each design choice. Deep adds three things: a recon step, micro-phases, and a cited brief per phase. A claim with no source is not built until you approve it.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Use it when</h3>
+            <p>You are new to the repo or the language. Or you want to understand the change, not only ship it.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Recon. Decode the request from zero. Map the stack, the architecture, and the data flow.</li>
+              <li>Clarify. Ask every open question in one message.</li>
+              <li>Bug only: Gate A and Gate B, as in <code>/djt-work</code>. Each gate writes a brief on the failing subsystem.</li>
+              <li>Plan micro-phases. Each one is the smallest change that teaches one concept.</li>
+              <li>Branch. Write the first failing test. Write the doer test plan.</li>
+              <li>Per micro-phase: load rules, find sources, write the brief, implement, lint, test, stop for your check, commit.</li>
+              <li>Open the PR.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>You get</h3>
+            <ul>
+              <li>Everything <code>/djt-work</code> gives</li>
+              <li><code>briefs/00-recon.html</code>, a map of the codebase</li>
+              <li>One brief per micro-phase: Problem, Background, Solution, Evidence</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Slash command</span>
+          <span class="cmd">/djt-test-plan</span>
+          <code class="usage">/djt-test-plan [ticket | diff range | @spec.md | post]</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-test-plan">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>Writes a tight manual test plan for one change. It also writes mitmweb scripts that inject faults for cases that are hard to reach. One plan serves the author and QA. There is no separate QA plan.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Use it when</h3>
+            <p>You must test a change by hand, or QA needs steps. <code>/djt-work</code> calls it for each phase.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Read the diff, ticket, or spec.</li>
+              <li>Keep only the cases this change can affect.</li>
+              <li>Find the points that need fault injection.</li>
+              <li>Ask for the environments and hosts. It never guesses an endpoint.</li>
+              <li>Generate one mitmweb script per injected case.</li>
+              <li>Publish the interactive plan, then stop.</li>
+              <li>After you pass it locally, post the same plan to the ticket's Doer Test Plan field.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>You get</h3>
+            <ul>
+              <li><code>doer-test-plan.html</code>: an interactive artifact with links, copy buttons, and result tracking</li>
+              <li>A markdown plan on the ticket for QA</li>
+              <li>One <code>TCn</code> script block per injected case</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Slash command</span>
+          <span class="cmd">/djt-frontend-design</span>
+          <code class="usage">/djt-frontend-design [brief | @file | url]</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-frontend-design">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>A design pass before any UI gets built. It bans the common AI-generated look. It writes its design reasoning before it writes code.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Use it when</h3>
+            <p>You build or redesign a page, a dashboard, or a component. <code>/djt-work</code> calls it for each phase that touches UI.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>New design: read the brief. If it is vague, offer three directions and wait.</li>
+              <li>Existing view: audit it. Flag weak patterns by file and line. Rank the repairs.</li>
+              <li>Write a design plan: type scale, color tokens, grid, and motion. Check contrast by the numbers.</li>
+              <li>Build the full artifact from the shared boilerplate.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>You get</h3>
+            <ul>
+              <li>A one-line design read, or a design profile of the existing view</li>
+              <li>A ranked repair plan: Critical, Recommended, Optional</li>
+              <li>A self-contained, responsive HTML or React artifact</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Shared layer</span>
+          <span class="cmd">djt-harness</span>
+          <code class="usage">~/.agents/skills/djt-harness/</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-harness">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it is</h3>
+            <p>Shared rules that <code>/djt-work</code> and <code>/djt-work-deep</code> read. It is not a slash command. It has three parts:</p>
+            <ul>
+              <li><code>stacks/*.md</code>: one index per stack. It says how to detect the stack, find the repo's lint commands, reach the official docs, and pick rule-pack files.</li>
+              <li><code>citations.md</code>: the evidence rules. Official docs first, then repo precedent. A rule pack never counts alone.</li>
+              <li><code>scripts/docs-mcp</code>: a small script that queries a remote docs MCP server over HTTP. It needs <code>curl</code> and <code>jq</code>. Nothing gets registered.</li>
+            </ul>
+          </div>
+          <div class="spec-block">
+            <h3>How it loads</h3>
+            <p>Just in time. A skill reads a stack file only at the step that names it, and only the rule-pack rows that match the current phase. The rest costs no context.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Stacks</h3>
+            <p><code>react</code>, <code>js-ts</code>, <code>python</code>, <code>html-css</code>, <code>aws</code></p>
+          </div>
+          <div class="spec-block">
+            <h3>Docs sources</h3>
+            <p>react.dev, the MDN MCP server, docs.python.org, and the AWS Knowledge MCP server. None needs an account.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+
+    <div class="deps">
+      <h3>Dependencies</h3>
+      <p><code>sync.sh</code> reads each file in <a href="https://github.com/tory37/djaunt-dot-agents/tree/main/tools">tools/</a>. It clones each repo into <code>~/src</code> and fast-forwards it. A <code>command</code> tool runs its install step. A <code>vsix</code> tool installs as a VS Code extension. A <code>clone</code> tool is only cloned, for agents to read.</p>
+      <div class="dj-table-scroll">
+        <table class="dj-table">
+          <thead>
+            <tr><th>Name</th><th>Kind</th><th class="wrap">What it is</th><th>Platforms</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><a href="https://github.com/tory37/djaunt-agent-hubs">djt-hub</a></td>
+              <td><code>command</code></td>
+              <td class="wrap">Live browser pages for processes you must watch or approve: releases, migrations, backfills. Needs <code>bun</code>.</td>
+              <td>macOS, Linux</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/tory37/djaunt-overseer">djaunt-overseer</a></td>
+              <td><code>vsix</code></td>
+              <td class="wrap">Vertical tabs for Claude CLI sessions in VS Code. Needs <code>gh</code>.</td>
+              <td>macOS, Linux</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/tory37/djaunt-branding">djaunt-branding</a></td>
+              <td><code>command</code></td>
+              <td class="wrap">Logos, fonts, tokens, and editor and terminal themes. This page uses its tokens.</td>
+              <td>macOS, Linux</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/tory37/djaunt-memguard">djaunt-memguard</a></td>
+              <td><code>command</code></td>
+              <td class="wrap">Warns before macOS runs out of memory. Needs <code>swiftc</code>.</td>
+              <td>macOS</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/vercel-labs/agent-skills">vercel-agent-skills</a></td>
+              <td><code>clone</code></td>
+              <td class="wrap">React and web UI rule packs. Agents read them.</td>
+              <td>macOS, Linux</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/vercel-labs/web-interface-guidelines">web-interface-guidelines</a></td>
+              <td><code>clone</code></td>
+              <td class="wrap">Web interface rules: accessibility, forms, focus, motion, layout, and copy. Agents read them.</td>
+              <td>macOS, Linux</td>
+            </tr>
+            <tr>
+              <td><a href="https://github.com/trailofbits/skills">trailofbits-skills</a></td>
+              <td><code>clone</code></td>
+              <td class="wrap">Testing and secure-code rule packs. Licensed CC-BY-SA: agents read it, and its text is never copied into this repo.</td>
+              <td>macOS, Linux</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
   </section>
 
@@ -255,6 +503,7 @@ cp ~/my-work-context.md ~/.agents/extensions/work.md</pre>
         <div class="body">
           <h3>Run the sync script</h3>
           <pre>bash scripts/sync.sh</pre>
+          <p>It sets up Claude Code and Gemini CLI, if installed, and installs the dependencies. Re-run it after each <code>git pull</code>.</p>
         </div>
       </div>
     </div>
@@ -263,7 +512,7 @@ cp ~/my-work-context.md ~/.agents/extensions/work.md</pre>
   <footer>
     <div class="left">
       <img src="assets/brand/logo/djaunt-icon-frost.svg" alt="">
-      <span class="mono">djaunt-dot-agents · MIT-style personal config</span>
+      <span class="mono">djaunt-dot-agents · personal agent config</span>
     </div>
     <a class="dj-button dj-button-ghost" href="https://github.com/tory37/djaunt-dot-agents">github.com/tory37/djaunt-dot-agents</a>
   </footer>
