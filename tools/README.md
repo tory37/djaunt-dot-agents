@@ -15,14 +15,14 @@ Everything this setup depends on that lives outside this repo. One file per comp
 
 Each file starts with a `---` frontmatter block of `key: value` lines. Sync reads that block. Everything after it is documentation for humans.
 
-Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It fast-forwards the clone if it exists, and uses it as is if it has local changes. It never aborts the whole sync: a failing tool logs a warning and sync moves on.
+Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It uses `gh` when installed, else plain `git clone` over https, which works for public repos. It fast-forwards the clone if it exists, and uses it as is if it has local changes. It never aborts the whole sync: a failing tool logs a warning and sync moves on.
 
 | Key | Required | Meaning |
 |---|---|---|
 | `name` | yes | Tool name. Also the stamp name. |
 | `repo` | yes | GitHub `owner/name`. |
 | `platforms` | yes | Space-separated `uname -s` values, lowercase: `darwin`, `linux`. Sync skips the tool elsewhere, including Windows. |
-| `kind` | yes | `command` runs `install` lines. `vsix` installs the latest release as an editor extension. |
+| `kind` | yes | `command` runs `install` lines. `vsix` installs the latest release as an editor extension. `clone` only clones and fast-forwards, for repos the agent reads, such as rule packs. |
 | `dir-env` | no | Env var that overrides the clone directory. |
 | `requires` | no | A command that must be on PATH to install. |
 | `requires-hint` | no | Shown when `requires` is missing. |

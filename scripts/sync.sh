@@ -253,12 +253,21 @@ tool_fields() {
 }
 tool_field() { tool_fields "$1" "$2" 1; }
 
+# clone_repo <owner/name> <dir> — gh when installed (private repos), else plain https (public repos)
+clone_repo() {
+    if command -v gh >/dev/null 2>&1; then
+        gh repo clone "$1" "$2" -- --quiet
+    else
+        git clone --quiet "https://github.com/$1.git" "$2"
+    fi
+}
+
 # ensure_djaunt_repo <owner/name> [dir] — clone if missing, else fast-forward. Sets DJAUNT_REPO_DIR.
 ensure_djaunt_repo() {
     local repo="$1" name="${1#*/}"
     DJAUNT_REPO_DIR="${2:-$DJAUNT_SRC_DIR/$name}"
     if [ ! -d "$DJAUNT_REPO_DIR/.git" ]; then
-        command -v gh >/dev/null 2>&1 && gh repo clone "$repo" "$DJAUNT_REPO_DIR" -- --quiet \
+        clone_repo "$repo" "$DJAUNT_REPO_DIR" \
             || { warn "Could not clone $repo to $DJAUNT_REPO_DIR — skipping"; return 1; }
         ok "Cloned $name → $DJAUNT_REPO_DIR"
     elif [ -n "$(git -C "$DJAUNT_REPO_DIR" status --porcelain)" ]; then
@@ -391,6 +400,7 @@ sync_tool() {
     ensure_djaunt_repo "$repo" "$dir" || return 0
     case "$kind" in
         command) sync_command_tool "$file" "$name" ;;
+        clone)   ;;
         vsix)    sync_vsix_tool "$file" "$name" "$repo" ;;
         *)       warn "$name has unknown kind '$kind' — skipping" ;;
     esac
