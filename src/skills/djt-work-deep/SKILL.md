@@ -81,7 +81,7 @@ State the tool-call budget for the phase first.
 2. **Research.** Read **Research** in `reference.md`. Find a source for each claim: the stack file's tier 1 docs, `~/.agents/skills/djt-harness/scripts/docs-mcp`, then repo precedent. Open each page. Confirm it says what you claim.
 3. **Brief.** Read **Briefs** in `reference.md`. Copy `brief-template.html` to `briefs/NN-<slug>.html`. Fill in Problem, Background, Solution, and Evidence. Apply the hard block.
 4. **Implement.** Follow `~/.agents/assets/code-clarity.md`. If the code moves away from the brief, fix the brief.
-5. **Verify.** Run the repo's lint commands from recon, then the project's tests. Ask the user to run the Doer Test Plan steps.
+5. **Verify.** Run the repo's lint commands from recon, then the project's tests. If the phase has a Doer Test Plan, ask the user to run its steps.
 6. **Report.** Give the real lint and test results. Give the brief path and a teaser of 2 to 4 lines. Never paste the brief into chat.
 7. **STOP.** Wait for confirmation.
 8. **Commit.** Use the phase description for the message.
