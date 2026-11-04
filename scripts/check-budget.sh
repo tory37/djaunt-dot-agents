@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # check-budget.sh — Enforce token budgets on always-loaded instruction files.
 # Exit 1 if any file is over budget. Warn at 80%.
-# Override limits: AGENTS_MAX_TOKENS=5000 SKILL_MAX_TOKENS=2500 HARNESS_MAX_TOKENS=800 bash scripts/check-budget.sh
+# Override limits: AGENTS_MAX_TOKENS=5000 SKILL_MAX_TOKENS=2500 AGENT_MAX_TOKENS=2500 HARNESS_MAX_TOKENS=800 bash scripts/check-budget.sh
 
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 AGENTS_MAX_TOKENS=${AGENTS_MAX_TOKENS:-5000}
 SKILL_MAX_TOKENS=${SKILL_MAX_TOKENS:-2500}
+AGENT_MAX_TOKENS=${AGENT_MAX_TOKENS:-2500}
 HARNESS_MAX_TOKENS=${HARNESS_MAX_TOKENS:-800}
 CHARS_PER_TOKEN=${CHARS_PER_TOKEN:-4}
 WARN_PERCENT=80
@@ -42,6 +43,10 @@ for skill_file in "$REPO_ROOT"/src/skills/*/SKILL.md; do
     [ -f "$skill_file" ] && check_file "$skill_file" "$SKILL_MAX_TOKENS"
 done
 
+for agent_file in "$REPO_ROOT"/src/agents/*/AGENT.md; do
+    [ -f "$agent_file" ] && check_file "$agent_file" "$AGENT_MAX_TOKENS"
+done
+
 HARNESS_DIR="$REPO_ROOT/src/skills/djt-harness"
 if [ -d "$HARNESS_DIR" ]; then
     while IFS= read -r harness_file; do
@@ -51,6 +56,6 @@ fi
 
 if $IS_OVER_BUDGET; then
     echo ""
-    echo "Over budget. Move detail into a reference.md beside the skill, or cut redundant rules."
+    echo "Over budget. Move detail into a reference.md beside the skill or agent, or cut redundant rules."
     exit 1
 fi

@@ -73,6 +73,7 @@ bash "$REPO_ROOT/scripts/check-budget.sh" || { warn "Budget check failed — syn
 COUNT_DOTAGENTS=0
 COUNT_EXTENSIONS=0
 COUNT_SKILLS=0
+COUNT_AGENTS=0
 
 # ──────────────────────────────────────────────
 # 1. Create ~/.agents and populate it
@@ -104,6 +105,20 @@ if [ -d "$SKILLS_DIR" ]; then
             skill_name=$(basename "$skill")
             ok "  Skill: $skill_name"
             ((++COUNT_SKILLS))
+        fi
+    done
+fi
+
+link_dir "$REPO_ROOT/src/agents" "$AGENTS_DIR/agents"
+ok "Linked $REPO_ROOT/src/agents → ~/.agents/agents"
+
+AGENT_SOURCES_DIR="$REPO_ROOT/src/agents"
+if [ -d "$AGENT_SOURCES_DIR" ]; then
+    for agent in "$AGENT_SOURCES_DIR"/*/; do
+        if [ -d "$agent" ]; then
+            agent_name=$(basename "$agent")
+            ok "  Agent: $agent_name"
+            ((++COUNT_AGENTS))
         fi
     done
 fi
@@ -153,6 +168,52 @@ if [ -d "$HOME/.claude" ]; then
     link_dir "$AGENTS_DIR/skills" "$HOME/.claude/skills"
     ok "Linked ~/.agents/skills → ~/.claude/skills"
 
+    # ~/.claude/agents also holds other repos' agents, so link one file at a time and never replace the directory.
+    CLAUDE_AGENTS_DIR="$HOME/.claude/agents"
+    # Windows copies files instead of linking, so this list of copied names stands in for the link target as proof of ownership.
+    COPIED_AGENTS_LIST="$AGENTS_DIR/claude-agents-copied.txt"
+    mkdir -p "$CLAUDE_AGENTS_DIR"
+
+    # is_owned_agent_file <file> — true when sync created <file> from ~/.agents/agents
+    is_owned_agent_file() {
+        local file="$1"
+        if $IS_WINDOWS; then
+            grep -qxF "$(basename "$file")" "$COPIED_AGENTS_LIST" 2>/dev/null
+        elif [ -L "$file" ]; then
+            case "$(readlink "$file")" in
+                "$AGENTS_DIR/agents/"*) return 0 ;;
+                *) return 1 ;;
+            esac
+        else
+            return 1
+        fi
+    }
+
+    for agent_link in "$CLAUDE_AGENTS_DIR"/*.md; do
+        agent_name=$(basename "$agent_link" .md)
+        if is_owned_agent_file "$agent_link" && [ ! -f "$AGENTS_DIR/agents/$agent_name/AGENT.md" ]; then
+            rm -f "$agent_link"
+            ok "Removed stale agent ~/.claude/agents/$agent_name.md"
+        fi
+    done
+
+    copied_agent_names=""
+    for agent_file in "$AGENTS_DIR"/agents/*/AGENT.md; do
+        [ -f "$agent_file" ] || continue
+        agent_name=$(basename "$(dirname "$agent_file")")
+        agent_link="$CLAUDE_AGENTS_DIR/$agent_name.md"
+        if { [ -e "$agent_link" ] || [ -L "$agent_link" ]; } && ! is_owned_agent_file "$agent_link"; then
+            warn "~/.claude/agents/$agent_name.md belongs to something else — skipping $agent_name"
+            continue
+        fi
+        link_file "$agent_file" "$agent_link"
+        copied_agent_names="${copied_agent_names}${agent_name}.md"$'\n'
+        ok "Linked ~/.agents/agents/$agent_name/AGENT.md → ~/.claude/agents/$agent_name.md"
+    done
+    if $IS_WINDOWS; then
+        printf '%s' "$copied_agent_names" > "$COPIED_AGENTS_LIST"
+    fi
+
     install -m 755 "$REPO_ROOT/src/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
     ok "Installed src/statusline-command.sh → ~/.claude/statusline-command.sh"
 
@@ -181,7 +242,7 @@ fi
 
 # ──────────────────────────────────────────────
 # 4. Wire up ~/.gemini (Gemini CLI)
-#    Assembles a single GEMINI.md by inlining all skills.
+#    Assembles a single GEMINI.md by inlining all skills and agents.
 # ──────────────────────────────────────────────
 if [ -d "$HOME/.gemini" ]; then
     log "Gemini CLI detected — assembling ~/.gemini/GEMINI.md …"
@@ -200,29 +261,37 @@ if [ -d "$HOME/.gemini" ]; then
         awk '/^---$/{if(++n==2){found=1;next}} found{print}' "$file"
     }
 
-    while IFS= read -r -d '' skill_dir; do
-        skill_file="$skill_dir/SKILL.md"
-        meta_file="$skill_dir/gemini.meta"
+    # inline_entries <source_dir> <entry_file> <label> — append each <source_dir>/<name>/<entry_file> that has a gemini.meta
+    inline_entries() {
+        local source_dir="$1" entry_file_name="$2" label="$3" entry_dir entry_file meta_file name trigger notes
+        while IFS= read -r -d '' entry_dir; do
+            entry_file="$entry_dir/$entry_file_name"
+            meta_file="$entry_dir/gemini.meta"
 
-        if [ -f "$skill_file" ] && [ -f "$meta_file" ]; then
-            name=$(basename "$skill_dir")
-            trigger=$(meta_field "$meta_file" "trigger")
-            notes=$(meta_field "$meta_file" "notes")
+            if [ -f "$entry_file" ] && [ -f "$meta_file" ]; then
+                name=$(basename "$entry_dir")
+                trigger=$(meta_field "$meta_file" "trigger")
+                notes=$(meta_field "$meta_file" "notes")
 
-            printf '## Skill: %s\n\n%s\n\n' "$name" "$trigger" >> "$GEMINI_MD"
-            if [ -n "$notes" ]; then
-                printf '> **Note:** %s\n\n' "$notes" >> "$GEMINI_MD"
+                printf '## %s: %s\n\n%s\n\n' "$label" "$name" "$trigger" >> "$GEMINI_MD"
+                if [ -n "$notes" ]; then
+                    printf '> **Note:** %s\n\n' "$notes" >> "$GEMINI_MD"
+                fi
+                skill_body "$entry_file" >> "$GEMINI_MD"
+                if [ -f "$entry_dir/reference.md" ]; then
+                    printf '\n\n' >> "$GEMINI_MD"
+                    cat "$entry_dir/reference.md" >> "$GEMINI_MD"
+                fi
+                printf '\n---\n\n' >> "$GEMINI_MD"
+
+                ok "  Inlined $(printf '%s' "$label" | tr '[:upper:]' '[:lower:]'): $name"
             fi
-            skill_body "$skill_file" >> "$GEMINI_MD"
-            if [ -f "$skill_dir/reference.md" ]; then
-                printf '\n\n' >> "$GEMINI_MD"
-                cat "$skill_dir/reference.md" >> "$GEMINI_MD"
-            fi
-            printf '\n---\n\n' >> "$GEMINI_MD"
+        done < <(find "$source_dir" -maxdepth 1 -mindepth 1 -type d -print0 | sort -z)
+    }
 
-            ok "  Inlined skill: $name"
-        fi
-    done < <(find "$SKILLS_DIR" -maxdepth 1 -mindepth 1 -type d -print0 | sort -z)
+    inline_entries "$SKILLS_DIR" SKILL.md Skill
+    printf '\n# AGENTS\n\n' >> "$GEMINI_MD"
+    inline_entries "$AGENT_SOURCES_DIR" AGENT.md Agent
 
     ok "Gemini CLI GEMINI.md assembled"
 else
@@ -416,12 +485,13 @@ for tool_file in "$REPO_ROOT"/tools/*.md; do
 done
 
 echo ""
-log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills"
+log "Summary: $COUNT_DOTAGENTS dotagents, $COUNT_EXTENSIONS extensions, $COUNT_SKILLS skills, $COUNT_AGENTS agents"
 echo ""
 log "Done. Your portable AI setup is live on this machine."
 echo ""
 echo "  Edit your config:    $REPO_ROOT/src/AGENTS.md"
 echo "  Add/edit skills:     $REPO_ROOT/src/skills/djt-<name>/SKILL.md"
+echo "  Add/edit agents:     $REPO_ROOT/src/agents/djt-<name>/AGENT.md"
 echo "  Machine extensions:  $AGENTS_DIR/extensions/<name>.md"
 echo ""
 if $IS_WINDOWS; then
