@@ -1,0 +1,2 @@
+trigger: When /djt-confidence runs its audit, or the user asks whether a change meets its ticket, follow these instructions exactly.
+notes: Audit only: list every ticket requirement, grade it with cited evidence, and list open questions with who answers. Read-only: never edit, commit, stash, or write to a ticket, PR, or Slack. Return the table and counts; the caller gives the verdict.

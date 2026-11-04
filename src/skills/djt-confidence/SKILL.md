@@ -21,35 +21,20 @@ The answer is a verdict: **Complete confidence: yes** or **no**. Never "mostly".
 
 If the ticket or the change can't be resolved, ask. Never guess.
 
-## Out of scope — never report these
+## Out of scope
 
-- Who can approve, merge rules, code owners, CI gates, branch protection.
-- Code style, naming, refactors. That is review, not requirements.
-- New ideas for the ticket.
-
-If it doesn't change whether a requirement is met, leave it out.
+Approval, merge rules, CI gates, code style, and new ideas for the ticket. The auditor's list is the full rule. If it doesn't change whether a requirement is met, leave it out.
 
 ## Workflow
 
 Read-only throughout. No ticket writes, no PR comments, no Slack, no commits.
 
-1. **Gather the requirements.** Read the whole ticket: description, acceptance criteria, test plan, the Doer Test Plan field, and every comment. Follow links the ticket uses to define scope: a parent epic section, a design thread, a spec. Later comments and answered questions override the description. Note which.
-2. **Gather the change.** Diff against the default branch. PR body, every review, every inline thread and its replies. Read the code. Never trust a PR body, commit message, or reply without checking the code or the recorded result.
-3. **List each requirement.** One row per description requirement, acceptance criterion, and numbered test-plan item. Quote it short.
-4. **Grade each row.**
-   - **Met**: evidence is a `file:line`, a test name that asserts it, or a result recorded on the ticket or PR.
-   - **Partly met**: some of it has evidence. Say what's missing.
-   - **Not met**: the code does something else, or nothing.
-   - **Unverified**: claimed but no evidence you can see. A test-plan item with no recorded result is Unverified.
-   - **Blocked**: can't be done yet. Name the blocker.
-5. **List open questions on the requirements.**
-   - Questions in the ticket or comments nobody answered.
-   - Places the code departs from the ticket text without a recorded decision.
-   - Review threads, human or bot, with no reply and no fix in code. Check the code before calling one open.
-   - Each one names who would answer it.
-6. **Give the verdict.** Yes only if every row is Met, or Blocked with the block agreed on the ticket or PR, and no open question remains.
+1. **Resolve the input.** The ticket key and the change: a PR, a branch, or a range. Ask if either is unresolved.
+2. **Audit.** Spawn `djt-confidence-auditor` (inherit model). Brief it with the ticket and the change. It gathers, lists, grades, and returns open questions.
+3. **Verify.** Check every row it marks Met. A Met row with no `file:line`, test name, or recorded result drops to Unverified. Open the cited code for any row that looks wrong.
+4. **Give the verdict.** Yes only if every row is Met, or Blocked with the block agreed on the ticket or PR, and no open question remains.
 
-Delegate steps 1–5 to one subagent (inherit model) when the ticket or diff is large. Keep step 6. Verify any row the subagent marks Met that has no evidence.
+If you can't spawn subagents (for example on Gemini), follow the `djt-confidence-auditor` instructions yourself, then run steps 3 and 4.
 
 ## Output
 

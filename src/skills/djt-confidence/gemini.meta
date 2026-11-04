@@ -1,2 +1,2 @@
 trigger: When the user types /djt-confidence, or asks whether a change meets its ticket, "do we believe in this change", or "are we confident in this", always execute the following workflow exactly.
-notes: Answer only whether every ticket requirement is met with evidence and whether any requirement question is open. Verdict is yes or no; one gap makes it no. Never report approval, merge, or CI mechanics. Read-only: no ticket, PR, or Slack writes.
+notes: Run the djt-confidence-auditor instructions yourself, then verify every Met row has evidence. Verdict is yes or no; one gap makes it no. Never report approval, merge, or CI mechanics. Read-only: no ticket, PR, or Slack writes.
