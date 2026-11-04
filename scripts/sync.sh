@@ -289,9 +289,20 @@ if [ -d "$HOME/.gemini" ]; then
         done < <(find "$source_dir" -maxdepth 1 -mindepth 1 -type d -print0 | sort -z)
     }
 
+    # has_gemini_entries <source_dir> <entry_file> — true when any <source_dir>/<name>/ has <entry_file> and gemini.meta
+    has_gemini_entries() {
+        local source_dir="$1" entry_file_name="$2" entry_dir
+        for entry_dir in "$source_dir"/*/; do
+            [ -f "$entry_dir$entry_file_name" ] && [ -f "${entry_dir}gemini.meta" ] && return 0
+        done
+        return 1
+    }
+
     inline_entries "$SKILLS_DIR" SKILL.md Skill
-    printf '\n# AGENTS\n\n' >> "$GEMINI_MD"
-    inline_entries "$AGENT_SOURCES_DIR" AGENT.md Agent
+    if has_gemini_entries "$AGENT_SOURCES_DIR" AGENT.md; then
+        printf '\n# AGENTS\n\n' >> "$GEMINI_MD"
+        inline_entries "$AGENT_SOURCES_DIR" AGENT.md Agent
+    fi
 
     ok "Gemini CLI GEMINI.md assembled"
 else

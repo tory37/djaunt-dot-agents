@@ -180,12 +180,12 @@
         <tbody>
           <tr>
             <td><a href="https://claude.ai/code">Claude Code</a></td>
-            <td class="wrap">Native skills — <code>~/.claude/skills/</code> links straight back to this repo</td>
+            <td class="wrap">Native skills and subagents — <code>~/.claude/skills/</code> and each <code>~/.claude/agents/&lt;name&gt;.md</code> link straight back to this repo</td>
             <td><span class="dj-badge dj-badge-success">Supported</span></td>
           </tr>
           <tr>
             <td><a href="https://github.com/google-gemini/gemini-cli">Gemini CLI</a></td>
-            <td class="wrap">Assembled — <code>sync.sh</code> inlines every skill into <code>~/.gemini/GEMINI.md</code></td>
+            <td class="wrap">Assembled — <code>sync.sh</code> inlines every skill and agent into <code>~/.gemini/GEMINI.md</code></td>
             <td><span class="dj-badge dj-badge-success">Supported</span></td>
           </tr>
         </tbody>
@@ -197,24 +197,25 @@
     <div class="section-head">
       <div class="eyebrow">02 — How it works</div>
       <h2>One source of truth, two targets</h2>
-      <p><code>src/AGENTS.md</code> is the shared system prompt. <code>src/skills/</code> holds every slash command. <code>sync.sh</code> deploys both to the tools installed on the machine. It also clones the companion repos listed in <code>tools/</code>.</p>
+      <p><code>src/AGENTS.md</code> is the shared system prompt. <code>src/skills/</code> holds every slash command. <code>src/agents/</code> holds the subagents those commands spawn. <code>sync.sh</code> deploys all three to the tools installed on the machine. It also clones the companion repos listed in <code>tools/</code>.</p>
     </div>
     <div class="diagram">djaunt-dot-agents/
   src/AGENTS.md  ──(copy)────▶ <span class="accent">~/.agents/AGENTS.md</span> ──(symlink)──▶ <span class="accent">~/.claude/CLAUDE.md</span>
   src/skills/    ──(symlink)─▶ <span class="accent">~/.agents/skills/</span>   ──(symlink)──▶ <span class="accent">~/.claude/skills/</span>
+  src/agents/    ──(symlink)─▶ <span class="accent">~/.agents/agents/</span>   ──(per-file)─▶ <span class="accent">~/.claude/agents/&lt;name&gt;.md</span>
                                     │
                                     └──(assembled)──▶ <span class="accent">~/.gemini/GEMINI.md</span>
-                                                      <span class="muted">(AGENTS.md + every skill inlined)</span>
+                                                      <span class="muted">(AGENTS.md + every skill and agent inlined)</span>
   tools/*.md     ──(clone)───▶ <span class="accent">~/src/&lt;repo&gt;/</span>
                                <span class="muted">(companion repos and rule packs)</span></div>
     <div class="cards">
       <div class="card">
         <h3>Claude Code</h3>
-        <p>Skills natively. <span class="path">~/.claude/skills/</span> is a symlink chain back to the repo. Skill edits are live at once. No re-sync needed.</p>
+        <p>Skills natively. <span class="path">~/.claude/skills/</span> is a symlink chain back to the repo. Skill edits are live at once. No re-sync needed. Each agent links one file into <span class="path">~/.claude/agents/</span>. Sync never touches another repo's agents.</p>
       </div>
       <div class="card">
         <h3>Gemini CLI</h3>
-        <p>No native skill system. <code>sync.sh</code> inlines <code>AGENTS.md</code>, plus each skill with its <code>gemini.meta</code> trigger, into one <span class="path">GEMINI.md</span>. Re-run sync after an edit.</p>
+        <p>No native skill system. <code>sync.sh</code> inlines <code>AGENTS.md</code>, plus each skill with its <code>gemini.meta</code> trigger, into one <span class="path">GEMINI.md</span>. No subagents either: agents inline after the skills, and Gemini runs their steps itself. Re-run sync after an edit.</p>
       </div>
     </div>
   </section>
@@ -222,7 +223,7 @@
   <section>
     <div class="section-head">
       <div class="eyebrow">03 — Skills</div>
-      <h2>Four slash commands, one shared harness</h2>
+      <h2>Six slash commands, one shared harness</h2>
       <p>Each skill is a folder under <code>src/skills/</code>: a <code>SKILL.md</code>, a <code>gemini.meta</code> trigger for Gemini, and sometimes a <code>reference.md</code> with the detail. The harness is a shared folder, not a command.</p>
     </div>
 
@@ -387,6 +388,78 @@
 
       <article class="spec-row">
         <div class="spec-id">
+          <span class="eyebrow">Slash command</span>
+          <span class="cmd">/djt-code-review</span>
+          <code class="usage">/djt-code-review [PR | branch | range]</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-code-review">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>Reviews one change and recommends SHIP, SHIP WITH NITS, CHANGES REQUESTED, or BLOCK. A finder agent reports cited findings. A fresh verifier agent drops the false ones. It never posts anywhere.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Use it when</h3>
+            <p>You want a second read on a diff, a branch, or a PR before it merges.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Resolve the diff. Read the linked ticket if there is one.</li>
+              <li>Size it. Over ~400 changed lines, split it between two finders.</li>
+              <li>Find. <code>djt-code-reviewer</code> returns cited candidate findings.</li>
+              <li>Verify. <code>djt-review-verifier</code> re-opens each cited line and keeps, drops, or re-tags it.</li>
+              <li>Rank and give the verdict. Pre-existing findings never move it.</li>
+              <li>Propose lessons. Save them only after you say yes.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>You get</h3>
+            <ul>
+              <li>A recommendation and the blocking findings in chat</li>
+              <li><code>review.html</code>: findings, verified claims, questions, test gaps, and what the verifier dropped</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Slash command</span>
+          <span class="cmd">/djt-confidence</span>
+          <code class="usage">/djt-confidence [TICKET] [PR | branch | range]</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/skills/djt-confidence">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>Answers one question: does this change meet every requirement of its ticket? The verdict is yes or no. One gap makes it no.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Use it when</h3>
+            <p>A change looks done and you want proof that it covers the whole ticket.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Resolve the ticket and the change. Ask if either is unclear.</li>
+              <li>Audit. <code>djt-confidence-auditor</code> grades every requirement with cited evidence.</li>
+              <li>Verify. A Met row with no evidence drops to Unverified.</li>
+              <li>Give the verdict.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>You get</h3>
+            <ul>
+              <li>The verdict, the gaps, and open questions with who answers each</li>
+              <li><code>confidence.html</code>: requirement, status, evidence</li>
+            </ul>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
           <span class="eyebrow">Shared layer</span>
           <span class="cmd">djt-harness</span>
           <code class="usage">~/.agents/skills/djt-harness/</code>
@@ -476,9 +549,117 @@
     </div>
   </section>
 
+  <section>
+    <div class="section-head">
+      <div class="eyebrow">04 — Subagents</div>
+      <h2>Three read-only agents, spawned by skills</h2>
+      <p>A skill runs in your session. It talks to you and holds the gates. An agent is an isolated, read-heavy job that returns a report. Each agent is a folder under <code>src/agents/</code>: an <code>AGENT.md</code> and a <code>gemini.meta</code>.</p>
+    </div>
+
+    <div class="spec">
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Subagent</span>
+          <span class="cmd">djt-code-reviewer</span>
+          <code class="usage">~/.claude/agents/djt-code-reviewer.md</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/agents/djt-code-reviewer">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>The finder pass of a code review. Reads the diff and the code around it. Checks the change's claims against source. Traces callers and consumers.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Spawned by</h3>
+            <p><code>/djt-code-review</code>. One or two run in parallel, by diff size.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Read the diff, the ticket, and past review lessons.</li>
+              <li>Check each claim the change makes against the code.</li>
+              <li>Trace callers, consumers, and tests.</li>
+              <li>Cite <code>file:line</code> for every finding.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>Returns</h3>
+            <p>Candidate findings with severity and evidence, plus proposed lessons. The verifier checks them next.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Subagent</span>
+          <span class="cmd">djt-review-verifier</span>
+          <code class="usage">~/.claude/agents/djt-review-verifier.md</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/agents/djt-review-verifier">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>The verify pass of a code review. Starts with a fresh context, so it does not share the finder's reasoning.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Spawned by</h3>
+            <p><code>/djt-code-review</code>, after the finders return.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Re-open the code each finding cites.</li>
+              <li>Drop a finding with no <code>file:line</code> or one the code disproves.</li>
+              <li>Downgrade or re-tag it as pre-existing where it fits.</li>
+              <li>Add no new findings.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>Returns</h3>
+            <p>Kept findings, and each dropped finding with its reason.</p>
+          </div>
+        </div>
+      </article>
+
+      <article class="spec-row">
+        <div class="spec-id">
+          <span class="eyebrow">Subagent</span>
+          <span class="cmd">djt-confidence-auditor</span>
+          <code class="usage">~/.claude/agents/djt-confidence-auditor.md</code>
+          <a class="src" href="https://github.com/tory37/djaunt-dot-agents/tree/main/src/agents/djt-confidence-auditor">View source</a>
+        </div>
+        <div class="spec-body">
+          <div class="spec-block">
+            <h3>What it does</h3>
+            <p>Audits a change against its ticket. Gathers the whole ticket and the whole change, then grades each requirement.</p>
+          </div>
+          <div class="spec-block">
+            <h3>Spawned by</h3>
+            <p><code>/djt-confidence</code>.</p>
+          </div>
+          <div class="spec-block">
+            <h3>How it runs</h3>
+            <ol>
+              <li>Read the ticket, its comments, and the change.</li>
+              <li>List every requirement.</li>
+              <li>Grade each one Met, Partly met, Not met, Unverified, or Blocked, with cited evidence.</li>
+              <li>List open questions and who answers each.</li>
+            </ol>
+          </div>
+          <div class="spec-block">
+            <h3>Returns</h3>
+            <p>The requirement table and the counts. The skill gives the verdict.</p>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
   <section id="get-started">
     <div class="section-head">
-      <div class="eyebrow">04 — Get started</div>
+      <div class="eyebrow">05 — Get started</div>
       <h2>Three steps, any machine</h2>
     </div>
     <div class="steps">

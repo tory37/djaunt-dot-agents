@@ -1,6 +1,6 @@
 # djaunt-dot-agents
 
-Your portable AI agent setup. Clone this repo on any machine, run one script, and your AI tools (Claude Code, Gemini CLI) are configured with a shared system prompt, shared skills, and machine-specific extensions.
+Your portable AI agent setup. Clone this repo on any machine, run one script, and your AI tools (Claude Code, Gemini CLI) are configured with a shared system prompt, shared skills, shared subagents, and machine-specific extensions.
 
 ## Supported agents
 
@@ -27,9 +27,13 @@ src/
       SKILL.md     — Claude Code loads this
       gemini.meta  — Gemini-specific trigger/notes (invisible to Claude)
     djt-harness/   — Shared layer for djt-work and djt-work-deep (not a slash command)
+  agents/          — Subagents that skills spawn (Claude subagents, inlined into Gemini)
+    djt-code-reviewer/
+      AGENT.md     — Claude Code loads this as ~/.claude/agents/djt-code-reviewer.md
+      gemini.meta  — Gemini-specific trigger/notes (invisible to Claude)
 scripts/
   sync.sh          — The install/refresh script
-  check-budget.sh  — Token budget check for AGENTS.md and each SKILL.md (sync runs it)
+  check-budget.sh  — Token budget check for AGENTS.md, each SKILL.md, and each AGENT.md (sync runs it)
 tools/             — One file per outside dependency. sync.sh reads these to install them.
 ```
 
@@ -41,6 +45,18 @@ tools/             — One file per outside dependency. sync.sh reads these to i
 | [`djt-work-deep`](src/skills/djt-work-deep/) | The `djt-work` flow with a teaching layer. |
 | [`djt-test-plan`](src/skills/djt-test-plan/) | Change-scoped manual test plan. One plan for the author and QA. Generates mitmweb fault-injection scripts. |
 | [`djt-frontend-design`](src/skills/djt-frontend-design/) | UI design and build. Declares design reasoning before code. Bans the default AI look. |
+| [`djt-code-review`](src/skills/djt-code-review/) | Code review of a diff, branch, range, or PR. Finder agent, then a fresh verifier agent. SHIP / SHIP WITH NITS / CHANGES REQUESTED / BLOCK. Never posts. |
+| [`djt-confidence`](src/skills/djt-confidence/) | Does a change meet its ticket. Maps each requirement to evidence. Yes or no, plus open questions. |
+
+## Agents
+
+A skill runs in the main session. It talks to you and holds the gates. An agent is an isolated, read-heavy job that returns a report. A skill spawns it.
+
+| Agent | What it does | Used by |
+|---|---|---|
+| [`djt-code-reviewer`](src/agents/djt-code-reviewer/) | Finder pass. Reads the diff and its callers. Returns cited candidate findings. | `djt-code-review` |
+| [`djt-review-verifier`](src/agents/djt-review-verifier/) | Verify pass, fresh context. Re-opens each cited line. Keeps, drops, or re-tags each finding. | `djt-code-review` |
+| [`djt-confidence-auditor`](src/agents/djt-confidence-auditor/) | Grades every ticket requirement with cited evidence. Returns the table, not the verdict. | `djt-confidence` |
 
 ### djt-work vs djt-work-deep
 
@@ -74,24 +90,29 @@ The skills load each file just in time: `citations.md` before the plan, a stack 
 djaunt-dot-agents/
   src/AGENTS.md  ──(copy)──▶  ~/.agents/AGENTS.md  ──(symlink)──▶  ~/.claude/CLAUDE.md
   src/skills/    ──(symlink)─▶ ~/.agents/skills/   ──(symlink)──▶  ~/.claude/skills/
+  src/agents/    ──(symlink)─▶ ~/.agents/agents/   ──(per-file)──▶  ~/.claude/agents/<name>.md
                                     │
                                     └──(assembled)──▶  ~/.gemini/GEMINI.md
-                                                       (AGENTS.md + all skills inlined)
+                                                       (AGENTS.md + all skills and agents inlined)
   src/assets/    ──(copy)──▶  ~/.agents/assets/
   tools/*.md     ──(clone/install)──▶  companion repos under $DJAUNT_SRC_DIR (default ~/src)
 ```
 
 **Claude Code** gets skills natively — `~/.claude/skills/` is a symlink chain back to the repo, so edits are live immediately.
 
+**Claude Code agents** — `~/.claude/agents/` also holds other repos' agents, so sync links one file per agent (`<name>/AGENT.md` → `<name>.md`). It skips a name it does not own and prunes only its own stale links. Re-run sync after adding or removing an agent; edits to an existing `AGENT.md` are live.
+
 **Gemini CLI** has no native skill system. Instead, `sync.sh` assembles `~/.gemini/GEMINI.md` by taking `AGENTS.md` and inlining every skill after it, with natural-language trigger instructions. When you type `/djt-work` in Gemini, it reads the trigger from the inlined skill and follows the workflow. Re-run `sync.sh` after adding or editing skills to rebuild `GEMINI.md`.
 
-Gemini gets only skill folders that have both `SKILL.md` and `gemini.meta`. A `reference.md` beside the skill is appended after the body.
+Gemini has no subagents either. Agents inline after the skills under a `# AGENTS` header, and a skill's `gemini.meta` tells Gemini to run the agent's steps itself. The header is written only when at least one agent qualifies.
 
-Before it deploys anything, `sync.sh` runs `scripts/check-budget.sh`. It aborts if `src/AGENTS.md` or a `SKILL.md` is over budget.
+Gemini gets only folders that have both `SKILL.md` (or `AGENT.md`) and `gemini.meta`. A `reference.md` beside it is appended after the body.
+
+Before it deploys anything, `sync.sh` runs `scripts/check-budget.sh`. It aborts if `src/AGENTS.md`, a `SKILL.md`, or an `AGENT.md` is over budget.
 
 ### The gemini.meta file
 
-Each skill folder contains a `gemini.meta` file with Gemini-specific metadata that `sync.sh` uses when assembling `GEMINI.md`. Claude Code never loads this file, so it costs zero context.
+Each skill and agent folder contains a `gemini.meta` file with Gemini-specific metadata that `sync.sh` uses when assembling `GEMINI.md`. Claude Code never loads this file, so it costs zero context.
 
 ```
 trigger: When the user types /djt-work or asks to build a feature, fix a bug, or refactor, ...
@@ -139,6 +160,7 @@ bash scripts/sync.sh
 | Global AI instructions | `src/AGENTS.md` | Yes |
 | Skill workflow (all tools) | `src/skills/<name>/SKILL.md` | Claude: no — Gemini: yes |
 | Gemini trigger / notes for a skill | `src/skills/<name>/gemini.meta` | Yes |
+| Agent (add or edit) | `src/agents/<name>/AGENT.md` + `gemini.meta` | Add: yes — Edit: Claude no, Gemini yes |
 | Shared layer for the work skills | `src/skills/djt-harness/` | No (symlinked) |
 | Reference assets | `src/assets/<name>.md` | Yes |
 | Claude Code settings keys | `src/claude-settings.json` | Yes |

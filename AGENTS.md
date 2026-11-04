@@ -8,6 +8,7 @@ This is the portable AI agent config repo. It is **not** a product project — i
 src/
   AGENTS.md        — Global AI instructions (deployed to ~/.agents/AGENTS.md and each tool's config)
   skills/          — Shared skills (deployed to Claude Code, Gemini CLI)
+  agents/          — Subagents spawned by skills (deployed to Claude Code, Gemini CLI)
 scripts/
   sync.sh          — Deploys src/ to the active toolchain on this machine
 tools/             — One file per outside dependency (companion repos, CLI tools). sync.sh reads these to install.
@@ -19,10 +20,16 @@ README.md          — Human-facing docs
 - **Edit global AI instructions:** `src/AGENTS.md` — re-run sync after saving
 - **Edit a skill:** `src/skills/<name>/SKILL.md` — re-run sync to propagate to all tools
 - **Add a skill:** create `src/skills/<name>/SKILL.md` + `gemini.meta` — re-run sync
+- **Add an agent:** create `src/agents/<name>/AGENT.md` + `gemini.meta` — re-run sync
+- **Skill or agent?** Skill = runs in the main session, talks to the user, holds the gates. Agent = isolated, read-heavy job that returns a report; a skill spawns it.
 
 ```bash
 bash scripts/sync.sh
 ```
+
+## Budgets
+
+`src/AGENTS.md` max 5,000 tokens. Each `SKILL.md` and `AGENT.md` max 2,500. Overflow goes in `reference.md` beside it. `bash scripts/check-budget.sh` checks; `sync.sh` runs it and aborts on failure.
 
 ## Output
 
@@ -41,5 +48,5 @@ Files produced while working on this repo (plans, analysis, session snapshots) g
 
 - Never manually edit deployed files in tool config dirs — always edit `src/` and sync
 - Never commit machine-specific extensions (those live in `~/.agents/extensions/` only)
-- Skills in `src/skills/` are loaded by all supported agents — keep them agent-agnostic
+- Skills in `src/skills/` and agents in `src/agents/` are loaded by all supported tools — keep them tool-agnostic
 - `djt-work` and `djt-work-deep` share one flow. `djt-work-deep` adds only the teaching layer and points at `djt-work` steps by number. A change to the flow, gates, or step numbers in either skill must be made in both in the same commit. Then reread both and confirm every "djt-work step N" still names the right step.
