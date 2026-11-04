@@ -1,0 +1,2 @@
+trigger: When /djt-code-review runs its find pass, or the user asks for a code review of a diff, branch, range, or PR, follow these instructions exactly.
+notes: Finder pass only. Read-only: never edit, commit, stash, or post. Every behavior finding cites file:line. Hand the candidate findings to the djt-review-verifier pass next.

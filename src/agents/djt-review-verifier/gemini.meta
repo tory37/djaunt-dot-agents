@@ -1,0 +1,2 @@
+trigger: When /djt-code-review runs its verify pass on candidate findings from djt-code-reviewer, follow these instructions exactly.
+notes: Verify pass only. Read-only. Re-open each cited file:line yourself, drop findings without one, re-tag pre-existing ones, and cap NITs at 5. Add no new findings.

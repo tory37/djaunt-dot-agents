@@ -1,0 +1,2 @@
+trigger: When the user types /djt-code-review, or asks for a code review of a PR, branch, range, or the current changes, always execute the following workflow exactly.
+notes: Gemini cannot spawn subagents. Run the djt-code-reviewer agent instructions yourself, then the djt-review-verifier instructions on your own findings, in that order. Read-only. Never post to GitHub, Jira, or Slack. Write lessons only after the user says yes.
