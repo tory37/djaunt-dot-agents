@@ -89,14 +89,14 @@ Wait for explicit approval of the phases.
 1. Create the branch before any code.
 2. Write the first test from the table (feature: failing tests for phase 1 only).
 3. Run it. Report the real output.
-4. Invoke `/djt-test-plan` for the phase's Doer Test Plan. Source goes in `<output dir>/doer-test-plan.html`.
+4. If the phase has behavior a person can check by hand, invoke `/djt-test-plan` for its Doer Test Plan. Source goes in `<output dir>/doer-test-plan.html`. If not (pure logic, a refactor with no behavior change), skip it. Say so in one line. Do not ask.
 5. If the phase touches UI, invoke `/djt-frontend-design` before writing it.
 
 ### 7. Implement, phase by phase
 
 1. Load the stack file's rule-pack rows that match this phase. Read only those files.
 2. Implement the phase.
-3. Run the lint commands from step 1, then the project's tests. Report the real results. Ask the user to run the Doer Test Plan steps.
+3. Run the lint commands from step 1, then the project's tests. Report the real results. If the phase has a Doer Test Plan, ask the user to run its steps.
 4. **STOP.** Wait for confirmation.
 5. Commit. Use the phase description for the message.
 6. Next phase.
