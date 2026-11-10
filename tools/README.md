@@ -8,6 +8,7 @@ Everything this setup depends on that lives outside this repo. One file per comp
 |---|---|---|---|
 | [`djt-hub.md`](djt-hub.md) | `tory37/djaunt-agent-hubs` | Live browser pages for agent processes | macOS, Linux |
 | [`djaunt-overseer.md`](djaunt-overseer.md) | `tory37/djaunt-overseer` | Session tabs for Claude CLI in VS Code | macOS, Linux |
+| [`office-simulation.md`](office-simulation.md) | `tory37/vscode-office-simulation` | Pixel-guy office view in VS Code, used by djaunt-overseer | macOS, Linux |
 | [`djaunt-branding.md`](djaunt-branding.md) | `tory37/djaunt-branding` | Brand assets and editor and terminal themes | macOS, Linux |
 | [`djaunt-memguard.md`](djaunt-memguard.md) | `tory37/djaunt-memguard` | Memory pressure guard | macOS |
 | [`vercel-agent-skills.md`](vercel-agent-skills.md) | `vercel-labs/agent-skills` | React and web UI rule packs, read by agents | macOS, Linux |
