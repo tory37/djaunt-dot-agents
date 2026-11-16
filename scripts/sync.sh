@@ -50,20 +50,46 @@ refresh_path() {
     export PATH
 }
 
+# prerequisite_dirs <command> — folders where installers put <command>, for a PATH that misses them
+prerequisite_dirs() {
+    [ "$1" = gh ] || return 0
+    if $IS_WINDOWS; then
+        [ -z "${PROGRAMFILES:-}" ] || cygpath -u "$PROGRAMFILES\\GitHub CLI"
+        echo "/c/Program Files/GitHub CLI"
+        [ -z "${LOCALAPPDATA:-}" ] || cygpath -u "$LOCALAPPDATA\\Programs\\GitHub CLI"
+        echo "$HOME/scoop/shims"
+        echo "/c/ProgramData/chocolatey/bin"
+    else
+        printf '%s\n' /opt/homebrew/bin /usr/local/bin /home/linuxbrew/.linuxbrew/bin "$HOME/.local/bin"
+    fi
+}
+
 # ensure_prerequisite <command> — returns 0 when the command is on PATH after the attempt
 ensure_prerequisite() {
-    local command_name="$1" recipe
+    local command_name="$1" recipe dir
     command -v "$command_name" >/dev/null 2>&1 && return 0
     # An earlier install may have landed after this shell started. Look again before installing.
     refresh_path
-    command -v "$command_name" >/dev/null 2>&1 && return 0
+    if command -v "$command_name" >/dev/null 2>&1; then
+        warn "$command_name is at $(command -v "$command_name") but not on this shell's PATH. Open a new terminal."
+        return 0
+    fi
+    while IFS= read -r dir; do
+        if [ -f "$dir/$command_name" ] || [ -f "$dir/$command_name.exe" ]; then
+            PATH="$PATH:$dir"
+            export PATH
+            if $IS_WINDOWS; then dir="$(cygpath -w "$dir")"; fi
+            warn "$command_name is installed in $dir, which is not on PATH. Using it for this run. Add $dir to PATH."
+            return 0
+        fi
+    done < <(prerequisite_dirs "$command_name")
     recipe="$(sed -n "s/^$command_name\.$PREREQUISITE_PLATFORM: *//p" "$REPO_ROOT/tools/prerequisites.txt" | head -n 1)"
     if [ -z "$recipe" ]; then
         warn "$command_name not found and no install recipe for $PREREQUISITE_PLATFORM (tools/prerequisites.txt)"
         return 1
     fi
     log "Installing $command_name …"
-    if ! bash -c "$recipe" </dev/null; then
+    if ! REPO_ROOT="$REPO_ROOT" bash -c "$recipe" </dev/null; then
         warn "Could not install $command_name. Install it yourself, then re-run sync."
         return 1
     fi
@@ -118,6 +144,17 @@ link_dir() {
 # Budget gate — refuse to deploy oversized instruction files
 # ──────────────────────────────────────────────
 bash "$REPO_ROOT/scripts/check-budget.sh" || { warn "Budget check failed — sync aborted"; exit 1; }
+
+# ──────────────────────────────────────────────
+# GitHub CLI — every machine gets gh. A failed install warns and sync goes on.
+# ──────────────────────────────────────────────
+log "Checking GitHub CLI (gh) …"
+if ensure_prerequisite gh; then
+    ok "gh $(gh --version 2>/dev/null | sed -n '1s/^gh version \([^ ]*\).*/\1/p')"
+    gh_is_signed_in || warn "gh is not signed in. Run: gh auth login"
+else
+    warn "gh is not installed. Get it from https://cli.github.com, then re-run sync."
+fi
 
 # ──────────────────────────────────────────────
 # 0. Initialize counters
@@ -562,10 +599,7 @@ sync_tool() {
     esac
 
     requirement="$(tool_field "$file" requires)"
-    if [ -n "$requirement" ]; then
-        ensure_prerequisite "$requirement" || true
-        [ "$requirement" != "gh" ] || gh_is_signed_in || warn "gh is not signed in. Run: gh auth login"
-    fi
+    [ -z "$requirement" ] || ensure_prerequisite "$requirement" || true
 
     [ -z "$dir_env" ] || dir="${!dir_env:-}"
     [ -n "$dir" ] || [ -z "$clone_name" ] || dir="$DJAUNT_SRC_DIR/$clone_name"

@@ -143,7 +143,7 @@ mkdir -p ~/.agents/extensions
 bash scripts/sync.sh
 ```
 
-The script creates `~/.agents/`, wires up Claude Code and Gemini CLI, injects extensions, and installs the tools in `tools/`. It skips Claude Code or Gemini CLI when its config folder (`~/.claude`, `~/.gemini`) is missing.
+The script installs the GitHub CLI (`gh`) when it is missing, creates `~/.agents/`, wires up Claude Code and Gemini CLI, injects extensions, and installs the tools in `tools/`. It skips Claude Code or Gemini CLI when its config folder (`~/.claude`, `~/.gemini`) is missing.
 
 ## Keeping it up to date
 

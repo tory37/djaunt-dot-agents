@@ -19,7 +19,15 @@ Everything this setup depends on that lives outside this repo. One file per comp
 
 Each file starts with a `---` frontmatter block of `key: value` lines. Sync reads that block. Everything after it is documentation for humans.
 
-Sync installs prerequisites it needs (`gh`, `bun`, `jq`) before anything else. One step cannot be automated: `gh auth login` is interactive, so sync warns until you run it once.
+Sync installs prerequisites it needs (`gh`, `bun`, `jq`) when they are missing. `gh` comes first, on every platform, whether or not a tool needs it:
+
+| Platform | How sync installs `gh` |
+|---|---|
+| Windows | winget, else scoop, else choco |
+| macOS | brew |
+| Linux | `scripts/install-gh.sh`: the official GitHub apt repo, dnf, zypper, or pacman. Then brew. Then the release tarball into `~/.local/bin`, which needs no root (SteamOS uses this path). |
+
+Before it installs, sync looks in the default install folders (for example `C:\Program Files\GitHub CLI`). When `gh` is there but not on `PATH`, sync uses it for the run and warns you to fix `PATH`. A failed install warns and sync goes on. One step cannot be automated: `gh auth login` is interactive, so sync warns until you run it once.
 
 Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It uses `gh` when installed, else plain `git clone` over https, which works for public repos. It fast-forwards the clone if it exists, and uses it as is if it has local changes. It never aborts the whole sync: a failing tool logs a warning and sync moves on.
 
