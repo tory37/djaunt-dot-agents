@@ -1,7 +1,7 @@
 ---
 name: web-interface-guidelines
 repo: vercel-labs/web-interface-guidelines
-platforms: darwin linux
+platforms: darwin linux windows
 kind: clone
 ---
 

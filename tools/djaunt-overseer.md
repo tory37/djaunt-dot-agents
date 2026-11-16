@@ -1,7 +1,7 @@
 ---
 name: djaunt-overseer
 repo: tory37/djaunt-overseer
-platforms: darwin linux
+platforms: darwin linux windows
 kind: vsix
 requires: gh
 requires-hint: see tools/README.md, section Bootstrap CLI tools (gh)
@@ -17,9 +17,9 @@ Vertical tabs for Claude CLI sessions in VS Code. Sessions stay real terminals. 
 
 1. Clones `tory37/djaunt-overseer` to `~/src/djaunt-overseer`. Fast-forwards it if it exists.
 2. Reads the latest GitHub release tag.
-3. Finds the VS Code CLI (`code` on PATH, or the one inside the app). Compares the installed version of `djaunt.djaunt-overseer` to that tag. It downloads the `.vsix` and installs it only when they differ.
+3. Finds the VS Code CLI (`code` on PATH, or the default install folder on macOS or Windows). Compares the installed version of `djaunt.djaunt-overseer` to that tag. It downloads the `.vsix` and installs it only when they differ.
 
-Reload the editor window after an update.
+Reload the editor window after an update. On Windows the extension starts Claude through Git Bash (v0.0.57 or later), which sync already requires.
 
 ## Uninstall
 

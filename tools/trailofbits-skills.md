@@ -1,7 +1,7 @@
 ---
 name: trailofbits-skills
 repo: trailofbits/skills
-platforms: darwin linux
+platforms: darwin linux windows
 kind: clone
 clone-name: trailofbits-skills
 note: trailofbits/skills is CC-BY-SA. Read it locally. Never copy its text into djaunt-dot-agents.

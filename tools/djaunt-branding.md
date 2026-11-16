@@ -1,10 +1,11 @@
 ---
 name: djaunt-branding
 repo: tory37/djaunt-branding
-platforms: darwin linux
+platforms: darwin linux windows
 kind: command
 install: bash vscode-theme/tools/sync-local.sh
 install: bash terminal-theme/tools/sync-local.sh
+install-windows: for d in "$HOME/.vscode/extensions" "$HOME/.cursor/extensions"; do [ -d "$d" ] || continue; link="$d/djaunt-themes"; if [ -e "$link" ]; then rmdir "$link" 2>/dev/null || { echo "skip: $link exists and is not a junction"; continue; }; fi; powershell.exe -NonInteractive -Command "New-Item -ItemType Junction -Path '$(cygpath -w "$link")' -Target '$(cygpath -w "$PWD/vscode-theme")'" >/dev/null && echo "linked: $link"; done
 ---
 
 # djaunt-branding

@@ -2,7 +2,7 @@
 name: djt-hub
 repo: tory37/djaunt-agent-hubs
 dir-env: DJT_HUB_REPO
-platforms: darwin linux
+platforms: darwin linux windows
 kind: command
 requires: bun
 requires-hint: see tools/README.md, section Bootstrap CLI tools (bun)

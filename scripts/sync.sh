@@ -28,6 +28,58 @@ warn() { printf '\033[1;33m  !\033[0m %s\n' "$*"; }
 $IS_WINDOWS && log "Windows detected — using junctions for dirs, copies for files"
 
 # ──────────────────────────────────────────────
+# Prerequisites
+#   ensure_prerequisite installs a missing command with the platform's package
+#   manager. The recipes live in tools/prerequisites.txt.
+# ──────────────────────────────────────────────
+if $IS_WINDOWS; then PREREQUISITE_PLATFORM=windows
+elif [ "$(uname -s)" = "Darwin" ]; then PREREQUISITE_PLATFORM=darwin
+else PREREQUISITE_PLATFORM=linux
+fi
+
+# A fresh install updates the registry or a dotfile, not this shell's PATH.
+refresh_path() {
+    if $IS_WINDOWS; then
+        local registry_path
+        registry_path="$(powershell.exe -NoProfile -NonInteractive -Command \
+            "[Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')" \
+            | tr -d '\r')"
+        PATH="$PATH:$(cygpath -u -p "$registry_path")"
+    fi
+    PATH="$PATH:$HOME/.bun/bin:$HOME/.local/bin"
+    export PATH
+}
+
+# ensure_prerequisite <command> — returns 0 when the command is on PATH after the attempt
+ensure_prerequisite() {
+    local command_name="$1" recipe
+    command -v "$command_name" >/dev/null 2>&1 && return 0
+    # An earlier install may have landed after this shell started. Look again before installing.
+    refresh_path
+    command -v "$command_name" >/dev/null 2>&1 && return 0
+    recipe="$(sed -n "s/^$command_name\.$PREREQUISITE_PLATFORM: *//p" "$REPO_ROOT/tools/prerequisites.txt" | head -n 1)"
+    if [ -z "$recipe" ]; then
+        warn "$command_name not found and no install recipe for $PREREQUISITE_PLATFORM (tools/prerequisites.txt)"
+        return 1
+    fi
+    log "Installing $command_name …"
+    if ! bash -c "$recipe" </dev/null; then
+        warn "Could not install $command_name. Install it yourself, then re-run sync."
+        return 1
+    fi
+    refresh_path
+    if command -v "$command_name" >/dev/null 2>&1; then
+        ok "Installed $command_name"
+    else
+        warn "$command_name installed but not on PATH yet. Open a new terminal and re-run sync."
+        return 1
+    fi
+}
+
+# gh_is_signed_in — gh refuses every call until the user signs in once (interactive, cannot be automated)
+gh_is_signed_in() { command -v gh >/dev/null 2>&1 && gh auth status >/dev/null 2>&1; }
+
+# ──────────────────────────────────────────────
 # Link helpers
 # ──────────────────────────────────────────────
 # link_file <target> <link>  — symlink on Unix, file copy on Windows
@@ -220,8 +272,31 @@ if [ -d "$HOME/.claude" ]; then
     # Merge owned top-level keys from src/claude-settings.json into settings.json.
     # Owned keys are replaced whole. Every other key is left alone.
     CLAUDE_SETTINGS="$HOME/.claude/settings.json"
+    ensure_prerequisite jq || true
     if ! command -v jq >/dev/null 2>&1; then
-        warn "jq not found — skipping ~/.claude/settings.json merge (see tools/README.md)"
+        # No jq: node does the same merge. Owned keys replace whole, other keys stay.
+        if command -v node >/dev/null 2>&1; then
+            [ -e "$CLAUDE_SETTINGS" ] || echo '{}' > "$CLAUDE_SETTINGS"
+            node_merge_result="$(node -e '
+                const fs = require("fs");
+                const [settingsPath, ownedPath] = process.argv.slice(1);
+                let current;
+                try { current = JSON.parse(fs.readFileSync(settingsPath, "utf8")); }
+                catch (error) { console.log("invalid"); process.exit(0); }
+                const owned = JSON.parse(fs.readFileSync(ownedPath, "utf8"));
+                const merged = { ...current, ...owned };
+                if (JSON.stringify(merged) === JSON.stringify(current)) { console.log("unchanged"); process.exit(0); }
+                fs.writeFileSync(settingsPath, JSON.stringify(merged, null, 2) + "\n");
+                console.log("merged " + Object.keys(owned).join(", "));
+            ' "$CLAUDE_SETTINGS" "$REPO_ROOT/src/claude-settings.json")"
+            case "$node_merge_result" in
+                invalid)   warn "$CLAUDE_SETTINGS is not valid JSON — skipping merge" ;;
+                unchanged) ok "~/.claude/settings.json already up to date" ;;
+                merged*)   ok "Merged src/claude-settings.json → ~/.claude/settings.json (${node_merge_result#merged })" ;;
+            esac
+        else
+            warn "Neither jq nor node found — skipping ~/.claude/settings.json merge (see tools/README.md)"
+        fi
     elif [ -e "$CLAUDE_SETTINGS" ] && ! jq empty "$CLAUDE_SETTINGS" 2>/dev/null; then
         warn "$CLAUDE_SETTINGS is not valid JSON — skipping merge"
     else
@@ -335,7 +410,7 @@ tool_field() { tool_fields "$1" "$2" 1; }
 
 # clone_repo <owner/name> <dir> — gh when installed (private repos), else plain https (public repos)
 clone_repo() {
-    if command -v gh >/dev/null 2>&1; then
+    if gh_is_signed_in; then
         gh repo clone "$1" "$2" -- --quiet
     else
         git clone --quiet "https://github.com/$1.git" "$2"
@@ -363,10 +438,14 @@ ensure_djaunt_repo() {
 stamp_matches() { [ "$(cat "$DJAUNT_STAMP_DIR/$1" 2>/dev/null)" = "$2" ]; }
 write_stamp()   { mkdir -p "$DJAUNT_STAMP_DIR"; printf '%s\n' "$2" > "$DJAUNT_STAMP_DIR/$1"; }
 
-# editor_clis — print the VS Code CLI (PATH first, then the app bundle on macOS)
+# editor_clis — print the VS Code CLI (PATH first, then the default install path on macOS or Windows)
 editor_clis() {
     local bundled="/Applications/Visual Studio Code.app/Contents/Resources/app/bin/code"
-    command -v code 2>/dev/null || { [ -x "$bundled" ] && echo "$bundled"; } || true
+    local windows_user_install="${LOCALAPPDATA:-}/Programs/Microsoft VS Code/bin/code"
+    command -v code 2>/dev/null \
+        || { [ -x "$bundled" ] && echo "$bundled"; } \
+        || { [ -n "${LOCALAPPDATA:-}" ] && [ -f "$windows_user_install" ] && echo "$windows_user_install"; } \
+        || true
 }
 
 # run_in_repo <command> — run a tool file's shell command inside the cloned repo
@@ -374,7 +453,7 @@ run_in_repo() { (cd "$DJAUNT_REPO_DIR" && bash -c "$1"); }
 
 # sync_command_tool <file> <name> — kind: command
 sync_command_tool() {
-    local file="$1" name="$2" revision check requirement installs cmd output note
+    local file="$1" name="$2" revision check requirement installs windows_installs cmd output note
     revision="$(git -C "$DJAUNT_REPO_DIR" rev-parse HEAD 2>/dev/null || echo unknown)"
     check="$(tool_field "$file" check)"
     if stamp_matches "$name-rev" "$revision" && { [ -z "$check" ] || run_in_repo "$check" >/dev/null 2>&1; }; then
@@ -389,6 +468,10 @@ sync_command_tool() {
     fi
 
     installs="$(tool_fields "$file" install)"
+    if $IS_WINDOWS; then
+        windows_installs="$(tool_fields "$file" install-windows)"
+        [ -z "$windows_installs" ] || installs="$windows_installs"
+    fi
     [ -n "$installs" ] || { warn "$name has no install line — skipping"; return 0; }
     while IFS= read -r cmd; do
         [ -n "$cmd" ] || continue
@@ -411,7 +494,7 @@ sync_vsix_tool() {
     extension="$(tool_field "$file" vsix-extension)"
     asset="$(tool_field "$file" vsix-asset)"
     [ -n "$extension" ] && [ -n "$asset" ] || { warn "$name needs vsix-extension and vsix-asset — skipping"; return 0; }
-    command -v gh >/dev/null 2>&1 || { warn "gh not found — skipping $name release check"; return 0; }
+    gh_is_signed_in || { warn "gh missing or not signed in (gh auth login) — skipping $name release check"; return 0; }
 
     latest="$(gh release view -R "$repo" --json tagName -q .tagName 2>/dev/null | sed 's/^v//' || true)"
     [ -n "$latest" ] || { warn "Could not read latest $name release — skipping"; return 0; }
@@ -458,7 +541,7 @@ sync_agent_doc() {
 
 # sync_tool <file> — read one tools/*.md file and install what it describes
 sync_tool() {
-    local file="$1" name repo platforms kind dir_env clone_name dir="" platform
+    local file="$1" name repo platforms kind dir_env clone_name dir="" platform requirement
     name="$(tool_field "$file" name)"
     repo="$(tool_field "$file" repo)"
     platforms="$(tool_field "$file" platforms)"
@@ -472,10 +555,17 @@ sync_tool() {
 
     log "Setting up $name …"
     platform="$(uname -s | tr '[:upper:]' '[:lower:]')"
+    ! $IS_WINDOWS || platform="windows"
     case " $platforms " in
         *" $platform "*) ;;
         *) warn "$name supports $platforms only — skipping"; return 0 ;;
     esac
+
+    requirement="$(tool_field "$file" requires)"
+    if [ -n "$requirement" ]; then
+        ensure_prerequisite "$requirement" || true
+        [ "$requirement" != "gh" ] || gh_is_signed_in || warn "gh is not signed in. Run: gh auth login"
+    fi
 
     [ -z "$dir_env" ] || dir="${!dir_env:-}"
     [ -n "$dir" ] || [ -z "$clone_name" ] || dir="$DJAUNT_SRC_DIR/$clone_name"

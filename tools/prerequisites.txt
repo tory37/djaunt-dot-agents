@@ -1,0 +1,16 @@
+# Commands sync installs when they are missing. One line per command and platform.
+# Format: <command>.<platform>: <shell command>. Platforms: windows, darwin, linux.
+# Sync runs the line with bash, then refreshes PATH. A tool file names its needs with `requires:`.
+# Leave a platform out to make sync print a warning instead of installing.
+
+gh.windows: winget install --id GitHub.cli -e --silent --accept-source-agreements --accept-package-agreements
+gh.darwin: brew install gh
+gh.linux: if command -v apt-get >/dev/null; then sudo apt-get install -y gh; elif command -v dnf >/dev/null; then sudo dnf install -y gh; elif command -v pacman >/dev/null; then sudo pacman -S --noconfirm github-cli; else exit 1; fi
+
+bun.windows: winget install --id Oven-sh.Bun -e --silent --accept-source-agreements --accept-package-agreements
+bun.darwin: brew install oven-sh/bun/bun
+bun.linux: curl -fsSL https://bun.sh/install | bash
+
+jq.windows: winget install --id jqlang.jq -e --silent --accept-source-agreements --accept-package-agreements
+jq.darwin: brew install jq
+jq.linux: if command -v apt-get >/dev/null; then sudo apt-get install -y jq; elif command -v dnf >/dev/null; then sudo dnf install -y jq; elif command -v pacman >/dev/null; then sudo pacman -S --noconfirm jq; else exit 1; fi

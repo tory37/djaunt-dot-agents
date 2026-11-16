@@ -1,7 +1,7 @@
 ---
 name: vercel-agent-skills
 repo: vercel-labs/agent-skills
-platforms: darwin linux
+platforms: darwin linux windows
 kind: clone
 ---
 

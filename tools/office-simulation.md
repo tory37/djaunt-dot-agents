@@ -1,7 +1,7 @@
 ---
 name: office-simulation
 repo: tory37/vscode-office-simulation
-platforms: darwin linux
+platforms: darwin linux windows
 kind: vsix
 requires: gh
 requires-hint: see tools/README.md, section Bootstrap CLI tools (gh)

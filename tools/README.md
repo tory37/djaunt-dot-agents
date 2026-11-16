@@ -6,18 +6,20 @@ Everything this setup depends on that lives outside this repo. One file per comp
 
 | File | Repo | What it is | Platforms |
 |---|---|---|---|
-| [`djt-hub.md`](djt-hub.md) | `tory37/djaunt-agent-hubs` | Live browser pages for agent processes | macOS, Linux |
-| [`djaunt-overseer.md`](djaunt-overseer.md) | `tory37/djaunt-overseer` | Session tabs for Claude CLI in VS Code | macOS, Linux |
-| [`office-simulation.md`](office-simulation.md) | `tory37/vscode-office-simulation` | Pixel-guy office view in VS Code, used by djaunt-overseer | macOS, Linux |
-| [`djaunt-branding.md`](djaunt-branding.md) | `tory37/djaunt-branding` | Brand assets and editor and terminal themes | macOS, Linux |
+| [`djt-hub.md`](djt-hub.md) | `tory37/djaunt-agent-hubs` | Live browser pages for agent processes | macOS, Linux, Windows |
+| [`djaunt-overseer.md`](djaunt-overseer.md) | `tory37/djaunt-overseer` | Session tabs for Claude CLI in VS Code | macOS, Linux, Windows |
+| [`office-simulation.md`](office-simulation.md) | `tory37/vscode-office-simulation` | Pixel-guy office view in VS Code, used by djaunt-overseer | macOS, Linux, Windows |
+| [`djaunt-branding.md`](djaunt-branding.md) | `tory37/djaunt-branding` | Brand assets and editor and terminal themes | macOS, Linux, Windows |
 | [`djaunt-memguard.md`](djaunt-memguard.md) | `tory37/djaunt-memguard` | Memory pressure guard | macOS |
-| [`vercel-agent-skills.md`](vercel-agent-skills.md) | `vercel-labs/agent-skills` | React and web UI rule packs, read by agents | macOS, Linux |
-| [`web-interface-guidelines.md`](web-interface-guidelines.md) | `vercel-labs/web-interface-guidelines` | Web interface rules, read by agents | macOS, Linux |
-| [`trailofbits-skills.md`](trailofbits-skills.md) | `trailofbits/skills` | Testing and secure-code rule packs, read by agents (CC-BY-SA) | macOS, Linux |
+| [`vercel-agent-skills.md`](vercel-agent-skills.md) | `vercel-labs/agent-skills` | React and web UI rule packs, read by agents | macOS, Linux, Windows |
+| [`web-interface-guidelines.md`](web-interface-guidelines.md) | `vercel-labs/web-interface-guidelines` | Web interface rules, read by agents | macOS, Linux, Windows |
+| [`trailofbits-skills.md`](trailofbits-skills.md) | `trailofbits/skills` | Testing and secure-code rule packs, read by agents (CC-BY-SA) | macOS, Linux, Windows |
 
 ## How sync reads a tool file
 
 Each file starts with a `---` frontmatter block of `key: value` lines. Sync reads that block. Everything after it is documentation for humans.
+
+Sync installs prerequisites it needs (`gh`, `bun`, `jq`) before anything else. One step cannot be automated: `gh auth login` is interactive, so sync warns until you run it once.
 
 Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It uses `gh` when installed, else plain `git clone` over https, which works for public repos. It fast-forwards the clone if it exists, and uses it as is if it has local changes. It never aborts the whole sync: a failing tool logs a warning and sync moves on.
 
@@ -25,14 +27,15 @@ Sync clones the repo to `$DJAUNT_SRC_DIR/<repo name>` (default `~/src`). It uses
 |---|---|---|
 | `name` | yes | Tool name. Also the stamp name. |
 | `repo` | yes | GitHub `owner/name`. |
-| `platforms` | yes | Space-separated `uname -s` values, lowercase: `darwin`, `linux`. Sync skips the tool elsewhere, including Windows. |
+| `platforms` | yes | Space-separated platform names: `darwin`, `linux`, `windows`. Sync maps Git Bash, MSYS, and Cygwin to `windows`. It skips the tool on any other platform. |
 | `kind` | yes | `command` runs `install` lines. `vsix` installs the latest release as an editor extension. `clone` only clones and fast-forwards, for repos the agent reads, such as rule packs. |
 | `dir-env` | no | Env var that overrides the clone directory. |
 | `clone-name` | no | Directory name under `$DJAUNT_SRC_DIR`, when the repo name is too generic. `dir-env` still wins. |
-| `requires` | no | A command that must be on PATH to install. |
-| `requires-hint` | no | Shown when `requires` is missing. |
+| `requires` | no | A command the tool needs. Sync installs it when missing, using the recipe in `tools/prerequisites.txt` (winget on Windows, brew on macOS, apt, dnf, or pacman on Linux). To support a new command, add its recipe there. |
+| `requires-hint` | no | Shown when `requires` is missing and sync could not install it. |
 | `check` | no | A shell command, run in the repo. Exit 0 means the tool is still installed. Without it, the stamp alone decides. |
 | `install` | `command` | A shell command, run in the repo. Repeat the key for several. They run in order and stop at the first failure. |
+| `install-windows` | no | Same as `install`, used instead of it on Windows. Use it when the repo's installer is Unix-only. |
 | `note` | no | Printed after a successful install. |
 | `agent-doc-cmd` | no | A shell command whose output is the agent guide. |
 | `agent-doc-fallback` | no | A repo-relative file to copy when `agent-doc-cmd` fails. |
@@ -59,7 +62,7 @@ Values stay on one line. Do not add inline comments.
 > On older macOS, Homebrew may lack bottles (prebuilt binaries) for Rust-based tools (`ripgrep`, `bat`, `fd`, `eza`) and compile Rust and LLVM from source. Install with `brew install --force-bottle <pkg>` so a missing bottle fails fast, then skip the tool or fetch its GitHub release binary.
 
 - **tree** — directory tree printer | <https://github.com/Old-Man-Programmer/tree>
-- **jq** — JSON processor. Sync needs it to merge `~/.claude/settings.json`. | <https://github.com/jqlang/jq>
+- **jq** — JSON processor. Sync uses it to merge `~/.claude/settings.json`. Without it, sync falls back to `node`. | <https://github.com/jqlang/jq>
 - **fzf** — fuzzy finder | <https://github.com/junegunn/fzf>
 - **ripgrep** (`rg`) — fast grep | <https://github.com/BurntSushi/ripgrep>
 - **bat** — `cat` with syntax highlighting | <https://github.com/sharkdp/bat>
