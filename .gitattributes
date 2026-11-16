@@ -1,0 +1,2 @@
+# Sync and the tool files are parsed by bash and awk, so every checkout must use LF, even on Windows.
+* text=auto eol=lf
